@@ -16,13 +16,17 @@ const BASE_URL = process.env.PIN_BASE_URL || 'http://localhost:3000';
 const PUBLISH_TOOL: Tool = {
   name: 'pin_publish',
   description:
-    'Publish an HTML artifact and get a shareable URL. Useful for sharing reports, dashboards, visualizations, or any rendered HTML produced by an agent.',
+    'Publish an HTML artifact or fetch a remote HTML page and get a shareable URL. Useful for sharing reports, dashboards, visualizations, or any rendered HTML produced by an agent.',
   inputSchema: {
     type: 'object',
     properties: {
       html: {
         type: 'string',
-        description: 'HTML content to publish. Should be a complete or body-safe HTML snippet.',
+        description: 'HTML content to publish. Provide either html or url.',
+      },
+      url: {
+        type: 'string',
+        description: 'URL of an HTML page to fetch and publish. Provide either html or url.',
       },
       title: {
         type: 'string',
@@ -41,7 +45,7 @@ const PUBLISH_TOOL: Tool = {
         description: 'Optional owner key for higher limits and ownership.',
       },
     },
-    required: ['html'],
+    anyOf: [{ required: ['html'] }, { required: ['url'] }],
   },
 };
 
@@ -62,13 +66,26 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 
   const args = request.params.arguments || {};
+
+  let html = '';
+  let sourceUrl: string | undefined;
+  if (args.url && !args.html) {
+    const response = await fetch(String(args.url), { headers: { 'User-Agent': 'Pin-Publish-MCP/0.1' } });
+    if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
+    html = await response.text();
+    sourceUrl = String(args.url);
+  } else {
+    html = String(args.html || '');
+  }
+
   const result = await publishArtifact(
     {
-      html: String(args.html || ''),
+      html,
       title: args.title ? String(args.title) : undefined,
       ttlDays: args.ttl_days ? Number(args.ttl_days) : undefined,
       password: args.password ? String(args.password) : undefined,
       ownerKey: args.owner_key ? String(args.owner_key) : undefined,
+      sourceUrl,
     },
     storage
   );

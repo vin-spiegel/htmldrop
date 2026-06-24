@@ -7,6 +7,8 @@ export interface ArtifactMeta {
   expiresAt: string;
   ownerKey?: string;
   password?: string;
+  sourceUrl?: string;
+  ogSvg?: string;
 }
 
 export interface PublishOptions {
@@ -15,6 +17,7 @@ export interface PublishOptions {
   ttlDays?: number;
   password?: string;
   ownerKey?: string;
+  sourceUrl?: string;
 }
 
 export interface PublishResult {

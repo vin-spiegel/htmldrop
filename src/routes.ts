@@ -9,8 +9,9 @@ import { publishArtifact } from './publish';
 export function createRouter(storage: Storage): Router {
   const router = express.Router();
 
-  router.use(express.json({ limit: '10mb' }));
-  router.use(express.urlencoded({ extended: true, limit: '10mb' }));
+  router.use(express.json({ limit: '30mb' }));
+  router.use(express.urlencoded({ extended: true, limit: '30mb' }));
+  router.use(express.raw({ type: 'text/html', limit: '30mb' }));
 
   const anonLimiter = rateLimit({
     windowMs: 60 * 1000,
@@ -44,18 +45,77 @@ export function createRouter(storage: Storage): Router {
     res.status(404).send('AGENTS.md not found');
   });
 
-  // Publish
+  // Publish JSON
   router.post('/publish', rateLimiter, async (req, res) => {
     try {
-      const { html, title, ttl_days, password } = req.body;
+      const { html, title, ttl_days, password, url } = req.body;
       const ownerKey = req.headers['x-pin-key']?.toString();
       const result = await publishArtifact(
-        { html, title, ttlDays: ttl_days ? Number(ttl_days) : undefined, password, ownerKey },
+        {
+          html,
+          title,
+          ttlDays: ttl_days ? Number(ttl_days) : undefined,
+          password,
+          ownerKey,
+          sourceUrl: url,
+        },
         storage
       );
       res.status(201).json(result);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'publish failed';
+      res.status(400).json({ error: message });
+    }
+  });
+
+  // Publish raw HTML
+  router.post('/publish/raw', rateLimiter, async (req, res) => {
+    try {
+      if (!Buffer.isBuffer(req.body) || req.body.length === 0) {
+        return res.status(400).json({ error: 'send text/html body' });
+      }
+      const ownerKey = req.headers['x-pin-key']?.toString();
+      const title = req.headers['x-pin-title']?.toString() || req.query.title?.toString();
+      const result = await publishArtifact(
+        { html: req.body.toString('utf-8'), title, ownerKey },
+        storage
+      );
+      res.status(201).json(result);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'publish failed';
+      res.status(400).json({ error: message });
+    }
+  });
+
+  // Publish from URL
+  router.post('/publish/from-url', rateLimiter, async (req, res) => {
+    try {
+      const { url, title, ttl_days, password } = req.body;
+      if (!url || typeof url !== 'string') {
+        return res.status(400).json({ error: 'url required' });
+      }
+      const ownerKey = req.headers['x-pin-key']?.toString();
+      const response = await fetch(url, {
+        headers: { 'User-Agent': 'Pin-Publish-Bot/0.1' },
+      });
+      if (!response.ok) {
+        return res.status(400).json({ error: `fetch failed: ${response.status}` });
+      }
+      const html = await response.text();
+      const result = await publishArtifact(
+        {
+          html,
+          title,
+          ttlDays: ttl_days ? Number(ttl_days) : undefined,
+          password,
+          ownerKey,
+          sourceUrl: url,
+        },
+        storage
+      );
+      res.status(201).json(result);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'publish from url failed';
       res.status(400).json({ error: message });
     }
   });
@@ -88,6 +148,20 @@ export function createRouter(storage: Storage): Router {
     }
   });
 
+  // OG image SVG endpoint (path fallback)
+  router.get('/og/:subdomain.svg', async (req, res) => {
+    try {
+      const meta = await storage.loadBySubdomain(req.params.subdomain);
+      if (!meta || !meta.ogSvg) return res.status(404).send('not found');
+      res.set('Content-Type', 'image/svg+xml');
+      res.set('Cache-Control', 'public, max-age=3600');
+      res.status(200).send(meta.ogSvg);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'unknown error';
+      res.status(500).send(message);
+    }
+  });
+
   // Serve artifact subdomain
   router.get('/', async (req, res) => {
     const host = req.headers.host || '';
@@ -99,6 +173,12 @@ export function createRouter(storage: Storage): Router {
     try {
       const meta = await storage.loadBySubdomain(subdomain);
       if (!meta) return res.status(404).send('<h1>Not found or expired</h1>');
+
+      if (meta.ogSvg && req.url.endsWith('/og.svg')) {
+        res.set('Content-Type', 'image/svg+xml');
+        res.set('Cache-Control', 'public, max-age=3600');
+        return res.status(200).send(meta.ogSvg);
+      }
 
       if (meta.password) {
         const query = new URLSearchParams(req.url.split('?')[1] || '');

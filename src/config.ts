@@ -14,7 +14,7 @@ export const config = {
   baseDomain: process.env.BASE_DOMAIN || 'localhost',
   anonTtlDays: parseInt(process.env.ANON_TTL_DAYS || '7', 10),
   keyTtlDays: parseInt(process.env.KEY_TTL_DAYS || '30', 10),
-  maxHtmlSizeBytes: parseInt(process.env.MAX_HTML_SIZE_BYTES || `${5 * 1024 * 1024}`, 10),
+  maxHtmlSizeBytes: parseInt(process.env.MAX_HTML_SIZE_BYTES || `${25 * 1024 * 1024}`, 10),
   rateLimitAnonPerMinute: parseInt(process.env.RATE_LIMIT_ANON_PER_MINUTE || '10', 10),
   rateLimitKeyPerMinute: parseInt(process.env.RATE_LIMIT_KEY_PER_MINUTE || '60', 10),
   cfR2Endpoint: process.env.CLOUDFLARE_R2_ENDPOINT || '',
