@@ -55,35 +55,43 @@ export async function handleCall(request: {
 
   const args = request.params.arguments || {};
 
-  let html = '';
-  let sourceUrl: string | undefined;
-  if (args.url && !args.html) {
-    const response = await fetch(String(args.url), { headers: { 'User-Agent': 'Pin-Publish-MCP/0.1' } });
-    if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
-    html = await response.text();
-    sourceUrl = String(args.url);
-  } else {
-    html = String(args.html || '');
-  }
+  try {
+    let html = '';
+    let sourceUrl: string | undefined;
+    if (args.url && !args.html) {
+      const response = await fetch(String(args.url), { headers: { 'User-Agent': 'Pin-Publish-MCP/0.1' } });
+      if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
+      html = await response.text();
+      sourceUrl = String(args.url);
+    } else {
+      html = String(args.html || '');
+    }
 
-  const result = await publishArtifact(
-    {
-      html,
-      title: args.title ? String(args.title) : undefined,
-      ttlDays: args.ttl_days ? Number(args.ttl_days) : undefined,
-      password: args.password ? String(args.password) : undefined,
-      ownerKey: args.owner_key ? String(args.owner_key) : undefined,
-      sourceUrl,
-    },
-    storage
-  );
-
-  return {
-    content: [
+    const result = await publishArtifact(
       {
-        type: 'text',
-        text: `Published!\n\nURL: ${result.url}\nID: ${result.id}\nExpires: ${result.expiresAt}`,
+        html,
+        title: args.title ? String(args.title) : undefined,
+        ttlDays: args.ttl_days ? Number(args.ttl_days) : undefined,
+        password: args.password ? String(args.password) : undefined,
+        ownerKey: args.owner_key ? String(args.owner_key) : undefined,
+        sourceUrl,
       },
-    ],
-  };
+      storage
+    );
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `Published!\n\nURL: ${result.url}\nID: ${result.id}\nExpires: ${result.expiresAt}`,
+        },
+      ],
+    };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    return {
+      content: [{ type: 'text', text: `Error: ${message}` }],
+      isError: true,
+    };
+  }
 }
