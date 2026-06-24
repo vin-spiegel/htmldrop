@@ -28,12 +28,12 @@ export function mcpGetHandler(req: IncomingMessage, res: ServerResponse) {
   server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: [PUBLISH_TOOL] }));
   server.setRequestHandler(CallToolRequestSchema, async (request) => handleCall(request));
 
+  const sessionId = transport.sessionId;
+  sessions.set(sessionId, { transport, server });
+
   server.connect(transport).catch((err) => {
     console.error('MCP SSE connection error:', err);
   });
-
-  const sessionId = transport.sessionId;
-  sessions.set(sessionId, { transport, server });
 
   res.on('close', () => {
     sessions.delete(sessionId);
