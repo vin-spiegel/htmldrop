@@ -1,4 +1,12 @@
-import { createCanvas, SKRSContext2D } from '@napi-rs/canvas';
+import { createCanvas, GlobalFonts, SKRSContext2D } from '@napi-rs/canvas';
+import * as path from 'path';
+
+const interRegular = path.resolve(__dirname, '../../node_modules/@fontsource/inter/files/inter-latin-400-normal.woff');
+const interBold = path.resolve(__dirname, '../../node_modules/@fontsource/inter/files/inter-latin-700-normal.woff');
+
+// Register embedded Inter fonts so text renders on hosts with no installed fonts.
+GlobalFonts.registerFromPath(interRegular, 'Inter');
+GlobalFonts.registerFromPath(interBold, 'Inter Bold');
 
 export function extractFirstImage(html: string): string | undefined {
   const match = html.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i);
@@ -66,12 +74,12 @@ export async function generatePngOgImage(title: string, domain: string): Promise
 
   // Logo
   ctx.fillStyle = '#f59e0b';
-  ctx.font = '600 28px sans-serif';
+  ctx.font = '600 28px Inter';
   ctx.fillText('Pin', 90, 150);
 
   // Title
   ctx.fillStyle = '#e6e6e6';
-  ctx.font = '700 48px sans-serif';
+  ctx.font = '700 48px Inter Bold';
   const wrapped = wrapText(ctx, title || 'Pin | Published artifact', 980);
   let y = 260;
   for (const line of wrapped) {

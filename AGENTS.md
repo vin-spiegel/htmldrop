@@ -1,124 +1,125 @@
-# Pin — Agent-native HTML publishing layer
+# Pin — MCP server for publishing HTML
 
-You are contributing to Pin: a service that lets AI agents publish HTML artifacts to public URLs with a single tool call.
+This is the Pin MCP server. It lets an agent publish an HTML artifact and receive a public URL.
 
-## Live service
+## Service endpoints
 
-- Landing page: https://pin-publish-production.up.railway.app/
-- API base: https://pin-publish-production.up.railway.app
-- HTTP MCP endpoint: `GET/POST https://pin-publish-production.up.railway.app/mcp`
-- `agents.md`: https://pin-publish-production.up.railway.app/agents.md
+| Endpoint | URL |
+|----------|-----|
+| Landing page | https://pin-publish-production.up.railway.app/ |
+| HTTP/SSE MCP | `GET/POST https://pin-publish-production.up.railway.app/mcp` |
+| REST API | `POST https://pin-publish-production.up.railway.app/publish` |
+| This file | https://pin-publish-production.up.railway.app/agents.md |
 
-## Project purpose
+## Connect as an MCP client
 
-Pin fills the gap between AI agents generating rich HTML reports/dashboards and the consumption layer (Slack, email, chat) that cannot render HTML. Agents call Pin and get back a public URL.
+Use HTTP/SSE. Connect to:
 
-Key principles:
-- Zero config for the agent: POST html → receive URL
-- Volatile by default: TTL-based expiration
-- Guessable-URL privacy via random-word subdomains
-- Optional password protection, owner keys, and rate limiting
-- `noindex/nofollow/noarchive` headers
-
-## Architecture
-
-```
-agent --(MCP / API)--> Pin API
-                          ├── HTTP server (Express, subdomain-based serving)
-                          ├── Storage: Cloudflare R2 when configured, else filesystem
-                          └── Metadata: id, subdomain, expiresAt, ownerKey, password
+```text
+GET https://pin-publish-production.up.railway.app/mcp
 ```
 
-## Entry points
+Wait for the endpoint event:
 
-- `src/index.ts` — HTTP server (landing page + wires MCP + API router)
-- `src/mcp-server.ts` — MCP server (stdio transport), exposes `pin_publish`
-- `src/mcp-sse.ts` — HTTP/SSE MCP transport at `/mcp`
-- `src/mcp-handlers.ts` — Shared `pin_publish` tool implementation
-- `src/routes.ts` — Express routes
-- `src/publish.ts` — Publishing logic
-- `src/storage.ts` — Storage abstraction with R2 and filesystem backends
-- `src/config.ts` — Environment config
-
-## MCP usage
-
-### stdio transport
-
-When running `src/mcp-server.ts`, agents can call:
-
-```json
-{
-  "name": "pin_publish",
-  "arguments": {
-    "html": "<h1>...</h1>",
-    "title": "My report",
-    "ttl_days": 14
-  }
-}
-```
-
-### HTTP/SSE transport
-
-Connect an SSE client to `GET https://<base>/mcp`. The server responds with:
-
-```
+```text
 event: endpoint
 data: /mcp?sessionId=<uuid>
 ```
 
-Then POST JSON-RPC requests to `POST https://<base>/mcp?sessionId=<uuid>`:
+All subsequent JSON-RPC messages go to:
+
+```text
+POST https://pin-publish-production.up.railway.app/mcp?sessionId=<uuid>
+Content-Type: application/json
+```
+
+## Available tool
+
+### `pin_publish`
+
+Publish HTML and get a public link.
+
+**Schema**
+
+```json
+{
+  "name": "pin_publish",
+  "description": "Publish an HTML artifact to a public URL",
+  "inputSchema": {
+    "type": "object",
+    "properties": {
+      "html": { "type": "string", "description": "HTML content to publish" },
+      "title": { "type": "string", "description": "Title used for social cards and metadata" },
+      "ttl_days": { "type": "number", "description": "Days until the artifact expires" },
+      "password": { "type": "string", "description": "Optional password to protect the artifact" },
+      "owner_key": { "type": "string", "description": "Optional owner key for higher rate limits and longer TTL" }
+    },
+    "required": ["html"]
+  }
+}
+```
+
+**Example call**
 
 ```json
 {
   "jsonrpc": "2.0",
   "id": 1,
-  "method": "tools/list"
-}
-```
-
-Or call the tool:
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 2,
   "method": "tools/call",
   "params": {
     "name": "pin_publish",
     "arguments": {
-      "html": "<h1>Report</h1>",
-      "title": "Report"
+      "html": "<h1>Hello world</h1>",
+      "title": "Demo",
+      "ttl_days": 7
     }
   }
 }
 ```
 
-The tool returns a public URL, artifact ID, and expiration timestamp.
+**Example response**
 
-## Environment variables
-
-See `.env.example`. Notable:
-
-- `BASE_DOMAIN` — apex domain used in returned URLs (e.g. `pin.app`)
-- `CLOUDFLARE_R2_*` — R2 credentials; leave empty to use local filesystem
-- `ANON_TTL_DAYS` / `KEY_TTL_DAYS` — default TTL tiers
-- `RATE_LIMIT_ANON_PER_MINUTE` / `RATE_LIMIT_KEY_PER_MINUTE`
-
-## Coding conventions
-
-- TypeScript, CommonJS output, strict mode
-- Prefer explicit error messages
-- Keep the MCP tool schema minimal and self-describing
-- Don't store secrets in code
-
-## Testing
-
-```bash
-npm run build
-npm test
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"url\":\"https://<subdomain>.pin-publish-production.up.railway.app\",\"id\":\"...\",\"expires_at\":\"2026-07-02T...\"}"
+      }
+    ]
+  }
+}
 ```
 
-## Deployment targets
+The response text is a JSON string. Parse it once to access `url`, `id`, and `expires_at`.
 
-- Railway (primary)
-- Cloudflare R2 for object storage (optional; filesystem fallback available)
+## REST fallback
+
+If you cannot use MCP, make a regular HTTP request:
+
+```bash
+curl -X POST https://pin-publish-production.up.railway.app/publish \
+  -H "Content-Type: application/json" \
+  -d '{"html":"<h1>Hello</h1>","title":"Demo","ttl_days":7}'
+```
+
+Response:
+
+```json
+{
+  "url": "https://<subdomain>.pin-publish-production.up.railway.app",
+  "id": "...",
+  "subdomain": "...",
+  "expires_at": "2026-07-02T..."
+}
+```
+
+## Important notes
+
+- The returned URL is volatile. Content expires automatically based on `ttl_days`.
+- All artifacts include `X-Robots-Tag: noindex, nofollow, noarchive`.
+- Pass an `owner_key` for higher rate limits and longer default TTL.
+- Ask for a fresh URL if the page returns 404 (expired) or 401 (password protected).

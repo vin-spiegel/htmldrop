@@ -81,10 +81,6 @@ export function landingPageHtml(): string {
 
   .hero-art { position: relative; display: flex; align-items: center; justify-content: center; min-height: 320px; }
   .hero-art svg { width: 100%; max-width: 420px; height: auto; }
-  .doodle-star { position: absolute; }
-  .doodle-star.top { top: 7%; right: 1%; width: 34px; height: 34px; }
-  .doodle-star.bottom { bottom: 21%; left: 4%; width: 26px; height: 26px; }
-  .doodle-arrow { position: absolute; width: 54px; bottom: 3%; right: 2%; }
 
   /* Endpoint code */
   .endpoint-bar { background: var(--card); border: 1px solid rgba(20,20,27,0.08); border-radius: 16px; padding: 1rem 1.25rem; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-top: 2rem; box-shadow: var(--shadow); }
@@ -205,10 +201,11 @@ export function landingPageHtml(): string {
           <!-- Connection line -->
           <path d="M110 240 Q 150 285, 205 265" fill="none" stroke="#2a6aff" stroke-width="2.5" stroke-linecap="round"/>
           <circle cx="108" cy="236" r="5" fill="#ffe14d" stroke="#14141b" stroke-width="1.5"/>
+          <!-- Doodle decorations -->
+          <path d="M40 45 L46 63 L64 63 L50 74 L56 92 L40 80 L24 92 L30 74 L16 63 L34 63 Z" fill="#ffe14d" stroke="#14141b" stroke-width="2" stroke-linejoin="round" transform="scale(0.55) translate(632, 25)"/>
+          <path d="M340 300 Q 370 275, 392 292 T 425 288" fill="none" stroke="#2a6aff" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M414 280 L425 288 L416 298" fill="none" stroke="#2a6aff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        <svg class="doodle-star top" viewBox="0 0 44 44" aria-hidden="true"><path d="M22 4 L26 16 L40 16 L29 24 L34 38 L22 29 L10 38 L15 24 L4 16 L18 16 Z" fill="#ffe14d" stroke="#14141b" stroke-width="2" stroke-linejoin="round"/></svg>
-        <svg class="doodle-star bottom" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3 L18 12 L28 12 L20 18 L23 28 L16 22 L9 28 L12 18 L4 12 L14 12 Z" fill="#ff5533" stroke="#14141b" stroke-width="2" stroke-linejoin="round"/></svg>
-        <svg class="doodle-arrow" viewBox="0 0 60 40" aria-hidden="true"><path d="M4 20 Q 20 5, 38 18 T 56 14" fill="none" stroke="#2a6aff" stroke-width="2.5" stroke-linecap="round"/><path d="M48 8 L56 14 L50 22" fill="none" stroke="#2a6aff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
     </div>
   </header>
