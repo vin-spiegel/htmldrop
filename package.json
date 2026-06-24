@@ -34,6 +34,9 @@
   "engines": {
     "node": ">=20"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "license": "MIT",
-  "keywords": ["mcp", "agent", "html", "publish"]
+  "keywords": ["mcp", "agent", "html", "publish", "pin"]
 }
