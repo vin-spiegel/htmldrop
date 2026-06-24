@@ -12,32 +12,36 @@ export function landingPageHtml(): string {
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --paper: #fbfaf9;
-    --ink: #14141b;
-    --ink-soft: #51515f;
-    --coral: #ff5533;
-    --coral-soft: #ffefec;
-    --blue: #2a6aff;
-    --blue-soft: #ecf2ff;
-    --lemon: #ffe14d;
-    --line: #14141b;
-    --card: #ffffff;
-    --shadow: 0 1px 2px rgba(20,20,27,0.04), 0 8px 24px rgba(20,20,27,0.06);
-    --shadow-hover: 0 1px 2px rgba(20,20,27,0.04), 0 12px 32px rgba(20,20,27,0.09);
+    --bg: #faf9f6;
+    --paper: #ffffff;
+    --ink: #1a1a1a;
+    --muted: #6b6b6e;
+    --accent: #ef4444;
+    --accent-soft: rgba(239, 68, 68, 0.10);
+    --blue: #2563eb;
+    --blue-soft: rgba(37, 99, 235, 0.10);
+    --line: #1a1a1a;
+    --shadow: rgba(26, 26, 26, 0.06);
+    --shadow-hover: rgba(26, 26, 26, 0.10);
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body {
     margin: 0;
     padding: 0;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--paper);
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
     color: var(--ink);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
+    line-height: 1.55;
+    background-image:
+      radial-gradient(#e6e2db 0.6px, transparent 0.6px),
+      radial-gradient(#e6e2db 0.6px, transparent 0.6px);
+    background-size: 28px 28px;
+    background-position: 0 0, 14px 14px;
+  }
     background-image: radial-gradient(circle at 15% 5%, rgba(255,85,51,0.06) 0%, transparent 35%),
                       radial-gradient(circle at 85% 25%, rgba(42,106,255,0.05) 0%, transparent 30%);
   }

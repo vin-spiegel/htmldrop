@@ -1,12 +1,16 @@
 import { createCanvas, GlobalFonts, SKRSContext2D } from '@napi-rs/canvas';
 import * as path from 'path';
 
-const interRegular = path.resolve(__dirname, '../../node_modules/@fontsource/inter/files/inter-latin-400-normal.woff');
-const interBold = path.resolve(__dirname, '../../node_modules/@fontsource/inter/files/inter-latin-700-normal.woff');
+const interRegular = path.resolve(__dirname, '../node_modules/@fontsource/inter/files/inter-latin-400-normal.woff');
+const interBold = path.resolve(__dirname, '../node_modules/@fontsource/inter/files/inter-latin-700-normal.woff');
 
 // Register embedded Inter fonts so text renders on hosts with no installed fonts.
-GlobalFonts.registerFromPath(interRegular, 'Inter');
-GlobalFonts.registerFromPath(interBold, 'Inter Bold');
+try {
+  GlobalFonts.registerFromPath(interRegular, 'Inter');
+  GlobalFonts.registerFromPath(interBold, 'Inter Bold');
+} catch (err) {
+  console.error('Failed to register embedded Inter font:', err);
+}
 
 export function extractFirstImage(html: string): string | undefined {
   const match = html.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i);
