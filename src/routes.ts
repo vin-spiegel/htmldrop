@@ -183,8 +183,8 @@ export function createRouter(storage: Storage): Router {
   router.get('/', async (req, res) => {
     const host = req.headers.host || '';
     const subdomain = host.split('.')[0];
-    if (!subdomain || subdomain.includes('localhost') || !isNaN(Number(subdomain))) {
-      return res.status(200).send(`<h1>Pin</h1><p>Agent-native HTML publishing. POST /publish to deploy an artifact.</p>`);
+    if (!subdomain || subdomain.includes('localhost') || !isNaN(Number(subdomain)) || host.split(':')[0] === 'localhost') {
+      return res.redirect('/');
     }
 
     try {
