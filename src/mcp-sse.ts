@@ -26,7 +26,12 @@ export function mcpGetHandler(req: IncomingMessage, res: ServerResponse) {
   );
 
   server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: [PUBLISH_TOOL] }));
-  server.setRequestHandler(CallToolRequestSchema, async (request) => handleCall(request));
+  server.setRequestHandler(CallToolRequestSchema, async (request) => {
+    console.log('MCP tool call:', request.params.name, JSON.stringify(request.params.arguments)?.slice(0, 200));
+    const result = await handleCall(request);
+    console.log('MCP tool result:', JSON.stringify(result).slice(0, 200));
+    return result;
+  });
 
   const sessionId = transport.sessionId;
   sessions.set(sessionId, { transport, server });
