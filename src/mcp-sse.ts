@@ -29,9 +29,10 @@ export function mcpGetHandler(req: IncomingMessage, res: ServerResponse) {
   server.setRequestHandler(CallToolRequestSchema, async (request) => handleCall(request));
 
   const sessionId = transport.sessionId;
-  sessions.set(sessionId, { transport, server });
 
-  server.connect(transport).catch((err) => {
+  server.connect(transport).then(() => {
+    sessions.set(sessionId, { transport, server });
+  }).catch((err) => {
     console.error('MCP SSE connection error:', err);
   });
 
