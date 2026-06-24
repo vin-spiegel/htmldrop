@@ -2,6 +2,13 @@
 
 You are contributing to Pin: a service that lets AI agents publish HTML artifacts to public URLs with a single tool call.
 
+## Live service
+
+- Landing page: https://pin-publish-production.up.railway.app/
+- API base: https://pin-publish-production.up.railway.app
+- HTTP MCP endpoint: `GET/POST https://pin-publish-production.up.railway.app/mcp`
+- `agents.md`: https://pin-publish-production.up.railway.app/agents.md
+
 ## Project purpose
 
 Pin fills the gap between AI agents generating rich HTML reports/dashboards and the consumption layer (Slack, email, chat) that cannot render HTML. Agents call Pin and get back a public URL.
@@ -24,16 +31,20 @@ agent --(MCP / API)--> Pin API
 
 ## Entry points
 
-- `src/index.ts` — HTTP server
+- `src/index.ts` — HTTP server (landing page + wires MCP + API router)
 - `src/mcp-server.ts` — MCP server (stdio transport), exposes `pin_publish`
+- `src/mcp-sse.ts` — HTTP/SSE MCP transport at `/mcp`
+- `src/mcp-handlers.ts` — Shared `pin_publish` tool implementation
 - `src/routes.ts` — Express routes
-- `src/publish.ts` — publishing logic
+- `src/publish.ts` — Publishing logic
 - `src/storage.ts` — Storage abstraction with R2 and filesystem backends
-- `src/config.ts` — environment config
+- `src/config.ts` — Environment config
 
 ## MCP usage
 
-When running the MCP server, agents can call:
+### stdio transport
+
+When running `src/mcp-server.ts`, agents can call:
 
 ```json
 {
@@ -41,9 +52,43 @@ When running the MCP server, agents can call:
   "arguments": {
     "html": "<h1>...</h1>",
     "title": "My report",
-    "ttl_days": 14,
-    "password": "secret",
-    "owner_key": "owner-key"
+    "ttl_days": 14
+  }
+}
+```
+
+### HTTP/SSE transport
+
+Connect an SSE client to `GET https://<base>/mcp`. The server responds with:
+
+```
+event: endpoint
+data: /mcp?sessionId=<uuid>
+```
+
+Then POST JSON-RPC requests to `POST https://<base>/mcp?sessionId=<uuid>`:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/list"
+}
+```
+
+Or call the tool:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "method": "tools/call",
+  "params": {
+    "name": "pin_publish",
+    "arguments": {
+      "html": "<h1>Report</h1>",
+      "title": "Report"
+    }
   }
 }
 ```
