@@ -10,9 +10,6 @@ export function computeExpiration(ttlDays?: number, ownerKey?: string): Date {
 }
 
 export function buildUrl(subdomain: string): string {
-  if (config.nodeEnv === 'development') {
-    return `http://${subdomain}.${config.baseDomain}:${config.port}`;
-  }
   return `https://${subdomain}.${config.baseDomain}`;
 }
 
