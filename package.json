@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.726.0",
-    "@modelcontextprotocol/sdk": "^1.7.0",
+    "@modelcontextprotocol/sdk": "1.7.0",
     "@resvg/resvg-js": "^2.6.2",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
@@ -40,5 +40,11 @@
     "access": "public"
   },
   "license": "MIT",
-  "keywords": ["mcp", "agent", "html", "publish", "pin"]
+  "keywords": [
+    "mcp",
+    "agent",
+    "html",
+    "publish",
+    "pin"
+  ]
 }
