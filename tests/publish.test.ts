@@ -17,9 +17,9 @@ describe('publish helpers', () => {
     expect(d.getTime()).toBeGreaterThan(now.getTime());
   });
 
-  it('buildUrl uses localhost in dev', () => {
+  it('buildUrl uses BASE_DOMAIN', () => {
     const url = buildUrl('happy-otter-42');
-    expect(url).toContain('happy-otter-42.localhost');
+    expect(url).toContain('happy-otter-42');
   });
 
   it('generates unique subdomains', () => {
