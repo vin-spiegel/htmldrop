@@ -59,7 +59,7 @@ function wrapText(ctx: SKRSContext2D, text: string, maxWidth: number): string[] 
   return lines.slice(0, 3);
 }
 
-export async function generatePngOgImage(title: string, domain: string): Promise<Buffer> {
+export function generatePngOgImage(title: string, domain: string): Promise<Buffer> {
   const canvas = createCanvas(1200, 630);
   const ctx = canvas.getContext('2d');
 
@@ -105,7 +105,7 @@ export async function generatePngOgImage(title: string, domain: string): Promise
   ctx.font = '18px sans-serif';
   ctx.fillText(`Published ${date}`, 90, 580);
 
-  return Buffer.from(await canvas.encode('png'));
+  return canvas.encode('png').then((data) => Buffer.from(data));
 }
 
 function roundRect(ctx: SKRSContext2D, x: number, y: number, width: number, height: number, radius: number) {
