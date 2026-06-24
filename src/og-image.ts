@@ -1,4 +1,4 @@
-import { Resvg } from '@resvg/resvg-js';
+import { createCanvas, SKRSContext2D } from '@napi-rs/canvas';
 
 export function extractFirstImage(html: string): string | undefined {
   const match = html.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i);
@@ -13,7 +13,6 @@ export function generateSvgOgImage(title: string, domain: string): string {
     month: 'short',
     day: 'numeric',
   });
-  // Use a generic sans-serif family to maximize cross-platform SVG rendering compatibility.
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
   <defs>
@@ -31,12 +30,84 @@ export function generateSvgOgImage(title: string, domain: string): string {
 </svg>`;
 }
 
-export function generatePngOgImage(title: string, domain: string): Buffer {
-  const svg = generateSvgOgImage(title, domain);
-  const resvg = new Resvg(svg, {
-    fitTo: { mode: 'width', value: 1200 },
+function wrapText(ctx: SKRSContext2D, text: string, maxWidth: number): string[] {
+  const words = text.split(' ');
+  const lines: string[] = [];
+  let current = '';
+  for (const word of words) {
+    const test = current ? `${current} ${word}` : word;
+    if (ctx.measureText(test).width > maxWidth && current) {
+      lines.push(current);
+      current = word;
+    } else {
+      current = test;
+    }
+  }
+  if (current) lines.push(current);
+  return lines.slice(0, 3);
+}
+
+export async function generatePngOgImage(title: string, domain: string): Promise<Buffer> {
+  const canvas = createCanvas(1200, 630);
+  const ctx = canvas.getContext('2d');
+
+  // Background
+  const gradient = ctx.createLinearGradient(0, 0, 1200, 630);
+  gradient.addColorStop(0, '#0f1115');
+  gradient.addColorStop(1, '#1a1d23');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 1200, 630);
+
+  // Doodle border
+  ctx.strokeStyle = '#f59e0b';
+  ctx.lineWidth = 4;
+  roundRect(ctx, 60, 60, 1080, 510, 20);
+  ctx.stroke();
+
+  // Logo
+  ctx.fillStyle = '#f59e0b';
+  ctx.font = '600 28px sans-serif';
+  ctx.fillText('Pin', 90, 150);
+
+  // Title
+  ctx.fillStyle = '#e6e6e6';
+  ctx.font = '700 48px sans-serif';
+  const wrapped = wrapText(ctx, title || 'Pin | Published artifact', 980);
+  let y = 260;
+  for (const line of wrapped) {
+    ctx.fillText(line, 90, y);
+    y += 64;
+  }
+
+  // Domain
+  ctx.fillStyle = '#888888';
+  ctx.font = '22px monospace';
+  ctx.fillText(domain, 90, 540);
+
+  // Date
+  const date = new Date().toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
   });
-  return resvg.render().asPng();
+  ctx.font = '18px sans-serif';
+  ctx.fillText(`Published ${date}`, 90, 580);
+
+  return Buffer.from(await canvas.encode('png'));
+}
+
+function roundRect(ctx: SKRSContext2D, x: number, y: number, width: number, height: number, radius: number) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
 }
 
 export function insertOgImage(html: string, imageUrl: string, title: string): string {

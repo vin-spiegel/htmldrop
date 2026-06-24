@@ -169,7 +169,7 @@ export function createRouter(storage: Storage): Router {
     try {
       const meta = await storage.loadBySubdomain(req.params.subdomain);
       if (!meta) return res.status(404).send('not found');
-      const png = generatePngOgImage(meta.ogTitle || meta.title || 'Pin', `${meta.subdomain}.${config.baseDomain}`);
+      const png = await generatePngOgImage(meta.ogTitle || meta.title || 'Pin', `${meta.subdomain}.${config.baseDomain}`);
       res.set('Content-Type', 'image/png');
       res.set('Cache-Control', 'public, max-age=3600');
       res.status(200).send(png);
@@ -200,7 +200,7 @@ export function createRouter(storage: Storage): Router {
       if (req.url.endsWith('/og.png')) {
         res.set('Content-Type', 'image/png');
         res.set('Cache-Control', 'public, max-age=3600');
-        return res.status(200).send(generatePngOgImage(meta.ogTitle || meta.title || 'Pin', `${meta.subdomain}.${config.baseDomain}`));
+        return res.status(200).send(await generatePngOgImage(meta.ogTitle || meta.title || 'Pin', `${meta.subdomain}.${config.baseDomain}`));
       }
 
       if (meta.password) {
