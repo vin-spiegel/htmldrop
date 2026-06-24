@@ -9,6 +9,7 @@ export interface ArtifactMeta {
   password?: string;
   sourceUrl?: string;
   ogSvg?: string;
+  ogTitle?: string;
 }
 
 export interface PublishOptions {

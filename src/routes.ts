@@ -5,6 +5,7 @@ import path from 'path';
 import { Storage } from './types';
 import { config } from './config';
 import { publishArtifact } from './publish';
+import { generatePngOgImage, generateSvgOgImage } from './og-image';
 
 export function createRouter(storage: Storage): Router {
   const router = express.Router();
@@ -152,10 +153,26 @@ export function createRouter(storage: Storage): Router {
   router.get('/og/:subdomain.svg', async (req, res) => {
     try {
       const meta = await storage.loadBySubdomain(req.params.subdomain);
-      if (!meta || !meta.ogSvg) return res.status(404).send('not found');
+      if (!meta) return res.status(404).send('not found');
+      const svg = generateSvgOgImage(meta.ogTitle || meta.title || 'Pin', `${meta.subdomain}.${config.baseDomain}`);
       res.set('Content-Type', 'image/svg+xml');
       res.set('Cache-Control', 'public, max-age=3600');
-      res.status(200).send(meta.ogSvg);
+      res.status(200).send(svg);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'unknown error';
+      res.status(500).send(message);
+    }
+  });
+
+  // OG image PNG endpoint
+  router.get('/og/:subdomain.png', async (req, res) => {
+    try {
+      const meta = await storage.loadBySubdomain(req.params.subdomain);
+      if (!meta) return res.status(404).send('not found');
+      const png = generatePngOgImage(meta.ogTitle || meta.title || 'Pin', `${meta.subdomain}.${config.baseDomain}`);
+      res.set('Content-Type', 'image/png');
+      res.set('Cache-Control', 'public, max-age=3600');
+      res.status(200).send(png);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'unknown error';
       res.status(500).send(message);
@@ -178,6 +195,12 @@ export function createRouter(storage: Storage): Router {
         res.set('Content-Type', 'image/svg+xml');
         res.set('Cache-Control', 'public, max-age=3600');
         return res.status(200).send(meta.ogSvg);
+      }
+
+      if (req.url.endsWith('/og.png')) {
+        res.set('Content-Type', 'image/png');
+        res.set('Cache-Control', 'public, max-age=3600');
+        return res.status(200).send(generatePngOgImage(meta.ogTitle || meta.title || 'Pin', `${meta.subdomain}.${config.baseDomain}`));
       }
 
       if (meta.password) {

@@ -1,7 +1,7 @@
 import { ArtifactMeta, PublishOptions, PublishResult } from './types';
 import { config } from './config';
 import { generateId, generateSubdomain } from './subdomain';
-import { extractFirstImage, generateSvgOgImage, insertOgImage } from './og-image';
+import { extractFirstImage, generatePngOgImage, insertOgImage } from './og-image';
 
 export function computeExpiration(ttlDays?: number, ownerKey?: string): Date {
   const days = ttlDays ?? (ownerKey ? config.keyTtlDays : config.anonTtlDays);
@@ -64,14 +64,14 @@ export async function publishArtifact(
     expiresAt: expiresAt.toISOString(),
     ownerKey: opts.ownerKey,
     password: opts.password,
+    sourceUrl: opts.sourceUrl,
+    ogTitle: opts.title || 'Pin | Published artifact',
   };
 
   // OG image: prefer first image in HTML, else generate SVG card
   let ogImageUrl = extractFirstImage(opts.html);
   if (!ogImageUrl) {
-    const svg = generateSvgOgImage(opts.title || 'Pin | Published artifact', `${subdomain}.${config.baseDomain}`);
-    ogImageUrl = `https://${config.baseDomain}/og/${subdomain}.svg`;
-    (meta as any).ogSvg = svg;
+    ogImageUrl = `https://${config.baseDomain}/og/${subdomain}.png`;
   }
   meta.html = insertOgImage(finalHtml, ogImageUrl, opts.title || 'Pin | Published artifact');
 
