@@ -3,6 +3,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import express from 'express';
 import { createRouter } from '../src/routes';
 import { FilesystemStorage } from '../src/storage';
+import { publishArtifact } from '../src/publish';
 
 describe('Pin API', () => {
   let storage: FilesystemStorage;
@@ -50,6 +51,16 @@ describe('Pin API', () => {
 
     expect(res.text).toContain('Secret report');
     expect(res.text).toContain('Published with Pin');
+  });
+
+  it('serves an artifact by /view/:subdomain path', async () => {
+    const result = await publishArtifact(
+      { html: '<p>Path fallback</p>' },
+      storage
+    );
+    const res = await request(app).get(`/view/${result.subdomain}`).expect(200);
+    expect(res.text).toContain('Path fallback');
+    expect(res.headers['x-robots-tag']).toContain('noindex');
   });
 
   it('allows password protected artifacts', async () => {

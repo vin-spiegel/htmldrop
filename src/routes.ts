@@ -66,6 +66,28 @@ export function createRouter(storage: Storage): Router {
     res.status(200).json({ requiresPassword: true, subdomain: req.params.subdomain });
   });
 
+  // Path-based artifact viewer (fallback for Railway default domain SSL limits)
+  router.get('/view/:subdomain', async (req, res) => {
+    try {
+      const meta = await storage.loadBySubdomain(req.params.subdomain);
+      if (!meta) return res.status(404).send('<h1>Not found or expired</h1>');
+
+      if (meta.password) {
+        const query = new URLSearchParams(req.url.split('?')[1] || '');
+        if (query.get('password') !== meta.password) {
+          return res.status(401).send(`<h1>Password required</h1>`);
+        }
+      }
+
+      res.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
+      res.set('Cache-Control', 'public, max-age=60');
+      res.status(200).send(meta.html);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'unknown error';
+      res.status(500).send(`<h1>Error</h1><p>${message}</p>`);
+    }
+  });
+
   // Serve artifact subdomain
   router.get('/', async (req, res) => {
     const host = req.headers.host || '';
