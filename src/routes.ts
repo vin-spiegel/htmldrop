@@ -1,5 +1,7 @@
 import express, { Router, Request, Response, NextFunction } from 'express';
 import rateLimit from 'express-rate-limit';
+import fs from 'fs';
+import path from 'path';
 import { Storage } from './types';
 import { config } from './config';
 import { publishArtifact } from './publish';
@@ -31,6 +33,16 @@ export function createRouter(storage: Storage): Router {
 
   // Health
   router.get('/health', (_req, res) => res.json({ status: 'ok' }));
+
+  // Expose AGENTS.md for other agents to discover MCP usage
+  router.get('/agents.md', (_req, res) => {
+    const filePath = path.join(process.cwd(), 'AGENTS.md');
+    if (fs.existsSync(filePath)) {
+      res.set('Content-Type', 'text/markdown; charset=utf-8');
+      return res.status(200).send(fs.readFileSync(filePath, 'utf-8'));
+    }
+    res.status(404).send('AGENTS.md not found');
+  });
 
   // Publish
   router.post('/publish', rateLimiter, async (req, res) => {
