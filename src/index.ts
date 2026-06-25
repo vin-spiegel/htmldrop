@@ -4,7 +4,7 @@ import { createRouter } from './routes';
 import { FilesystemStorage, R2Storage } from './storage';
 import { config, isR2Configured } from './config';
 import { mcpGetHandler, mcpPostHandler } from './mcp-sse';
-import { landingPageHtml } from './landing';
+import { landingPageHtml, resolveLocale } from './landing';
 
 const app = express();
 
@@ -13,10 +13,13 @@ const router = createRouter(storage);
 
 app.set('trust proxy', true);
 
-// Landing page at root
+// Landing page at root — localized by the visitor's Accept-Language header
 app.get('/', (req, res) => {
+  const locale = resolveLocale(req.headers['accept-language']);
   res.set('Cache-Control', 'public, max-age=300');
-  res.status(200).send(landingPageHtml());
+  res.set('Vary', 'Accept-Language');
+  res.set('Content-Language', locale);
+  res.status(200).send(landingPageHtml(locale));
 });
 
 // MCP over SSE at /mcp
