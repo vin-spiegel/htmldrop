@@ -8,6 +8,7 @@ on:
 permissions:
   contents: read
   id-token: write # npm --provenance
+  packages: write # GitHub Packages mirror
 
 jobs:
   publish:
@@ -27,7 +28,30 @@ jobs:
 
       - run: pnpm test
 
-      # prepublishOnly runs tsc, so dist/ is built here
-      - run: npm publish --access public --provenance
+      # prepublishOnly runs tsc, so dist/ is built here. Both publish steps
+      # are idempotent: an already-published version is skipped, so the
+      # workflow can be re-dispatched safely.
+      - name: Publish to npm
+        run: |
+          VERSION=$(npm pkg get version | tr -d '"')
+          if npm view "htmldrop-mcp@${VERSION}" version >/dev/null 2>&1; then
+            echo "htmldrop-mcp@${VERSION} already on npm — skipping"
+          else
+            npm publish --access public --provenance
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Mirror to GitHub Packages (requires an owner-scoped name)
+      - name: Publish to GitHub Packages
+        run: |
+          VERSION=$(npm pkg get version | tr -d '"')
+          npm pkg set name="@vin-spiegel/htmldrop-mcp"
+          echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" > .npmrc
+          if npm view "@vin-spiegel/htmldrop-mcp@${VERSION}" version --registry https://npm.pkg.github.com >/dev/null 2>&1; then
+            echo "@vin-spiegel/htmldrop-mcp@${VERSION} already on GitHub Packages — skipping"
+          else
+            npm publish --access public --registry https://npm.pkg.github.com
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
