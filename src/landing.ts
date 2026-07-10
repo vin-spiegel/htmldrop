@@ -763,7 +763,7 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
         <a href="#api">${t.navApi}</a>
         <a href="#mcp">${t.navMcp}</a>
         <a href="/agents.md">agents.md</a>
-        <a class="gh" href="https://github.com/vin-spiegel/pin-publish" target="_blank" rel="noopener">GitHub</a>
+        <a class="gh" href="https://github.com/vin-spiegel/htmldrop" target="_blank" rel="noopener">GitHub</a>
       </div>
     </div>
   </div>
@@ -915,7 +915,7 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
 
 <footer>
   <div class="container">
-    ${t.footer} · <a href="/agents.md">agents.md</a> · <a href="https://github.com/vin-spiegel/pin-publish" target="_blank" rel="noopener">GitHub</a>
+    ${t.footer} · <a href="/agents.md">agents.md</a> · <a href="https://github.com/vin-spiegel/htmldrop" target="_blank" rel="noopener">GitHub</a>
   </div>
 </footer>
 <script>

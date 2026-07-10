@@ -1,11 +1,19 @@
 {
-  "name": "pin-publish",
+  "name": "htmldrop",
   "version": "0.1.0",
-  "description": "Agent-native publishing layer for HTML artifacts",
+  "description": "Publish HTML for agents — one API call, MCP server included",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vin-spiegel/htmldrop.git"
+  },
+  "homepage": "https://htmldrop.link",
+  "bugs": {
+    "url": "https://github.com/vin-spiegel/htmldrop/issues"
+  },
   "bin": {
-    "pin-publish-mcp": "dist/mcp-server.js"
+    "htmldrop-mcp": "dist/mcp-server.js"
   },
   "scripts": {
     "dev": "tsx src/index.ts",
@@ -49,9 +57,10 @@
   "license": "MIT",
   "keywords": [
     "mcp",
+    "mcp-server",
     "agent",
     "html",
     "publish",
-    "pin"
+    "htmldrop"
   ]
 }

@@ -21,7 +21,7 @@ export function getMcpSessions(): ReadonlyMap<string, McpSession> {
 export function mcpGetHandler(req: IncomingMessage, res: ServerResponse) {
   const transport = new SSEServerTransport('/mcp', res);
   const server = new Server(
-    { name: 'pin-publish', version: '0.1.0' },
+    { name: 'htmldrop', version: '0.1.0' },
     { capabilities: { tools: {} } }
   );
 

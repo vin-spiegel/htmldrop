@@ -60,6 +60,11 @@ export function createRouter(storage: Storage): Router {
   router.use(express.urlencoded({ extended: true, limit: '30mb' }));
   router.use(express.raw({ type: 'text/html', limit: '30mb' }));
 
+  // Owner key header: `x-htmldrop-key` is canonical; `x-pin-key` is accepted
+  // for backwards compatibility with early clients.
+  const ownerKeyOf = (req: Request): string | undefined =>
+    (req.headers['x-htmldrop-key'] ?? req.headers['x-pin-key'])?.toString();
+
   const anonLimiter = rateLimit({
     windowMs: 60 * 1000,
     max: config.rateLimitAnonPerMinute,
@@ -71,11 +76,11 @@ export function createRouter(storage: Storage): Router {
     windowMs: 60 * 1000,
     max: config.rateLimitKeyPerMinute,
     standardHeaders: true,
-    keyGenerator: (req: Request) => req.headers['x-pin-key']?.toString() ?? req.ip ?? 'unknown',
+    keyGenerator: (req: Request) => ownerKeyOf(req) ?? req.ip ?? 'unknown',
   });
 
   const rateLimiter = (req: Request, res: Response, next: NextFunction) => {
-    if (req.headers['x-pin-key']) return keyLimiter(req, res, next);
+    if (ownerKeyOf(req)) return keyLimiter(req, res, next);
     return anonLimiter(req, res, next);
   };
 
@@ -96,7 +101,7 @@ export function createRouter(storage: Storage): Router {
   router.post('/publish', rateLimiter, async (req, res) => {
     try {
       const { html, title, ttl_days, password, url } = req.body;
-      const ownerKey = req.headers['x-pin-key']?.toString();
+      const ownerKey = ownerKeyOf(req);
       const result = await publishArtifact(
         {
           html,
@@ -121,8 +126,10 @@ export function createRouter(storage: Storage): Router {
       if (!Buffer.isBuffer(req.body) || req.body.length === 0) {
         return res.status(400).json({ error: 'send text/html body' });
       }
-      const ownerKey = req.headers['x-pin-key']?.toString();
-      const title = req.headers['x-pin-title']?.toString() || req.query.title?.toString();
+      const ownerKey = ownerKeyOf(req);
+      const title =
+        (req.headers['x-htmldrop-title'] ?? req.headers['x-pin-title'])?.toString() ||
+        req.query.title?.toString();
       const result = await publishArtifact(
         { html: req.body.toString('utf-8'), title, ownerKey },
         storage
@@ -141,9 +148,9 @@ export function createRouter(storage: Storage): Router {
       if (!url || typeof url !== 'string') {
         return res.status(400).json({ error: 'url required' });
       }
-      const ownerKey = req.headers['x-pin-key']?.toString();
+      const ownerKey = ownerKeyOf(req);
       const response = await fetch(url, {
-        headers: { 'User-Agent': 'Pin-Publish-Bot/0.1' },
+        headers: { 'User-Agent': 'htmldrop-bot/0.1' },
       });
       if (!response.ok) {
         return res.status(400).json({ error: `fetch failed: ${response.status}` });

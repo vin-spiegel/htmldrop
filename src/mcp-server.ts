@@ -9,7 +9,7 @@ import {
 import { PUBLISH_TOOL, handleCall } from './mcp-handlers.js';
 
 const server = new Server(
-  { name: 'pin-publish', version: '0.1.0' },
+  { name: 'htmldrop', version: '0.1.0' },
   { capabilities: { tools: {} } }
 );
 
