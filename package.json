@@ -15,6 +15,12 @@
   "bin": {
     "htmldrop-mcp": "dist/mcp-server.js"
   },
+  "files": [
+    "dist",
+    "AGENTS.md",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "dev": "tsx src/index.ts",
     "build": "tsc",
@@ -22,6 +28,7 @@
     "mcp": "node dist/mcp-server.js",
     "test": "vitest run",
     "test:watch": "vitest",
+    "prepublishOnly": "tsc",
     "railway:set-base-domain": "railway variables set BASE_DOMAIN=htmldrop.link"
   },
   "packageManager": "pnpm@10.12.4",
