@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(npm run build)",
+      "PowerShell(npm test 2>&1)",
+      "PowerShell(git add src/index.ts src/landing.ts)",
+      "PowerShell(git push)"
+    ]
+  }
+}

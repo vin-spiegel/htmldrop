@@ -10,10 +10,11 @@ import { generatePngOgImage, generateSvgOgImage } from './og-image';
 /**
  * A self-contained password page for protected artifacts. The form POSTs the
  * password (so it never lands in the URL), which means the shareable link
- * (`/view/<subdomain>`) carries no secret — the viewer types the password here.
+ * carries no secret — the viewer types the password here. `action` is where the
+ * form posts: on a subdomain entry it's the subdomain root (`/`) so the clean
+ * URL is kept after unlock; on the base-domain path fallback it's `/view/<sub>`.
  */
-function passwordPageHtml(subdomain: string, wrong = false): string {
-  const sub = encodeURIComponent(subdomain);
+function passwordPageHtml(subdomain: string, action: string, wrong = false): string {
   const err = wrong ? '<p class="err">Incorrect password — try again.</p>' : '';
   return `<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -43,7 +44,7 @@ function passwordPageHtml(subdomain: string, wrong = false): string {
     <div class="lock">🔒</div>
     <h1>Password required</h1>
     <p class="sub">This artifact is password protected.</p>
-    <form method="POST" action="/view/${sub}">
+    <form method="POST" action="${action}">
       <input name="password" type="password" placeholder="Enter password" autofocus required autocomplete="off">
       ${err}
       <button type="submit">View</button>
@@ -184,7 +185,7 @@ export function createRouter(storage: Storage): Router {
         const query = new URLSearchParams(req.url.split('?')[1] || '');
         if (query.get('password') !== meta.password) {
           res.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
-          return res.status(401).send(passwordPageHtml(req.params.subdomain));
+          return res.status(401).send(passwordPageHtml(req.params.subdomain, `/view/${encodeURIComponent(req.params.subdomain)}`));
         }
       }
 
@@ -205,7 +206,7 @@ export function createRouter(storage: Storage): Router {
       if (!meta) return res.status(404).send('<h1>Not found or expired</h1>');
       res.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
       if (meta.password && (req.body?.password ?? '') !== meta.password) {
-        return res.status(401).send(passwordPageHtml(req.params.subdomain, true));
+        return res.status(401).send(passwordPageHtml(req.params.subdomain, `/view/${encodeURIComponent(req.params.subdomain)}`, true));
       }
       // Password arrived via POST body — don't cache the unlocked view.
       res.set('Cache-Control', 'no-store');
@@ -273,15 +274,39 @@ export function createRouter(storage: Storage): Router {
       if (meta.password) {
         const query = new URLSearchParams(req.url.split('?')[1] || '');
         if (query.get('password') !== meta.password) {
-          // The form POSTs to the path-based /view route (valid SSL on the base
-          // domain), so the same unlock flow works regardless of entry point.
+          // Post back to the subdomain root itself so the clean URL is kept
+          // after unlock (the subdomain has its own valid wildcard cert).
           res.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
-          return res.status(401).send(passwordPageHtml(subdomain));
+          return res.status(401).send(passwordPageHtml(subdomain, '/'));
         }
       }
 
       res.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
       res.set('Cache-Control', 'public, max-age=60');
+      res.status(200).send(meta.html);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'unknown error';
+      res.status(500).send(`<h1>Error</h1><p>${message}</p>`);
+    }
+  });
+
+  // Unlock a subdomain artifact in place — the gate form POSTs the password
+  // here, so the address bar stays on the clean subdomain root after unlock.
+  router.post('/', async (req, res) => {
+    const host = req.headers.host || '';
+    const subdomain = host.split('.')[0];
+    if (!subdomain || subdomain.includes('localhost') || !isNaN(Number(subdomain)) || host.split(':')[0] === 'localhost') {
+      return res.status(404).send('<h1>Not found</h1>');
+    }
+    try {
+      const meta = await storage.loadBySubdomain(subdomain);
+      if (!meta) return res.status(404).send('<h1>Not found or expired</h1>');
+      res.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
+      if (meta.password && (req.body?.password ?? '') !== meta.password) {
+        return res.status(401).send(passwordPageHtml(subdomain, '/', true));
+      }
+      // Password arrived via POST body — don't cache the unlocked view.
+      res.set('Cache-Control', 'no-store');
       res.status(200).send(meta.html);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'unknown error';
