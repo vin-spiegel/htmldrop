@@ -821,6 +821,7 @@ ${ogLocaleAlternates}
     --accent: #e8503a;
     --accent-soft: rgba(232, 80, 58, 0.12);
     --line: #211d18;
+    --line-soft: rgba(33, 29, 24, 0.38);
     --shadow: rgba(33, 29, 24, 0.10);
     --radius-hand: 235px 18px 225px 18px / 18px 225px 18px 235px;
     --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -840,17 +841,18 @@ ${ogLocaleAlternates}
   }
   .container { max-width: 1040px; margin: 0 auto; padding: 0 1.5rem; }
 
-  /* Hand-drawn helpers */
+  /* Hand-drawn helpers. Passive cards get a soft pencil line; interactive
+     elements (buttons, drop zone) keep full ink so hierarchy reads. */
   .doodle-border {
-    border: 2px solid var(--line);
+    border: 2px solid var(--line-soft);
     border-radius: var(--radius-hand);
-    box-shadow: 4px 4px 0 var(--shadow);
+    box-shadow: 4px 4px 0 rgba(33, 29, 24, 0.07);
     background: var(--paper);
     --tilt: 0deg;
     transform: rotate(var(--tilt));
     transition: box-shadow 0.18s ease, transform 0.18s ease;
   }
-  .doodle-border:hover { box-shadow: 7px 7px 0 var(--shadow); transform: translateY(-3px) rotate(calc(var(--tilt) - 0.6deg)); }
+  .doodle-border:hover { box-shadow: 7px 7px 0 rgba(33, 29, 24, 0.09); transform: translateY(-3px) rotate(calc(var(--tilt) - 0.6deg)); }
 
   /* Hand-placed variance: every card gets its own tilt, wobble, and offset
      so the grid reads as pinned-up paper, not cloned components. */
@@ -935,7 +937,8 @@ ${ogLocaleAlternates}
 
   /* Drop zone — a real, working publish window as the hero centerpiece */
   .hero-drop { position: relative; max-width: 620px; margin: 0 auto; }
-  .dropzone { width: 100%; cursor: pointer; --tilt: 0.4deg; }
+  /* The drop zone is the primary CTA — it keeps the full-ink line. */
+  .dropzone { width: 100%; cursor: pointer; --tilt: 0.4deg; border-color: var(--line); box-shadow: 4px 4px 0 var(--shadow); }
   .dz-head { display: flex; align-items: center; gap: 0.45rem; padding: 0.75rem 1.1rem; border-bottom: 2px solid var(--line); }
   .dz-head .tl { width: 11px; height: 11px; border-radius: 50%; background: rgba(33,29,24,0.16); }
   .dz-head .tl.a { background: var(--accent); opacity: 0.75; }
@@ -1054,7 +1057,7 @@ ${ogLocaleAlternates}
   .feature p { margin: 0; color: var(--muted); font-size: 0.96rem; max-width: 42ch; }
   .feature-icon {
     width: 46px; height: 46px; border-radius: 14px 8px 15px 9px; display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; border: 2px solid var(--line); box-shadow: 2px 2px 0 var(--shadow);
+    flex-shrink: 0; border: 2px solid rgba(232, 80, 58, 0.45); box-shadow: 2px 2px 0 rgba(33, 29, 24, 0.06);
     background: var(--accent-soft); color: var(--accent);
     transform: rotate(-2.5deg);
   }
