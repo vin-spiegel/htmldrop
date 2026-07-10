@@ -1,13 +1,26 @@
-# htmldrop
+<p align="center">
+  <a href="https://htmldrop.link"><img src=".github/logo.svg" width="140" alt="htmldrop logo"></a>
+</p>
 
-**Publish HTML for agents — one API call, MCP server included.**
+<h1 align="center">htmldrop</h1>
+
+<p align="center"><b>Publish HTML for agents — one API call, MCP server included.</b></p>
+
+<p align="center">
+  <a href="https://htmldrop.link"><img src="https://img.shields.io/badge/htmldrop.link-live-e8503a" alt="htmldrop.link"></a>
+  <a href="https://github.com/vin-spiegel/htmldrop/actions/workflows/ci.yml"><img src="https://github.com/vin-spiegel/htmldrop/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://www.npmjs.com/package/htmldrop-mcp"><img src="https://img.shields.io/npm/v/htmldrop-mcp" alt="npm"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT"></a>
+</p>
+
+---
 
 htmldrop turns any HTML artifact into a shareable link in seconds. Reports,
 dashboards, charts, demos — anything an agent (or a human) creates. No git, no
 build, no dashboard.
 
-**Hosted service: [htmldrop.link](https://htmldrop.link)** — drag & drop an
-HTML file, paste HTML source, or POST to the API.
+**Try it now: [htmldrop.link](https://htmldrop.link)** — drag & drop an HTML
+file, paste HTML source, or POST to the API.
 
 ## How it works
 
@@ -29,21 +42,81 @@ curl -X POST https://htmldrop.link/publish \
 Every link gets its own subdomain, an auto-generated Open Graph preview card,
 and a TTL — shared artifacts don't live forever.
 
-## MCP server
+## Connect your agent (MCP)
 
-Connect any MCP client over Server-Sent Events:
+The hosted MCP server lives at `https://htmldrop.link/mcp` (SSE) and exposes
+one tool: `publish_html`.
+
+### Claude Code
+
+```bash
+claude mcp add --transport sse htmldrop https://htmldrop.link/mcp
+```
+
+### Claude Desktop
+
+Claude Desktop speaks stdio, so bridge to the hosted server with
+[`mcp-remote`](https://www.npmjs.com/package/mcp-remote). In
+`claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
     "htmldrop": {
-      "url": "https://htmldrop.link/mcp"
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://htmldrop.link/mcp"]
     }
   }
 }
 ```
 
-The server exposes one tool, `publish_html`:
+### Cursor
+
+Cursor connects to SSE URLs directly. In `.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "htmldrop": { "url": "https://htmldrop.link/mcp" }
+  }
+}
+```
+
+### Codex CLI
+
+In `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.htmldrop]
+command = "npx"
+args = ["-y", "mcp-remote", "https://htmldrop.link/mcp"]
+```
+
+### Self-hosted instance (npm, stdio)
+
+Running your own htmldrop? The [`htmldrop-mcp`](https://www.npmjs.com/package/htmldrop-mcp)
+package is a local stdio MCP server that publishes to **your** storage and
+domain:
+
+```json
+{
+  "mcpServers": {
+    "htmldrop": {
+      "command": "npx",
+      "args": ["-y", "htmldrop-mcp"],
+      "env": {
+        "BASE_DOMAIN": "your-domain.example",
+        "CLOUDFLARE_R2_ENDPOINT": "...",
+        "CLOUDFLARE_R2_ACCESS_KEY_ID": "...",
+        "CLOUDFLARE_R2_SECRET_ACCESS_KEY": "...",
+        "CLOUDFLARE_R2_BUCKET_NAME": "..."
+      }
+    }
+  }
+}
+```
+
+### `publish_html` tool
 
 | Argument | Type | Description |
 |----------|------|-------------|
