@@ -41,6 +41,11 @@ app.post('/mcp', express.json(), async (req, res) => {
 app.use('/', router);
 
 app.listen(config.port, () => {
-  console.log(`Pin running on port ${config.port}`);
+  const local = `http://localhost:${config.port}`;
+  const isLocal = !config.baseDomain || config.baseDomain === 'localhost';
+  console.log(`htmldrop running at ${isLocal ? local : `https://${config.baseDomain} (${local})`}`);
+  console.log(`  Landing  ${local}/`);
+  console.log(`  API      POST ${local}/publish`);
+  console.log(`  MCP/SSE  ${local}/mcp`);
   console.log(`Storage: ${isR2Configured() ? 'R2' : 'filesystem'}`);
 });

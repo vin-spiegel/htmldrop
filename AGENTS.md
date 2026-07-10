@@ -1,22 +1,22 @@
-# Pin — MCP server for publishing HTML
+# htmldrop — MCP server for publishing HTML
 
-This is the Pin MCP server. It lets an agent publish an HTML artifact and receive a public URL.
+This is the htmldrop MCP server (htmldrop.link). It lets an agent publish an HTML artifact and receive a public URL. The MCP tool name is `publish_html`.
 
 ## Service endpoints
 
 | Endpoint | URL |
 |----------|-----|
-| Landing page | https://pin-publish-production.up.railway.app/ |
-| HTTP/SSE MCP | `GET/POST https://pin-publish-production.up.railway.app/mcp` |
-| REST API | `POST https://pin-publish-production.up.railway.app/publish` |
-| This file | https://pin-publish-production.up.railway.app/agents.md |
+| Landing page | https://htmldrop.link/ |
+| HTTP/SSE MCP | `GET/POST https://htmldrop.link/mcp` |
+| REST API | `POST https://htmldrop.link/publish` |
+| This file | https://htmldrop.link/agents.md |
 
 ## Connect as an MCP client
 
 Use HTTP/SSE. Connect to:
 
 ```text
-GET https://pin-publish-production.up.railway.app/mcp
+GET https://htmldrop.link/mcp
 ```
 
 Wait for the endpoint event:
@@ -29,13 +29,13 @@ data: /mcp?sessionId=<uuid>
 All subsequent JSON-RPC messages go to:
 
 ```text
-POST https://pin-publish-production.up.railway.app/mcp?sessionId=<uuid>
+POST https://htmldrop.link/mcp?sessionId=<uuid>
 Content-Type: application/json
 ```
 
 ## Available tool
 
-### `pin_publish`
+### `publish_html`
 
 Publish HTML and get a public link.
 
@@ -43,7 +43,7 @@ Publish HTML and get a public link.
 
 ```json
 {
-  "name": "pin_publish",
+  "name": "publish_html",
   "description": "Publish an HTML artifact to a public URL",
   "inputSchema": {
     "type": "object",
@@ -67,7 +67,7 @@ Publish HTML and get a public link.
   "id": 1,
   "method": "tools/call",
   "params": {
-    "name": "pin_publish",
+    "name": "publish_html",
     "arguments": {
       "html": "<h1>Hello world</h1>",
       "title": "Demo",
@@ -87,7 +87,7 @@ Publish HTML and get a public link.
     "content": [
       {
         "type": "text",
-        "text": "{\"url\":\"https://<subdomain>.pin-publish-production.up.railway.app\",\"id\":\"...\",\"expires_at\":\"2026-07-02T...\"}"
+        "text": "{\"url\":\"https://<subdomain>.htmldrop.link\",\"id\":\"...\",\"expires_at\":\"2026-07-02T...\"}"
       }
     ]
   }
@@ -101,7 +101,7 @@ The response text is a JSON string. Parse it once to access `url`, `id`, and `ex
 If you cannot use MCP, make a regular HTTP request:
 
 ```bash
-curl -X POST https://pin-publish-production.up.railway.app/publish \
+curl -X POST https://htmldrop.link/publish \
   -H "Content-Type: application/json" \
   -d '{"html":"<h1>Hello</h1>","title":"Demo","ttl_days":7}'
 ```
@@ -110,7 +110,7 @@ Response:
 
 ```json
 {
-  "url": "https://<subdomain>.pin-publish-production.up.railway.app",
+  "url": "https://<subdomain>.htmldrop.link",
   "id": "...",
   "subdomain": "...",
   "expires_at": "2026-07-02T..."

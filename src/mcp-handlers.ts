@@ -6,7 +6,7 @@ import { FilesystemStorage, R2Storage } from './storage';
 import { isR2Configured } from './config';
 
 export const PUBLISH_TOOL = {
-  name: 'pin_publish',
+  name: 'publish_html',
   description:
     'Publish an HTML artifact or fetch a remote HTML page and get a shareable URL. Useful for sharing reports, dashboards, visualizations, or any rendered HTML produced by an agent.',
   inputSchema: {
@@ -49,7 +49,7 @@ export async function handleCall(request: {
     arguments?: Record<string, unknown>;
   };
 }) {
-  if (request.params.name !== 'pin_publish') {
+  if (request.params.name !== 'publish_html') {
     throw new Error(`Unknown tool: ${request.params.name}`);
   }
 
@@ -59,7 +59,7 @@ export async function handleCall(request: {
     let html = '';
     let sourceUrl: string | undefined;
     if (args.url && !args.html) {
-      const response = await fetch(String(args.url), { headers: { 'User-Agent': 'Pin-Publish-MCP/0.1' } });
+      const response = await fetch(String(args.url), { headers: { 'User-Agent': 'htmldrop-mcp/0.1' } });
       if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
       html = await response.text();
       sourceUrl = String(args.url);

@@ -28,16 +28,16 @@ Or run the HTTP server:
 ```bash
 git clone https://github.com/vin-spiegel/pin-publish.git
 cd pin-publish
-npm install
-npm run build
-npm start
+pnpm install
+pnpm run build
+pnpm start
 ```
 
 Then POST to `http://localhost:3000/publish`.
 
 ## MCP tool
 
-### `pin_publish`
+### `publish_html`
 
 Input:
 
