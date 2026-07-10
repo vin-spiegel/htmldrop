@@ -13,6 +13,34 @@ export const DEFAULT_LOCALE: Locale = 'en';
 
 const SUPPORTED: Locale[] = ['en', 'ko', 'ja', 'zh', 'es', 'fr', 'de'];
 
+export const SUPPORTED_LOCALES: readonly Locale[] = SUPPORTED;
+
+/** URL path each locale lives at. English is the root (and the x-default). */
+export function localePath(locale: Locale): string {
+  return locale === DEFAULT_LOCALE ? '/' : `/${locale}`;
+}
+
+/** Native-language labels for the footer language switcher. */
+const LANGUAGE_LABELS: ReadonlyArray<[Locale, string]> = [
+  ['en', 'English'],
+  ['ko', '한국어'],
+  ['ja', '日本語'],
+  ['zh', '中文'],
+  ['es', 'Español'],
+  ['fr', 'Français'],
+  ['de', 'Deutsch'],
+];
+
+const OG_LOCALES: Record<Locale, string> = {
+  en: 'en_US',
+  ko: 'ko_KR',
+  ja: 'ja_JP',
+  zh: 'zh_CN',
+  es: 'es_ES',
+  fr: 'fr_FR',
+  de: 'de_DE',
+};
+
 interface Strings {
   htmlLang: string;
   metaTitle: string;
@@ -61,15 +89,19 @@ interface Strings {
   s2Desc: string;
   s3Title: string;
   s3Desc: string;
+  faqH2: string;
+  faqP: string;
+  faq: ReadonlyArray<{ q: string; a: string }>;
   footer: string;
 }
 
 const translations: Record<Locale, Strings> = {
   en: {
     htmlLang: 'en',
-    metaTitle: 'htmldrop — Publish HTML for agents',
-    metaDesc: 'Publish HTML reports, dashboards, and visualizations with one API call.',
-    ogTitle: 'htmldrop — Publish HTML for agents',
+    metaTitle: 'htmldrop — Upload & Publish HTML Online in Seconds',
+    metaDesc:
+      'Drop an HTML file or POST it to one API and get a shareable link instantly. Free HTML hosting with social preview cards and an MCP server for AI agents.',
+    ogTitle: 'htmldrop — Upload & Publish HTML Online in Seconds',
     ogDesc: 'POST HTML, get a link. MCP server included.',
     navApi: 'API',
     navMcp: 'MCP',
@@ -114,13 +146,46 @@ const translations: Record<Locale, Strings> = {
     s2Desc: 'We store the file and generate a social preview.',
     s3Title: 'Get a link',
     s3Desc: 'Receive a URL on its own subdomain, ready to share.',
+    faqH2: 'Frequently asked questions',
+    faqP: 'Everything about uploading and hosting HTML files with htmldrop.',
+    faq: [
+      {
+        q: 'How do I upload and publish an HTML file?',
+        a: 'Three ways: drag and drop the file onto this page, POST it to the /publish API, or let an AI agent call the publish_html MCP tool. Either way you get a live URL on its own subdomain in seconds — no account, no build step, no configuration.',
+      },
+      {
+        q: 'Is htmldrop free?',
+        a: 'Yes. Publishing HTML with htmldrop is free and requires no sign-up. Drop a file or make one API call and share the link.',
+      },
+      {
+        q: 'How long does a published link stay online?',
+        a: 'Every link has a TTL. Anonymous publishes stay up for 7 days by default; publishing with an owner key extends that to 30 days. Expiry is a feature — shared artifacts don’t live on the internet forever.',
+      },
+      {
+        q: 'Can my HTML file use CSS, JavaScript, and images?',
+        a: 'Yes. Upload a single self-contained HTML file with inline CSS and JavaScript. External stylesheets, scripts, fonts, and images referenced by absolute URLs (for example from a CDN) work too.',
+      },
+      {
+        q: 'What is the maximum file size?',
+        a: 'Up to 25 MB per HTML file — more than enough for reports, dashboards, charts, and interactive demos.',
+      },
+      {
+        q: 'Can I password-protect a published page?',
+        a: 'Yes. Pass an optional password when publishing and viewers will be asked for it before the page renders. The link itself stays clean and easy to share.',
+      },
+      {
+        q: 'What is the MCP server for?',
+        a: 'AI agents (Claude, and any MCP-compatible client) connect over Server-Sent Events at /mcp and call publish_html directly — no API docs to read. It’s the fastest way for an agent to turn generated HTML into a shareable link.',
+      },
+    ],
     footer: 'Built for agents',
   },
   ko: {
     htmlLang: 'ko',
-    metaTitle: 'htmldrop — 에이전트를 위한 HTML 퍼블리싱',
-    metaDesc: 'API 호출 한 번으로 HTML 리포트, 대시보드, 시각화를 게시하세요.',
-    ogTitle: 'htmldrop — 에이전트를 위한 HTML 퍼블리싱',
+    metaTitle: 'htmldrop — HTML 파일 업로드, 몇 초 만에 공유 링크로',
+    metaDesc:
+      'HTML 파일을 끌어다 놓거나 API 한 번 호출로 업로드하면 즉시 공유 링크가 생깁니다. 무료 HTML 호스팅에 소셜 미리보기 카드, AI 에이전트용 MCP 서버까지.',
+    ogTitle: 'htmldrop — HTML 파일 업로드, 몇 초 만에 공유 링크로',
     ogDesc: 'HTML을 POST하면 링크가 나옵니다. MCP 서버 포함.',
     navApi: 'API',
     navMcp: 'MCP',
@@ -165,13 +230,46 @@ const translations: Record<Locale, Strings> = {
     s2Desc: '파일을 저장하고 소셜 미리보기를 생성합니다.',
     s3Title: '링크 받기',
     s3Desc: '바로 공유할 수 있는 전용 서브도메인 URL을 받으세요.',
+    faqH2: '자주 묻는 질문',
+    faqP: 'htmldrop으로 HTML 파일을 업로드하고 호스팅하는 것에 대한 모든 것.',
+    faq: [
+      {
+        q: 'HTML 파일은 어떻게 업로드하고 게시하나요?',
+        a: '세 가지 방법이 있어요. 이 페이지에 파일을 끌어다 놓거나, /publish API로 POST하거나, AI 에이전트가 publish_html MCP 도구를 호출하면 됩니다. 어느 쪽이든 몇 초 안에 전용 서브도메인 URL이 나옵니다 — 계정도, 빌드도, 설정도 필요 없어요.',
+      },
+      {
+        q: 'htmldrop은 무료인가요?',
+        a: '네. htmldrop으로 HTML을 게시하는 것은 무료이고 회원가입도 필요 없습니다. 파일을 던지거나 API를 한 번 호출하고 링크를 공유하세요.',
+      },
+      {
+        q: '게시한 링크는 얼마나 오래 유지되나요?',
+        a: '모든 링크에는 TTL이 있습니다. 익명 게시는 기본 7일, 소유자 키를 사용하면 30일까지 유지됩니다. 만료는 의도된 기능이에요 — 공유한 결과물이 인터넷에 영원히 남지 않습니다.',
+      },
+      {
+        q: 'HTML 파일에서 CSS, JavaScript, 이미지를 쓸 수 있나요?',
+        a: '네. 인라인 CSS와 JavaScript가 포함된 단일 HTML 파일을 업로드하세요. CDN 등 절대 URL로 참조하는 외부 스타일시트, 스크립트, 폰트, 이미지도 잘 동작합니다.',
+      },
+      {
+        q: '파일 크기 제한은 얼마인가요?',
+        a: 'HTML 파일 하나당 최대 25MB입니다. 리포트, 대시보드, 차트, 인터랙티브 데모에 충분한 크기예요.',
+      },
+      {
+        q: '게시한 페이지에 비밀번호를 걸 수 있나요?',
+        a: '네. 게시할 때 비밀번호를 지정하면 페이지가 열리기 전에 비밀번호를 묻습니다. 링크 자체는 깔끔하게 유지되어 공유하기 쉽습니다.',
+      },
+      {
+        q: 'MCP 서버는 어디에 쓰나요?',
+        a: 'AI 에이전트(Claude 등 MCP 호환 클라이언트)가 /mcp에서 Server-Sent Events로 연결해 publish_html을 직접 호출합니다. API 문서를 읽을 필요 없이, 에이전트가 만든 HTML을 공유 링크로 바꾸는 가장 빠른 방법이에요.',
+      },
+    ],
     footer: '에이전트를 위해 제작됨',
   },
   ja: {
     htmlLang: 'ja',
-    metaTitle: 'htmldrop — エージェントのためのHTML公開',
-    metaDesc: 'API呼び出し1回でHTMLレポート、ダッシュボード、ビジュアライゼーションを公開。',
-    ogTitle: 'htmldrop — エージェントのためのHTML公開',
+    metaTitle: 'htmldrop — HTMLファイルをアップロードして数秒で公開',
+    metaDesc:
+      'HTMLファイルをドロップするかAPIを1回呼ぶだけで、すぐに共有リンクを取得。無料のHTMLホスティングに、ソーシャルプレビューカードとAIエージェント向けMCPサーバー付き。',
+    ogTitle: 'htmldrop — HTMLファイルをアップロードして数秒で公開',
     ogDesc: 'HTMLをPOSTすればリンクが返ります。MCPサーバー付き。',
     navApi: 'API',
     navMcp: 'MCP',
@@ -216,13 +314,46 @@ const translations: Record<Locale, Strings> = {
     s2Desc: 'ファイルを保存し、ソーシャルプレビューを生成します。',
     s3Title: 'リンクを取得',
     s3Desc: 'すぐ共有できる専用サブドメインURLを受け取ります。',
+    faqH2: 'よくある質問',
+    faqP: 'htmldropでのHTMLファイルのアップロードとホスティングについて。',
+    faq: [
+      {
+        q: 'HTMLファイルはどうやってアップロード・公開しますか？',
+        a: '方法は3つ。このページにファイルをドラッグ＆ドロップする、/publish APIにPOSTする、またはAIエージェントがpublish_html MCPツールを呼び出す。どの方法でも数秒で専用サブドメインのURLが手に入ります — アカウントもビルドも設定も不要です。',
+      },
+      {
+        q: 'htmldropは無料ですか？',
+        a: 'はい。htmldropでのHTML公開は無料で、登録も不要です。ファイルをドロップするかAPIを1回呼んで、リンクを共有するだけ。',
+      },
+      {
+        q: '公開したリンクはどのくらい残りますか？',
+        a: 'すべてのリンクにTTLがあります。匿名公開はデフォルトで7日間、オーナーキーを使えば30日間まで延長できます。期限切れは仕様です — 共有した成果物が永遠にインターネットに残ることはありません。',
+      },
+      {
+        q: 'HTMLでCSS・JavaScript・画像は使えますか？',
+        a: 'はい。インラインのCSSとJavaScriptを含む単一のHTMLファイルをアップロードしてください。CDNなど絶対URLで参照する外部のスタイルシート、スクリプト、フォント、画像も動作します。',
+      },
+      {
+        q: 'ファイルサイズの上限は？',
+        a: 'HTMLファイル1つにつき最大25MB。レポート、ダッシュボード、チャート、インタラクティブなデモには十分な容量です。',
+      },
+      {
+        q: '公開ページにパスワードをかけられますか？',
+        a: 'はい。公開時にパスワードを指定すると、ページ表示前にパスワード入力を求めます。リンク自体はクリーンなまま共有しやすい形です。',
+      },
+      {
+        q: 'MCPサーバーは何のためにありますか？',
+        a: 'AIエージェント（ClaudeなどMCP対応クライアント）が/mcpにServer-Sent Eventsで接続し、publish_htmlを直接呼び出せます。APIドキュメントを読む必要なし — エージェントが生成したHTMLを共有リンクに変える最速の方法です。',
+      },
+    ],
     footer: 'エージェントのために構築',
   },
   zh: {
     htmlLang: 'zh-CN',
-    metaTitle: 'htmldrop — 为智能体发布 HTML',
-    metaDesc: '一次 API 调用即可发布 HTML 报告、仪表盘和可视化内容。',
-    ogTitle: 'htmldrop — 为智能体发布 HTML',
+    metaTitle: 'htmldrop — 上传 HTML 文件，几秒内发布上线',
+    metaDesc:
+      '拖放 HTML 文件或调用一次 API，立即获得可分享链接。免费 HTML 托管，自动生成社交预览卡片，并内置面向 AI 智能体的 MCP 服务器。',
+    ogTitle: 'htmldrop — 上传 HTML 文件，几秒内发布上线',
     ogDesc: 'POST HTML，即得链接。内置 MCP 服务器。',
     navApi: 'API',
     navMcp: 'MCP',
@@ -267,13 +398,46 @@ const translations: Record<Locale, Strings> = {
     s2Desc: '我们保存文件并生成社交预览。',
     s3Title: '获取链接',
     s3Desc: '获得一个可直接分享的专属子域名 URL。',
+    faqH2: '常见问题',
+    faqP: '关于用 htmldrop 上传和托管 HTML 文件的一切。',
+    faq: [
+      {
+        q: '如何上传并发布 HTML 文件？',
+        a: '三种方式：把文件拖放到本页面、POST 到 /publish API，或让 AI 智能体调用 publish_html MCP 工具。任何一种方式都能在几秒内获得专属子域名 URL — 无需账号、无需构建、无需配置。',
+      },
+      {
+        q: 'htmldrop 免费吗？',
+        a: '免费。用 htmldrop 发布 HTML 无需注册，拖一个文件或调用一次 API，就能分享链接。',
+      },
+      {
+        q: '发布的链接能保留多久？',
+        a: '每个链接都有 TTL。匿名发布默认保留 7 天，使用所有者密钥可延长到 30 天。过期是有意设计的 — 分享的内容不会永远留在互联网上。',
+      },
+      {
+        q: 'HTML 文件里可以用 CSS、JavaScript 和图片吗？',
+        a: '可以。上传包含内联 CSS 和 JavaScript 的单个 HTML 文件即可。通过绝对 URL（例如 CDN）引用的外部样式表、脚本、字体和图片也都能正常工作。',
+      },
+      {
+        q: '文件大小限制是多少？',
+        a: '每个 HTML 文件最大 25MB — 对报告、仪表盘、图表和交互式演示来说绰绰有余。',
+      },
+      {
+        q: '可以给发布的页面设置密码吗？',
+        a: '可以。发布时传入可选密码，访问者需要输入密码才能查看页面。链接本身保持干净，依然易于分享。',
+      },
+      {
+        q: 'MCP 服务器是干什么的？',
+        a: 'AI 智能体（Claude 及任何 MCP 兼容客户端）通过 Server-Sent Events 连接 /mcp，直接调用 publish_html — 不用读 API 文档。这是智能体把生成的 HTML 变成分享链接的最快方式。',
+      },
+    ],
     footer: '为智能体而建',
   },
   es: {
     htmlLang: 'es',
-    metaTitle: 'htmldrop — Publica HTML para agentes',
-    metaDesc: 'Publica informes, paneles y visualizaciones HTML con una sola llamada a la API.',
-    ogTitle: 'htmldrop — Publica HTML para agentes',
+    metaTitle: 'htmldrop — Sube y publica HTML online en segundos',
+    metaDesc:
+      'Arrastra un archivo HTML o envíalo a una API y obtén un enlace para compartir al instante. Alojamiento HTML gratis con tarjetas sociales y servidor MCP para agentes de IA.',
+    ogTitle: 'htmldrop — Sube y publica HTML online en segundos',
     ogDesc: 'Envía HTML por POST y obtén un enlace. Servidor MCP incluido.',
     navApi: 'API',
     navMcp: 'MCP',
@@ -318,13 +482,46 @@ const translations: Record<Locale, Strings> = {
     s2Desc: 'Guardamos el archivo y generamos una vista previa social.',
     s3Title: 'Obtén un enlace',
     s3Desc: 'Recibe una URL con su propio subdominio, lista para compartir.',
+    faqH2: 'Preguntas frecuentes',
+    faqP: 'Todo sobre subir y alojar archivos HTML con htmldrop.',
+    faq: [
+      {
+        q: '¿Cómo subo y publico un archivo HTML?',
+        a: 'Hay tres formas: arrastra el archivo a esta página, envíalo por POST a la API /publish, o deja que un agente de IA llame a la herramienta MCP publish_html. En segundos tendrás una URL en su propio subdominio — sin cuenta, sin build, sin configuración.',
+      },
+      {
+        q: '¿htmldrop es gratis?',
+        a: 'Sí. Publicar HTML con htmldrop es gratis y no requiere registro. Suelta un archivo o haz una llamada a la API y comparte el enlace.',
+      },
+      {
+        q: '¿Cuánto tiempo permanece online un enlace publicado?',
+        a: 'Cada enlace tiene un TTL. Las publicaciones anónimas duran 7 días por defecto; con una clave de propietario se extiende a 30 días. La caducidad es una característica: lo compartido no vive en internet para siempre.',
+      },
+      {
+        q: '¿Mi HTML puede usar CSS, JavaScript e imágenes?',
+        a: 'Sí. Sube un único archivo HTML autocontenido con CSS y JavaScript en línea. También funcionan hojas de estilo, scripts, fuentes e imágenes externas referenciadas por URL absoluta (por ejemplo desde un CDN).',
+      },
+      {
+        q: '¿Cuál es el tamaño máximo de archivo?',
+        a: 'Hasta 25 MB por archivo HTML: más que suficiente para informes, paneles, gráficos y demos interactivas.',
+      },
+      {
+        q: '¿Puedo proteger una página con contraseña?',
+        a: 'Sí. Indica una contraseña opcional al publicar y se pedirá antes de mostrar la página. El enlace se mantiene limpio y fácil de compartir.',
+      },
+      {
+        q: '¿Para qué sirve el servidor MCP?',
+        a: 'Los agentes de IA (Claude y cualquier cliente compatible con MCP) se conectan por Server-Sent Events en /mcp y llaman a publish_html directamente, sin leer documentación de la API. Es la vía más rápida para convertir HTML generado en un enlace compartible.',
+      },
+    ],
     footer: 'Hecho para agentes',
   },
   fr: {
     htmlLang: 'fr',
-    metaTitle: 'htmldrop — Publiez du HTML pour les agents',
-    metaDesc: 'Publiez des rapports, tableaux de bord et visualisations HTML en un seul appel API.',
-    ogTitle: 'htmldrop — Publiez du HTML pour les agents',
+    metaTitle: 'htmldrop — Publiez un fichier HTML en ligne en secondes',
+    metaDesc:
+      'Déposez un fichier HTML ou envoyez-le à une API et obtenez instantanément un lien à partager. Hébergement HTML gratuit, cartes sociales et serveur MCP pour agents IA.',
+    ogTitle: 'htmldrop — Publiez un fichier HTML en ligne en secondes',
     ogDesc: 'Envoyez du HTML en POST, recevez un lien. Serveur MCP inclus.',
     navApi: 'API',
     navMcp: 'MCP',
@@ -369,13 +566,46 @@ const translations: Record<Locale, Strings> = {
     s2Desc: 'Nous stockons le fichier et générons un aperçu social.',
     s3Title: 'Obtenez un lien',
     s3Desc: 'Recevez une URL avec son propre sous-domaine, prête à partager.',
+    faqH2: 'Questions fréquentes',
+    faqP: 'Tout sur l’envoi et l’hébergement de fichiers HTML avec htmldrop.',
+    faq: [
+      {
+        q: 'Comment publier un fichier HTML ?',
+        a: 'Trois façons : glissez-déposez le fichier sur cette page, envoyez-le en POST à l’API /publish, ou laissez un agent IA appeler l’outil MCP publish_html. Dans tous les cas, vous obtenez en quelques secondes une URL sur son propre sous-domaine — sans compte, sans build, sans configuration.',
+      },
+      {
+        q: 'htmldrop est-il gratuit ?',
+        a: 'Oui. Publier du HTML avec htmldrop est gratuit et sans inscription. Déposez un fichier ou faites un appel API, puis partagez le lien.',
+      },
+      {
+        q: 'Combien de temps un lien publié reste-t-il en ligne ?',
+        a: 'Chaque lien a un TTL. Les publications anonymes durent 7 jours par défaut ; avec une clé propriétaire, jusqu’à 30 jours. L’expiration est voulue — ce que vous partagez ne reste pas en ligne pour toujours.',
+      },
+      {
+        q: 'Mon HTML peut-il utiliser CSS, JavaScript et des images ?',
+        a: 'Oui. Envoyez un fichier HTML autonome avec CSS et JavaScript en ligne. Les feuilles de style, scripts, polices et images externes référencés par URL absolue (par exemple depuis un CDN) fonctionnent aussi.',
+      },
+      {
+        q: 'Quelle est la taille maximale de fichier ?',
+        a: 'Jusqu’à 25 Mo par fichier HTML — largement assez pour des rapports, tableaux de bord, graphiques et démos interactives.',
+      },
+      {
+        q: 'Puis-je protéger une page par mot de passe ?',
+        a: 'Oui. Indiquez un mot de passe optionnel à la publication : il sera demandé avant l’affichage de la page. Le lien reste propre et facile à partager.',
+      },
+      {
+        q: 'À quoi sert le serveur MCP ?',
+        a: 'Les agents IA (Claude et tout client compatible MCP) se connectent en Server-Sent Events sur /mcp et appellent publish_html directement, sans lire la documentation de l’API. C’est le moyen le plus rapide de transformer du HTML généré en lien partageable.',
+      },
+    ],
     footer: 'Conçu pour les agents',
   },
   de: {
     htmlLang: 'de',
-    metaTitle: 'htmldrop — HTML für Agenten veröffentlichen',
-    metaDesc: 'Veröffentliche HTML-Berichte, Dashboards und Visualisierungen mit einem einzigen API-Aufruf.',
-    ogTitle: 'htmldrop — HTML für Agenten veröffentlichen',
+    metaTitle: 'htmldrop — HTML-Datei hochladen & in Sekunden online',
+    metaDesc:
+      'HTML-Datei ablegen oder per API senden und sofort einen teilbaren Link erhalten. Kostenloses HTML-Hosting mit Social Cards und MCP-Server für KI-Agenten.',
+    ogTitle: 'htmldrop — HTML-Datei hochladen & in Sekunden online',
     ogDesc: 'HTML per POST senden, Link erhalten. MCP-Server inklusive.',
     navApi: 'API',
     navMcp: 'MCP',
@@ -420,6 +650,38 @@ const translations: Record<Locale, Strings> = {
     s2Desc: 'Wir speichern die Datei und erzeugen eine Social-Vorschau.',
     s3Title: 'Link erhalten',
     s3Desc: 'Erhalte eine URL mit eigener Subdomain, bereit zum Teilen.',
+    faqH2: 'Häufige Fragen',
+    faqP: 'Alles über das Hochladen und Hosten von HTML-Dateien mit htmldrop.',
+    faq: [
+      {
+        q: 'Wie lade ich eine HTML-Datei hoch und veröffentliche sie?',
+        a: 'Drei Wege: Datei auf diese Seite ziehen, per POST an die /publish-API senden, oder einen KI-Agenten das MCP-Tool publish_html aufrufen lassen. In jedem Fall bekommst du in Sekunden eine URL auf eigener Subdomain — ohne Konto, ohne Build, ohne Konfiguration.',
+      },
+      {
+        q: 'Ist htmldrop kostenlos?',
+        a: 'Ja. HTML mit htmldrop zu veröffentlichen ist kostenlos und erfordert keine Registrierung. Datei ablegen oder einen API-Aufruf machen und den Link teilen.',
+      },
+      {
+        q: 'Wie lange bleibt ein veröffentlichter Link online?',
+        a: 'Jeder Link hat eine TTL. Anonyme Veröffentlichungen bleiben standardmäßig 7 Tage online; mit einem Owner-Key bis zu 30 Tage. Der Ablauf ist gewollt — Geteiltes bleibt nicht für immer im Netz.',
+      },
+      {
+        q: 'Kann meine HTML-Datei CSS, JavaScript und Bilder nutzen?',
+        a: 'Ja. Lade eine einzelne, in sich geschlossene HTML-Datei mit Inline-CSS und -JavaScript hoch. Externe Stylesheets, Skripte, Schriften und Bilder über absolute URLs (z. B. von einem CDN) funktionieren ebenfalls.',
+      },
+      {
+        q: 'Wie groß darf die Datei sein?',
+        a: 'Bis zu 25 MB pro HTML-Datei — mehr als genug für Berichte, Dashboards, Diagramme und interaktive Demos.',
+      },
+      {
+        q: 'Kann ich eine Seite mit einem Passwort schützen?',
+        a: 'Ja. Gib beim Veröffentlichen ein optionales Passwort an — Besucher werden danach gefragt, bevor die Seite erscheint. Der Link selbst bleibt sauber und leicht teilbar.',
+      },
+      {
+        q: 'Wofür ist der MCP-Server?',
+        a: 'KI-Agenten (Claude und jeder MCP-kompatible Client) verbinden sich über Server-Sent Events unter /mcp und rufen publish_html direkt auf — ohne API-Doku. Der schnellste Weg, generiertes HTML in einen teilbaren Link zu verwandeln.',
+      },
+    ],
     footer: 'Für Agenten gebaut',
   },
 };
@@ -456,9 +718,66 @@ function escapeAttr(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }
 
+/** Serialize JSON-LD so it can be embedded inside a <script> tag safely. */
+function jsonLd(data: unknown): string {
+  return JSON.stringify(data).replace(/</g, '\\u003c');
+}
+
 export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
   const t = translations[locale] ?? translations[DEFAULT_LOCALE];
   const baseDomain = process.env.BASE_DOMAIN || 'htmldrop.link';
+  const origin = `https://${baseDomain}`;
+  const canonical = `${origin}${localePath(locale)}`;
+  const ogImage = `${origin}/og.png`;
+
+  const hreflangLinks = SUPPORTED.map(
+    (l) => `<link rel="alternate" hreflang="${l === 'zh' ? 'zh-CN' : l}" href="${origin}${localePath(l)}">`
+  ).join('\n');
+
+  const ogLocaleAlternates = SUPPORTED.filter((l) => l !== locale)
+    .map((l) => `<meta property="og:locale:alternate" content="${OG_LOCALES[l]}">`)
+    .join('\n');
+
+  const appLd = jsonLd({
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'htmldrop',
+    url: origin,
+    description: t.metaDesc,
+    applicationCategory: 'DeveloperApplication',
+    operatingSystem: 'Any',
+    browserRequirements: 'Requires a modern web browser',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    inLanguage: t.htmlLang,
+  });
+
+  const faqLd = jsonLd({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    inLanguage: t.htmlLang,
+    mainEntity: t.faq.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  });
+
+  const langSwitch = LANGUAGE_LABELS.map(
+    ([l, label]) =>
+      l === locale
+        ? `<span aria-current="true">${label}</span>`
+        : `<a href="${localePath(l)}" hreflang="${l}" lang="${l}">${label}</a>`
+  ).join('\n      ');
+
+  const faqItems = t.faq
+    .map(
+      ({ q, a }, i) => `      <details class="faq-item doodle-border"${i === 0 ? ' open' : ''}>
+        <summary><h3>${q}</h3><span class="faq-toggle" aria-hidden="true">+</span></summary>
+        <p>${a}</p>
+      </details>`
+    )
+    .join('\n');
+
   return `<!DOCTYPE html>
 <html lang="${t.htmlLang}">
 <head>
@@ -466,10 +785,24 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${t.metaTitle}</title>
 <meta name="description" content="${escapeAttr(t.metaDesc)}">
+<link rel="canonical" href="${canonical}">
+${hreflangLinks}
+<link rel="alternate" hreflang="x-default" href="${origin}/">
 <meta property="og:title" content="${escapeAttr(t.ogTitle)}">
 <meta property="og:description" content="${escapeAttr(t.ogDesc)}">
 <meta property="og:type" content="website">
+<meta property="og:url" content="${canonical}">
+<meta property="og:site_name" content="htmldrop">
+<meta property="og:image" content="${ogImage}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="${OG_LOCALES[locale]}">
+${ogLocaleAlternates}
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="${ogImage}">
+<meta name="theme-color" content="#f7f3ea">
+<script type="application/ld+json">${appLd}</script>
+<script type="application/ld+json">${faqLd}</script>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -744,10 +1077,34 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
 
   .features-section { padding-top: 5rem; }
 
+  /* FAQ — hand-drawn accordion cards */
+  .faq-list { display: grid; gap: 1rem; max-width: 780px; }
+  .faq-item { --tilt: 0deg; padding: 0; }
+  .faq-list .faq-item:nth-child(odd) { --tilt: -0.25deg; }
+  .faq-list .faq-item:nth-child(even) { --tilt: 0.25deg; border-radius: 18px 235px 22px 245px / 240px 20px 250px 18px; }
+  .faq-item summary {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    cursor: pointer; list-style: none; padding: 1.05rem 1.4rem;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary h3 { margin: 0; font-size: 1.35rem; line-height: 1.25; }
+  .faq-toggle {
+    flex-shrink: 0; width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Gaegu', cursive; font-size: 1.4rem; font-weight: 700; color: var(--accent);
+    border: 2px solid var(--line); border-radius: 12px 8px 13px 9px; background: var(--accent-soft);
+    transform: rotate(-2deg); transition: transform 0.18s ease;
+  }
+  .faq-item[open] .faq-toggle { transform: rotate(43deg); }
+  .faq-item > p { margin: 0; padding: 0 1.4rem 1.25rem; color: var(--muted); font-size: 0.97rem; max-width: 64ch; }
+
   /* Footer */
   footer { padding: 1.5rem 0 2.75rem; text-align: center; color: var(--muted); font-size: 1.05rem; font-family: 'Gaegu', system-ui, cursive; }
   footer a { color: var(--ink); text-decoration: none; border-bottom: 2px solid var(--accent-soft); }
   footer a:hover { border-bottom-color: var(--accent); }
+  .lang-switch { margin-top: 0.9rem; font-family: 'Nunito', sans-serif; font-size: 0.82rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.35rem 1rem; }
+  .lang-switch a { color: var(--muted); border-bottom: 2px dotted rgba(33, 29, 24, 0.22); }
+  .lang-switch a:hover { color: var(--ink); border-bottom-color: var(--accent); }
+  .lang-switch span { color: var(--ink); font-weight: 700; }
 
   @media (max-width: 900px) {
     .hero { padding: 2.5rem 0 3.5rem; }
@@ -915,6 +1272,18 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
   </div>
 </section>
 
+<section id="faq">
+  <div class="container">
+    <div class="section-header">
+      <h2>${t.faqH2}</h2>
+      <p>${t.faqP}</p>
+    </div>
+    <div class="faq-list">
+${faqItems}
+    </div>
+  </div>
+</section>
+
 <section class="finale">
   <div class="container">
     <h2>${t.finaleH2}</h2>
@@ -925,6 +1294,9 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
 <footer>
   <div class="container">
     ${t.footer} · <a href="/agents.md">agents.md</a> · <a href="https://github.com/vin-spiegel/htmldrop" target="_blank" rel="noopener">GitHub</a>
+    <nav class="lang-switch" aria-label="Language">
+      ${langSwitch}
+    </nav>
   </div>
 </footer>
 <script>

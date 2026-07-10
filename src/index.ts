@@ -4,7 +4,16 @@ import { createRouter } from './routes';
 import { FilesystemStorage, R2Storage } from './storage';
 import { config, isR2Configured } from './config';
 import { mcpGetHandler, mcpPostHandler } from './mcp-sse';
-import { landingPageHtml, resolveLocale } from './landing';
+import {
+  DEFAULT_LOCALE,
+  Locale,
+  SUPPORTED_LOCALES,
+  landingPageHtml,
+  localePath,
+  resolveLocale,
+} from './landing';
+import { generatePngOgImage } from './og-image';
+import type { Request } from 'express';
 
 const app = express();
 
@@ -13,20 +22,84 @@ const router = createRouter(storage);
 
 app.set('trust proxy', true);
 
-// Landing page at root — but ONLY on the base domain. A request whose Host is a
-// subdomain of the base (e.g. abc.htmldrop.link) is an artifact request, so hand
-// it off to the artifact router below instead of showing the landing page.
-app.get('/', (req, res, next) => {
+// A request whose Host is a subdomain of the base (e.g. abc.htmldrop.link) is
+// an artifact request — landing/SEO routes must not answer it.
+function isArtifactHost(req: Request): boolean {
   const host = (req.headers.host || '').split(':')[0];
   const base = config.baseDomain;
-  if (base && base !== 'localhost' && host !== base && host.endsWith('.' + base)) {
-    return next();
-  }
+  return Boolean(base && base !== 'localhost' && host !== base && host.endsWith('.' + base));
+}
+
+// Landing page at root. English is the canonical root (and hreflang x-default);
+// browsers preferring another supported language are redirected once to the
+// locale's own URL (/ko, /ja, …) so every translation has a stable, indexable
+// address instead of invisible Accept-Language content negotiation.
+app.get('/', (req, res, next) => {
+  if (isArtifactHost(req)) return next();
   const locale = resolveLocale(req.headers['accept-language']);
-  res.set('Cache-Control', 'public, max-age=300');
   res.set('Vary', 'Accept-Language');
+  if (locale !== DEFAULT_LOCALE) {
+    res.set('Cache-Control', 'public, max-age=300');
+    return res.redirect(302, localePath(locale));
+  }
+  res.set('Cache-Control', 'public, max-age=300');
+  res.set('Content-Language', DEFAULT_LOCALE);
+  res.status(200).send(landingPageHtml(DEFAULT_LOCALE));
+});
+
+// Localized landing pages at /ko, /ja, /zh, /es, /fr, /de.
+const NON_DEFAULT_LOCALES = SUPPORTED_LOCALES.filter((l) => l !== DEFAULT_LOCALE);
+app.get(NON_DEFAULT_LOCALES.map(localePath), (req, res, next) => {
+  if (isArtifactHost(req)) return next();
+  const locale = req.path.replace(/^\//, '') as Locale;
+  res.set('Cache-Control', 'public, max-age=300');
   res.set('Content-Language', locale);
   res.status(200).send(landingPageHtml(locale));
+});
+
+// robots.txt — artifacts are kept out of search via X-Robots-Tag noindex
+// headers (crawling must stay allowed for the noindex to be seen), so robots
+// only needs to advertise the sitemap on the base domain.
+app.get('/robots.txt', (req, res) => {
+  res.set('Content-Type', 'text/plain; charset=utf-8');
+  res.set('Cache-Control', 'public, max-age=86400');
+  if (isArtifactHost(req)) return res.send('User-agent: *\nAllow: /\n');
+  res.send(`User-agent: *\nAllow: /\n\nSitemap: https://${config.baseDomain}/sitemap.xml\n`);
+});
+
+// sitemap.xml — one entry per locale, cross-annotated with hreflang.
+app.get('/sitemap.xml', (req, res, next) => {
+  if (isArtifactHost(req)) return next();
+  const origin = `https://${config.baseDomain}`;
+  const alternates = SUPPORTED_LOCALES.map(
+    (l) =>
+      `    <xhtml:link rel="alternate" hreflang="${l === 'zh' ? 'zh-CN' : l}" href="${origin}${localePath(l)}"/>`
+  )
+    .concat(`    <xhtml:link rel="alternate" hreflang="x-default" href="${origin}/"/>`)
+    .join('\n');
+  const urls = SUPPORTED_LOCALES.map(
+    (l) => `  <url>\n    <loc>${origin}${localePath(l)}</loc>\n${alternates}\n  </url>`
+  ).join('\n');
+  res.set('Content-Type', 'application/xml; charset=utf-8');
+  res.set('Cache-Control', 'public, max-age=86400');
+  res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${urls}
+</urlset>
+`);
+});
+
+// Social preview image for the landing page itself (og:image points here).
+app.get('/og.png', async (req, res, next) => {
+  if (isArtifactHost(req)) return next();
+  try {
+    const png = await generatePngOgImage('Publish HTML in seconds', config.baseDomain);
+    res.set('Content-Type', 'image/png');
+    res.set('Cache-Control', 'public, max-age=86400');
+    res.status(200).send(png);
+  } catch (err: unknown) {
+    res.status(500).send(err instanceof Error ? err.message : 'og image failed');
+  }
 });
 
 // Favicon — the coral droplet, served for the landing page and any artifact

@@ -18,7 +18,7 @@ export function extractFirstImage(html: string): string | undefined {
 }
 
 export function generateSvgOgImage(title: string, domain: string): string {
-  const safeTitle = escapeXml(title || 'Pin | Published artifact');
+  const safeTitle = escapeXml(title || 'htmldrop | Published artifact');
   const safeDomain = escapeXml(domain);
   const date = new Date().toLocaleDateString('en-US', {
     year: 'numeric',
@@ -35,7 +35,7 @@ export function generateSvgOgImage(title: string, domain: string): string {
   </defs>
   <rect width="1200" height="630" fill="url(#bg)"/>
   <rect x="60" y="60" width="1080" height="510" rx="20" fill="none" stroke="#f59e0b" stroke-width="4"/>
-  <text x="90" y="150" fill="#f59e0b" font-family="sans-serif" font-size="28" font-weight="600">Pin</text>
+  <text x="90" y="150" fill="#f59e0b" font-family="sans-serif" font-size="28" font-weight="600">htmldrop</text>
   <text x="90" y="260" fill="#e6e6e6" font-family="sans-serif" font-size="48" font-weight="700">${safeTitle}</text>
   <text x="90" y="540" fill="#888" font-family="monospace" font-size="22">${safeDomain}</text>
   <text x="90" y="580" fill="#888" font-family="sans-serif" font-size="18">Published ${date}</text>
@@ -79,12 +79,12 @@ export function generatePngOgImage(title: string, domain: string): Promise<Buffe
   // Logo
   ctx.fillStyle = '#f59e0b';
   ctx.font = '600 28px Inter';
-  ctx.fillText('Pin', 90, 150);
+  ctx.fillText('htmldrop', 90, 150);
 
   // Title
   ctx.fillStyle = '#e6e6e6';
   ctx.font = '700 48px Inter Bold';
-  const wrapped = wrapText(ctx, title || 'Pin | Published artifact', 980);
+  const wrapped = wrapText(ctx, title || 'htmldrop | Published artifact', 980);
   let y = 260;
   for (const line of wrapped) {
     ctx.fillText(line, 90, y);
@@ -125,13 +125,13 @@ function roundRect(ctx: SKRSContext2D, x: number, y: number, width: number, heig
 export function insertOgImage(html: string, imageUrl: string, title: string): string {
   if (html.includes('<meta property="og:image"')) return html;
   const ogTags = `
-<meta property="og:title" content="${escapeHtml(title || 'Pin | Published artifact')}">
-<meta property="og:description" content="Published artifact via Pin">
+<meta property="og:title" content="${escapeHtml(title || 'htmldrop | Published artifact')}">
+<meta property="og:description" content="Published artifact via htmldrop">
 <meta property="og:image" content="${escapeHtml(imageUrl)}">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="${escapeHtml(imageUrl)}">
-<meta name="twitter:title" content="${escapeHtml(title || 'Pin | Published artifact')}">
+<meta name="twitter:title" content="${escapeHtml(title || 'htmldrop | Published artifact')}">
 `;
   return html.replace(/(<head[\s\S]*?>)/i, `$1${ogTags}`);
 }
