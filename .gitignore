@@ -6,3 +6,6 @@ data/
 .env.local
 coverage/
 .env
+
+# local agent config
+.claude/

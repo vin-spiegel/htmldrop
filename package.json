@@ -1,5 +1,5 @@
 {
-  "name": "htmldrop",
+  "name": "htmldrop-mcp",
   "version": "0.1.0",
   "description": "Publish HTML for agents — one API call, MCP server included",
   "main": "dist/index.js",

@@ -470,6 +470,7 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
 <meta property="og:description" content="${escapeAttr(t.ogDesc)}">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -647,8 +648,16 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
   .section-header p { color: var(--muted); margin: 0; font-size: 1.06rem; }
 
   /* Dark beat — the API/MCP block goes full-bleed ink to give the page
-     a real value change instead of four same-weight cream sections. */
-  .dark { background: var(--ink); padding: 4.5rem 0 4rem; }
+     a real value change instead of four same-weight cream sections.
+     Top/bottom edges are hand-drawn squiggles, not razor cuts. */
+  .dark { background: var(--ink); padding: 5.5rem 0 5rem; position: relative; }
+  .dark::before, .dark::after {
+    content: ''; position: absolute; left: 0; right: 0; height: 16px; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 16'%3E%3Cpath d='M0 9 C 14 4 31 13 52 8 C 70 4 88 14 112 9 C 132 5 150 13 174 8 C 194 4 218 12 240 7 L 240 0 L 0 0 Z' fill='%23f7f3ea'/%3E%3C/svg%3E");
+    background-size: 240px 16px; background-repeat: repeat-x;
+  }
+  .dark::before { top: -1px; }
+  .dark::after { bottom: -1px; transform: scaleY(-1); }
   .dark .section-header h2 { color: #f4efe6; }
   .dark .section-header p { color: rgba(244, 239, 230, 0.60); }
   .dark .endpoint-row code {

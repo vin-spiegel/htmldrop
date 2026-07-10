@@ -29,6 +29,15 @@ app.get('/', (req, res, next) => {
   res.status(200).send(landingPageHtml(locale));
 });
 
+// Favicon — the coral droplet, served for the landing page and any artifact
+// that doesn't ship its own icon.
+const FAVICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2.5C12 2.5 5.5 10 5.5 14.5a6.5 6.5 0 0 0 13 0C18.5 10 12 2.5 12 2.5Z" fill="#e8503a" stroke="#211d18" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.2 14.8a2.8 2.8 0 0 0 2.4 2.9" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+app.get(['/favicon.ico', '/favicon.svg'], (_req, res) => {
+  res.set('Content-Type', 'image/svg+xml');
+  res.set('Cache-Control', 'public, max-age=86400');
+  res.send(FAVICON_SVG);
+});
+
 // MCP over SSE at /mcp
 app.get('/mcp', (req, res) => {
   mcpGetHandler(req, res);
