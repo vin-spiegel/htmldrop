@@ -51,6 +51,8 @@ interface Strings {
   dropOpen: string;
   dropAgain: string;
   dropErr: string;
+  finaleH2: string;
+  finaleCta: string;
   howH2: string;
   howP: string;
   s1Title: string;
@@ -94,7 +96,7 @@ const translations: Record<Locale, Strings> = {
     f4Title: 'Expires by default',
     f4Desc: 'Every link has a TTL, so shared artifacts don’t live forever.',
     dropTitle: 'Drop an HTML file here',
-    dropHint: 'or click to choose — publishes instantly',
+    dropHint: 'or click to choose · pasting HTML works too',
     dropBusy: 'Publishing…',
     dropDone: 'Your link is live!',
     dropCopy: 'Copy',
@@ -102,6 +104,8 @@ const translations: Record<Locale, Strings> = {
     dropOpen: 'Open',
     dropAgain: 'Publish another',
     dropErr: 'Something went wrong. Try again.',
+    finaleH2: 'Ready to publish something?',
+    finaleCta: 'Drop a file now',
     howH2: 'How it works',
     howP: 'Three steps from HTML artifact to shareable URL.',
     s1Title: 'Send HTML',
@@ -143,7 +147,7 @@ const translations: Record<Locale, Strings> = {
     f4Title: '만료는 기본',
     f4Desc: '모든 링크에 TTL이 있어, 공유한 결과물이 영원히 남지 않습니다.',
     dropTitle: '여기에 HTML 파일을 끌어다 놓으세요',
-    dropHint: '또는 클릭해서 선택 — 바로 게시됩니다',
+    dropHint: '또는 클릭해서 선택 · HTML 붙여넣기도 돼요',
     dropBusy: '게시 중…',
     dropDone: '링크가 준비됐어요!',
     dropCopy: '복사',
@@ -151,6 +155,8 @@ const translations: Record<Locale, Strings> = {
     dropOpen: '열기',
     dropAgain: '하나 더 게시',
     dropErr: '문제가 생겼어요. 다시 시도해 주세요.',
+    finaleH2: '바로 게시해 볼까요?',
+    finaleCta: '지금 던져보기',
     howH2: '동작 방식',
     howP: 'HTML 결과물에서 공유 가능한 URL까지 세 단계.',
     s1Title: 'HTML 전송',
@@ -192,7 +198,7 @@ const translations: Record<Locale, Strings> = {
     f4Title: 'デフォルトで期限切れ',
     f4Desc: 'すべてのリンクにTTLがあり、共有した成果物が永遠に残ることはありません。',
     dropTitle: 'ここにHTMLファイルをドロップ',
-    dropHint: 'またはクリックして選択 — すぐに公開されます',
+    dropHint: 'またはクリックで選択 · HTMLの貼り付けもOK',
     dropBusy: '公開中…',
     dropDone: 'リンクができました！',
     dropCopy: 'コピー',
@@ -200,6 +206,8 @@ const translations: Record<Locale, Strings> = {
     dropOpen: '開く',
     dropAgain: 'もう1つ公開',
     dropErr: 'エラーが発生しました。もう一度お試しください。',
+    finaleH2: 'さっそく公開してみませんか？',
+    finaleCta: '今すぐドロップ',
     howH2: '仕組み',
     howP: 'HTML成果物から共有可能なURLまで3ステップ。',
     s1Title: 'HTMLを送る',
@@ -241,7 +249,7 @@ const translations: Record<Locale, Strings> = {
     f4Title: '默认过期',
     f4Desc: '每个链接都有 TTL，分享的内容不会永远存在。',
     dropTitle: '将 HTML 文件拖到这里',
-    dropHint: '或点击选择 — 立即发布',
+    dropHint: '或点击选择 · 也可直接粘贴 HTML',
     dropBusy: '发布中…',
     dropDone: '链接已就绪！',
     dropCopy: '复制',
@@ -249,6 +257,8 @@ const translations: Record<Locale, Strings> = {
     dropOpen: '打开',
     dropAgain: '再发布一个',
     dropErr: '出错了，请重试。',
+    finaleH2: '要不要马上发布一个？',
+    finaleCta: '立即拖放',
     howH2: '工作原理',
     howP: '从 HTML 内容到可分享 URL，只需三步。',
     s1Title: '发送 HTML',
@@ -290,7 +300,7 @@ const translations: Record<Locale, Strings> = {
     f4Title: 'Caduca por defecto',
     f4Desc: 'Cada enlace tiene un TTL: lo compartido no vive para siempre.',
     dropTitle: 'Suelta un archivo HTML aquí',
-    dropHint: 'o haz clic para elegir — se publica al instante',
+    dropHint: 'o haz clic para elegir · pegar HTML también funciona',
     dropBusy: 'Publicando…',
     dropDone: '¡Tu enlace está listo!',
     dropCopy: 'Copiar',
@@ -298,6 +308,8 @@ const translations: Record<Locale, Strings> = {
     dropOpen: 'Abrir',
     dropAgain: 'Publicar otro',
     dropErr: 'Algo salió mal. Inténtalo de nuevo.',
+    finaleH2: '¿Listo para publicar algo?',
+    finaleCta: 'Suelta un archivo',
     howH2: 'Cómo funciona',
     howP: 'Tres pasos del artefacto HTML a una URL para compartir.',
     s1Title: 'Envía HTML',
@@ -339,7 +351,7 @@ const translations: Record<Locale, Strings> = {
     f4Title: 'Expiration par défaut',
     f4Desc: 'Chaque lien a un TTL — rien ne reste en ligne pour toujours.',
     dropTitle: 'Déposez un fichier HTML ici',
-    dropHint: 'ou cliquez pour choisir — publié instantanément',
+    dropHint: 'ou cliquez pour choisir · coller du HTML marche aussi',
     dropBusy: 'Publication…',
     dropDone: 'Votre lien est prêt !',
     dropCopy: 'Copier',
@@ -347,6 +359,8 @@ const translations: Record<Locale, Strings> = {
     dropOpen: 'Ouvrir',
     dropAgain: 'Publier un autre',
     dropErr: 'Une erreur est survenue. Réessayez.',
+    finaleH2: 'Prêt à publier quelque chose ?',
+    finaleCta: 'Déposez un fichier',
     howH2: 'Comment ça marche',
     howP: 'Trois étapes de l’artefact HTML à une URL partageable.',
     s1Title: 'Envoyez du HTML',
@@ -388,7 +402,7 @@ const translations: Record<Locale, Strings> = {
     f4Title: 'Läuft standardmäßig ab',
     f4Desc: 'Jeder Link hat eine TTL — Geteiltes bleibt nicht für immer online.',
     dropTitle: 'HTML-Datei hier ablegen',
-    dropHint: 'oder klicken zum Auswählen — sofort veröffentlicht',
+    dropHint: 'oder klicken zum Auswählen · HTML einfügen geht auch',
     dropBusy: 'Wird veröffentlicht…',
     dropDone: 'Dein Link ist live!',
     dropCopy: 'Kopieren',
@@ -396,6 +410,8 @@ const translations: Record<Locale, Strings> = {
     dropOpen: 'Öffnen',
     dropAgain: 'Noch eins veröffentlichen',
     dropErr: 'Etwas ist schiefgelaufen. Versuch es erneut.',
+    finaleH2: 'Bereit, etwas zu veröffentlichen?',
+    finaleCta: 'Jetzt Datei ablegen',
     howH2: 'So funktioniert es',
     howP: 'Drei Schritte vom HTML-Artefakt zur teilbaren URL.',
     s1Title: 'HTML senden',
@@ -555,12 +571,17 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
   .nav-links a.gh { background: var(--ink); color: #fff; border-color: var(--ink); }
   .nav-links a.gh:hover { transform: translateY(-1px) rotate(-1.5deg); }
 
-  /* Hero */
-  .hero { padding: 3.5rem 0 4.5rem; }
-  .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 3rem; align-items: center; }
-  .hero h1 { font-size: clamp(3.1rem, 6vw, 5rem); line-height: 1.02; margin: 0 0 1.1rem; }
-  .tagline { font-size: 1.15rem; color: var(--muted); max-width: 440px; margin: 0 0 1.9rem; }
-  .hero-actions { display: flex; flex-wrap: wrap; gap: 0.85rem; }
+  /* Hero — single centered column: headline, one tagline, the drop zone
+     as the only call to action, quiet text links below. */
+  .hero { padding: 3.2rem 0 4.5rem; text-align: center; }
+  .hero h1 { font-size: clamp(3rem, 5.5vw, 4.6rem); line-height: 1.05; margin: 0 0 1rem; }
+  .tagline { font-size: 1.12rem; color: var(--muted); max-width: 560px; margin: 0 auto 2.4rem; }
+  .hero-links { display: flex; justify-content: center; gap: 1.75rem; margin-top: 1.7rem; }
+  .hero-links a {
+    color: var(--muted); font-weight: 700; font-size: 0.95rem; text-decoration: none;
+    border-bottom: 2px dotted rgba(33, 29, 24, 0.28); padding-bottom: 1px; transition: color 0.15s ease, border-color 0.15s ease;
+  }
+  .hero-links a:hover { color: var(--ink); border-bottom-color: var(--accent); }
   .btn {
     display: inline-flex; align-items: center; gap: 0.45rem; text-decoration: none; font-weight: 700;
     font-size: 0.98rem; padding: 0.8rem 1.5rem; background: var(--paper); color: var(--ink);
@@ -573,10 +594,9 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
   .btn .arr { transition: transform 0.16s ease; }
   .btn:hover .arr { transform: translateX(3px); }
 
-  .hero-art { position: relative; display: flex; align-items: center; justify-content: center; min-height: 340px; }
-
-  /* Drop zone — the hero illustration is a real, working publish window */
-  .dropzone { width: 100%; max-width: 460px; cursor: pointer; --tilt: 0.6deg; }
+  /* Drop zone — a real, working publish window as the hero centerpiece */
+  .hero-drop { position: relative; max-width: 620px; margin: 0 auto; }
+  .dropzone { width: 100%; cursor: pointer; --tilt: 0.4deg; }
   .dz-head { display: flex; align-items: center; gap: 0.45rem; padding: 0.75rem 1.1rem; border-bottom: 2px solid var(--line); }
   .dz-head .tl { width: 11px; height: 11px; border-radius: 50%; background: rgba(33,29,24,0.16); }
   .dz-head .tl.a { background: var(--accent); opacity: 0.75; }
@@ -584,8 +604,8 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
   .dz-body { padding: 1.1rem; }
   .dz-inner {
     border: 2.5px dashed rgba(33,29,24,0.30); border-radius: 14px;
-    padding: 2.2rem 1.4rem; text-align: center; transition: border-color 0.15s ease, background 0.15s ease;
-    min-height: 230px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 2rem 1.4rem; text-align: center; transition: border-color 0.15s ease, background 0.15s ease;
+    min-height: 210px; display: flex; flex-direction: column; align-items: center; justify-content: center;
   }
   .dropzone.drag .dz-inner { border-color: var(--accent); background: var(--accent-soft); }
   .dropzone.drag { transform: rotate(0deg) scale(1.02); }
@@ -617,18 +637,26 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
   .dz-again { margin-top: 0.9rem; background: none; border: none; color: var(--muted); font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; text-decoration: underline dotted; }
   .dz-again:hover { color: var(--ink); }
   .dz-err-msg { color: var(--accent); font-weight: 700; margin: 0.6rem 0 0; }
-  .doodle-star { position: absolute; }
-  .doodle-star.top { top: -3%; right: -4%; width: 36px; height: 36px; animation: spin-slow 14s linear infinite; }
-  .doodle-star.bottom { bottom: 16%; left: 2%; width: 28px; height: 28px; animation: twinkle 3s ease-in-out infinite; }
+  .doodle-star { position: absolute; top: -16px; right: -15px; width: 34px; height: 34px; animation: spin-slow 16s linear infinite; }
   @keyframes spin-slow { to { transform: rotate(360deg); } }
-  @keyframes twinkle { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.82); opacity: 0.6; } }
-  .doodle-arrow { position: absolute; width: 62px; bottom: 0%; right: 3%; transform: rotate(-8deg); }
 
   /* Sections */
   section { padding: 4rem 0; }
   .section-header { max-width: 580px; margin-bottom: 2.25rem; }
   .section-header h2 { font-size: clamp(2rem, 4vw, 2.9rem); margin: 0 0 0.4rem; line-height: 1.08; }
   .section-header p { color: var(--muted); margin: 0; font-size: 1.06rem; }
+
+  /* Dark beat — the API/MCP block goes full-bleed ink to give the page
+     a real value change instead of four same-weight cream sections. */
+  .dark { background: var(--ink); padding: 4.5rem 0 4rem; }
+  .dark .section-header h2 { color: #f4efe6; }
+  .dark .section-header p { color: rgba(244, 239, 230, 0.60); }
+  .dark .endpoint-row code {
+    background: transparent; color: #f4efe6; border-color: rgba(244, 239, 230, 0.35);
+    box-shadow: none;
+  }
+  .dark .endpoint-row code b { color: #ff8570; }
+  .dark .code-card { border-color: rgba(244, 239, 230, 0.22); box-shadow: 6px 7px 0 rgba(0, 0, 0, 0.35); }
 
   /* API section */
   .endpoint-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.75rem; }
@@ -657,15 +685,20 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
   .code-body .cmd { color: #ffb4a8; } .code-body .flag { color: rgba(244, 239, 230, 0.6); } .code-body .str { color: #e8c789; }
   .code-body .out { color: rgba(244, 239, 230, 0.45); }
 
-  /* MCP banner */
-  .mcp-banner {
-    background: linear-gradient(135deg, var(--accent-soft) 0%, var(--paper) 65%);
-    padding: 2rem 2.25rem; display: flex; flex-wrap: wrap;
-    align-items: center; justify-content: space-between; gap: 1.5rem;
+  /* MCP row — lives at the bottom of the dark section */
+  .mcp-row {
+    margin-top: 2.75rem; padding-top: 2.25rem; border-top: 2px dashed rgba(244, 239, 230, 0.22);
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem;
   }
-  .mcp-banner h3 { margin: 0; font-size: 1.85rem; display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap; }
-  .mcp-banner p { margin: 0.35rem 0 0; color: var(--muted); max-width: 46ch; }
-  .mcp-banner .endpoint { font-family: var(--mono); font-size: 0.9rem; color: #fff; background: var(--ink); padding: 0.15rem 0.55rem; border-radius: 7px; font-weight: 700; }
+  .mcp-row h3 { margin: 0; font-size: 1.7rem; color: #f4efe6; display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap; }
+  .mcp-row p { margin: 0.35rem 0 0; color: rgba(244, 239, 230, 0.60); max-width: 52ch; }
+  .mcp-row .endpoint { font-family: var(--mono); font-size: 0.9rem; color: #fff; background: var(--accent); padding: 0.15rem 0.55rem; border-radius: 7px; font-weight: 700; }
+  .dark .btn { box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.35); }
+
+  /* Finale — the closing beat before the footer */
+  .finale { padding: 5.5rem 0 5rem; text-align: center; }
+  .finale h2 { font-size: clamp(2.4rem, 5vw, 3.4rem); margin: 0 0 1.7rem; line-height: 1.1; }
+  .btn.lg { padding: 1rem 2.1rem; font-size: 1.05rem; }
 
   /* Features */
   .features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
@@ -700,15 +733,15 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
   .step h4 { margin: 0 0 0.35rem; font-size: 1.5rem; }
   .step p { margin: 0; color: var(--muted); font-size: 0.95rem; }
 
+  .features-section { padding-top: 5rem; }
+
   /* Footer */
-  footer { padding: 3rem 0 3.5rem; text-align: center; color: var(--muted); font-size: 1.05rem; font-family: 'Gaegu', system-ui, cursive; }
+  footer { padding: 1.5rem 0 2.75rem; text-align: center; color: var(--muted); font-size: 1.05rem; font-family: 'Gaegu', system-ui, cursive; }
   footer a { color: var(--ink); text-decoration: none; border-bottom: 2px solid var(--accent-soft); }
   footer a:hover { border-bottom-color: var(--accent); }
 
   @media (max-width: 900px) {
-    .hero-grid { grid-template-columns: 1fr; gap: 2rem; }
     .hero { padding: 2.5rem 0 3.5rem; }
-    .hero-art { order: -1; min-height: 260px; }
     .steps { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 560px) {
@@ -738,16 +771,9 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
 
 <div class="container">
   <header class="hero">
-    <div class="hero-grid">
-      <div>
-        <h1 class="reveal d1">${t.heroLine1}<br><span class="scribble-underline">${t.heroAccent}<svg viewBox="0 0 180 12" preserveAspectRatio="none"><path d="M2 7 C 40 2, 70 10, 110 6 S 170 4, 178 9"/></svg></span>.</h1>
-        <p class="tagline reveal d2">${t.tagline}</p>
-        <div class="hero-actions reveal d3">
-          <a class="btn primary" href="#api">${t.ctaTryApi} <span class="arr">→</span></a>
-          <a class="btn" href="/agents.md">${t.ctaReadAgents}</a>
-        </div>
-      </div>
-      <div class="hero-art reveal d2">
+    <h1 class="reveal d1">${t.heroLine1} <span class="scribble-underline">${t.heroAccent}<svg viewBox="0 0 180 12" preserveAspectRatio="none"><path d="M2 7 C 40 2, 70 10, 110 6 S 170 4, 178 9"/></svg></span>.</h1>
+    <p class="tagline reveal d2">${t.tagline}</p>
+    <div class="hero-drop reveal d3">
         <div class="dropzone doodle-border" id="dropzone" data-state="idle">
           <div class="dz-head">
             <span class="tl"></span><span class="tl"></span><span class="tl a"></span>
@@ -782,15 +808,16 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
           </div>
         </div>
         <input type="file" id="dzFile" accept=".html,.htm,text/html" hidden>
-        <svg class="doodle-star top" viewBox="0 0 44 44" aria-hidden="true"><path d="M22 4 L26 16 L40 16 L29 24 L34 38 L22 29 L10 38 L15 24 L4 16 L18 16 Z" fill="#fff" stroke="#211d18" stroke-width="2" stroke-linejoin="round"/></svg>
-        <svg class="doodle-star bottom" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3 L18 12 L28 12 L20 18 L23 28 L16 22 L9 28 L12 18 L4 12 L14 12 Z" fill="#e8503a" stroke="#211d18" stroke-width="2" stroke-linejoin="round"/></svg>
-        <svg class="doodle-arrow" viewBox="0 0 60 40" aria-hidden="true"><path d="M4 20 Q 20 5, 38 18 T 56 14" fill="none" stroke="#211d18" stroke-width="2.5" stroke-linecap="round" opacity="0.45"/><path d="M48 8 L56 14 L50 22" fill="none" stroke="#211d18" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.45"/></svg>
-      </div>
+        <svg class="doodle-star" viewBox="0 0 44 44" aria-hidden="true"><path d="M22 4 L26 16 L40 16 L29 24 L34 38 L22 29 L10 38 L15 24 L4 16 L18 16 Z" fill="#fff" stroke="#211d18" stroke-width="2" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="hero-links reveal d4">
+      <a href="#api">${t.ctaTryApi} →</a>
+      <a href="/agents.md">${t.ctaReadAgents}</a>
     </div>
   </header>
 </div>
 
-<section id="api">
+<section id="api" class="dark">
   <div class="container">
     <div class="section-header">
       <h2>${t.apiH2}</h2>
@@ -812,14 +839,9 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
 
 <span class="out">${t.apiReturns}</span></pre>
     </div>
-  </div>
-</section>
-
-<section id="mcp" style="background: rgba(33,29,24,0.02);">
-  <div class="container">
-    <div class="mcp-banner doodle-border">
+    <div class="mcp-row" id="mcp">
       <div>
-        <h3><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#211d18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M7 10 L12 13 L17 10" stroke="#e8503a" stroke-width="2.5"/></svg> ${t.mcpH3} <span class="endpoint">/mcp</span></h3>
+        <h3><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#f4efe6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M7 10 L12 13 L17 10" stroke="#e8503a" stroke-width="2.5"/></svg> ${t.mcpH3} <span class="endpoint">/mcp</span></h3>
         <p>${t.mcpP}</p>
       </div>
       <a class="btn primary" href="/agents.md">${t.mcpCta} <span class="arr">→</span></a>
@@ -827,7 +849,7 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
   </div>
 </section>
 
-<section>
+<section class="features-section">
   <div class="container">
     <div class="section-header">
       <h2>${t.featuresH2}</h2>
@@ -881,6 +903,13 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
         <p>${t.s3Desc}</p>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="finale">
+  <div class="container">
+    <h2>${t.finaleH2}</h2>
+    <a class="btn primary lg" href="#dropzone">${t.finaleCta} <span class="arr">→</span></a>
   </div>
 </section>
 
