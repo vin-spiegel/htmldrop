@@ -727,6 +727,11 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
   const t = translations[locale] ?? translations[DEFAULT_LOCALE];
   const baseDomain = process.env.BASE_DOMAIN || 'htmldrop.link';
   const origin = `https://${baseDomain}`;
+  // Site-ownership verification tags (Naver Search Advisor, etc.) — set the
+  // env var to the `content` value from the verification snippet.
+  const naverVerification = process.env.NAVER_SITE_VERIFICATION
+    ? `\n<meta name="naver-site-verification" content="${escapeAttr(process.env.NAVER_SITE_VERIFICATION)}">`
+    : '';
   const canonical = `${origin}${localePath(locale)}`;
   const ogImage = `${origin}/og.png`;
 
@@ -784,7 +789,7 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>${t.metaTitle}</title>
-<meta name="description" content="${escapeAttr(t.metaDesc)}">
+<meta name="description" content="${escapeAttr(t.metaDesc)}">${naverVerification}
 <link rel="canonical" href="${canonical}">
 ${hreflangLinks}
 <link rel="alternate" hreflang="x-default" href="${origin}/">
