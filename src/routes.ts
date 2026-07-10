@@ -2,10 +2,10 @@ import express, { Router, Request, Response, NextFunction } from 'express';
 import rateLimit from 'express-rate-limit';
 import fs from 'fs';
 import path from 'path';
-import { Storage } from './types';
+import { ArtifactMeta, Storage } from './types';
 import { config } from './config';
 import { publishArtifact } from './publish';
-import { markdownToHtml } from './markdown';
+import { markdownToHtml, textToHtml } from './markdown';
 import { generatePngOgImage, generateSvgOgImage } from './og-image';
 
 /**
@@ -54,12 +54,27 @@ function passwordPageHtml(subdomain: string, action: string, wrong = false): str
 </body></html>`;
 }
 
+/** Send an artifact with its stored content type; binary payloads verbatim. */
+function sendArtifact(res: Response, meta: ArtifactMeta): void {
+  if (meta.contentBase64) {
+    res.set('Content-Type', meta.contentType || 'application/octet-stream');
+    res.status(200).send(Buffer.from(meta.contentBase64, 'base64'));
+    return;
+  }
+  res.status(200).send(meta.html);
+}
+
 export function createRouter(storage: Storage): Router {
   const router = express.Router();
 
   router.use(express.json({ limit: '30mb' }));
   router.use(express.urlencoded({ extended: true, limit: '30mb' }));
-  router.use(express.raw({ type: ['text/html', 'text/markdown'], limit: '30mb' }));
+  router.use(
+    express.raw({
+      type: ['text/html', 'text/markdown', 'text/plain', 'text/csv', 'application/pdf', 'image/*'],
+      limit: '30mb',
+    })
+  );
 
   // Owner key header: `x-htmldrop-key` is canonical; `x-pin-key` is accepted
   // for backwards compatibility with early clients.
@@ -128,19 +143,45 @@ export function createRouter(storage: Storage): Router {
     }
   });
 
-  // Publish raw HTML or markdown (Content-Type: text/html | text/markdown)
+  // Publish raw content. Supported Content-Types:
+  //   text/html        — published as-is
+  //   text/markdown    — rendered to the reader page
+  //   text/plain, text/csv, application/json — shown as <pre> in the reader page
+  //   application/pdf, image/* — stored and served verbatim
   router.post('/publish/raw', rateLimiter, async (req, res) => {
     try {
-      if (!Buffer.isBuffer(req.body) || req.body.length === 0) {
-        return res.status(400).json({ error: 'send text/html or text/markdown body' });
-      }
       const ownerKey = ownerKeyOf(req);
       let title =
         (req.headers['x-htmldrop-title'] ?? req.headers['x-pin-title'])?.toString() ||
         req.query.title?.toString();
+
+      // application/json is consumed by the JSON body parser upstream.
+      if (req.is('application/json')) {
+        const rendered = textToHtml(JSON.stringify(req.body, null, 2), title, 'json');
+        const result = await publishArtifact({ html: rendered.html, title: rendered.title, ownerKey }, storage);
+        return res.status(201).json(result);
+      }
+
+      if (!Buffer.isBuffer(req.body) || req.body.length === 0) {
+        return res.status(400).json({ error: 'send html, markdown, text, csv, pdf, or image body' });
+      }
+
+      if (req.is('application/pdf') || req.is('image/*')) {
+        const contentType = (req.headers['content-type'] || 'application/octet-stream').split(';')[0];
+        const result = await publishArtifact(
+          { html: '', binary: { data: req.body, contentType }, title, ownerKey },
+          storage
+        );
+        return res.status(201).json(result);
+      }
+
       let html = req.body.toString('utf-8');
       if (req.is('text/markdown')) {
         const rendered = markdownToHtml(html, title);
+        html = rendered.html;
+        title = rendered.title;
+      } else if (req.is('text/plain') || req.is('text/csv')) {
+        const rendered = textToHtml(html, title, req.is('text/csv') ? 'csv' : 'text');
         html = rendered.html;
         title = rendered.title;
       }
@@ -166,18 +207,24 @@ export function createRouter(storage: Storage): Router {
       if (!response.ok) {
         return res.status(400).json({ error: `fetch failed: ${response.status}` });
       }
-      const html = await response.text();
-      const result = await publishArtifact(
-        {
-          html,
-          title,
-          ttlDays: ttl_days ? Number(ttl_days) : undefined,
-          password,
-          ownerKey,
-          sourceUrl: url,
-        },
-        storage
-      );
+      const fetchedType = (response.headers.get('content-type') || '').split(';')[0].trim();
+      const common = {
+        title,
+        ttlDays: ttl_days ? Number(ttl_days) : undefined,
+        password,
+        ownerKey,
+        sourceUrl: url,
+      };
+      let result;
+      if (fetchedType === 'application/pdf' || fetchedType.startsWith('image/')) {
+        const data = Buffer.from(await response.arrayBuffer());
+        result = await publishArtifact({ html: '', binary: { data, contentType: fetchedType }, ...common }, storage);
+      } else if (fetchedType === 'text/markdown') {
+        const rendered = markdownToHtml(await response.text(), title);
+        result = await publishArtifact({ ...common, html: rendered.html, title: rendered.title }, storage);
+      } else {
+        result = await publishArtifact({ ...common, html: await response.text() }, storage);
+      }
       res.status(201).json(result);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'publish from url failed';
@@ -209,7 +256,7 @@ export function createRouter(storage: Storage): Router {
 
       res.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
       res.set('Cache-Control', 'public, max-age=60');
-      res.status(200).send(meta.html);
+      sendArtifact(res, meta);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'unknown error';
       res.status(500).send(`<h1>Error</h1><p>${message}</p>`);
@@ -228,7 +275,7 @@ export function createRouter(storage: Storage): Router {
       }
       // Password arrived via POST body — don't cache the unlocked view.
       res.set('Cache-Control', 'no-store');
-      res.status(200).send(meta.html);
+      sendArtifact(res, meta);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'unknown error';
       res.status(500).send(`<h1>Error</h1><p>${message}</p>`);
@@ -301,7 +348,7 @@ export function createRouter(storage: Storage): Router {
 
       res.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
       res.set('Cache-Control', 'public, max-age=60');
-      res.status(200).send(meta.html);
+      sendArtifact(res, meta);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'unknown error';
       res.status(500).send(`<h1>Error</h1><p>${message}</p>`);
@@ -325,7 +372,7 @@ export function createRouter(storage: Storage): Router {
       }
       // Password arrived via POST body — don't cache the unlocked view.
       res.set('Cache-Control', 'no-store');
-      res.status(200).send(meta.html);
+      sendArtifact(res, meta);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'unknown error';
       res.status(500).send(`<h1>Error</h1><p>${message}</p>`);

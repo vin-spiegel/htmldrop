@@ -127,8 +127,8 @@ const translations: Record<Locale, Strings> = {
     f3Desc: 'Lock artifacts behind a password. The link stays easy to share.',
     f4Title: 'Expires by default',
     f4Desc: 'Every link has a TTL, so shared artifacts don’t live forever.',
-    dropTitle: 'Drop an HTML or Markdown file here',
-    dropHint: 'or click to choose · pasting works too',
+    dropTitle: 'Drop a file here',
+    dropHint: 'HTML · MD · PDF · images · or click / paste',
     dropBusy: 'Publishing…',
     dropDone: 'Your link is live!',
     dropCopy: 'Copy',
@@ -211,8 +211,8 @@ const translations: Record<Locale, Strings> = {
     f3Desc: '결과물을 비밀번호로 잠그세요. 링크는 그대로 공유하기 쉽습니다.',
     f4Title: '만료는 기본',
     f4Desc: '모든 링크에 TTL이 있어, 공유한 결과물이 영원히 남지 않습니다.',
-    dropTitle: '여기에 HTML·Markdown 파일을 끌어다 놓으세요',
-    dropHint: '또는 클릭해서 선택 · 붙여넣기도 돼요',
+    dropTitle: '여기에 파일을 끌어다 놓으세요',
+    dropHint: 'HTML · MD · PDF · 이미지 · 클릭/붙여넣기도 돼요',
     dropBusy: '게시 중…',
     dropDone: '링크가 준비됐어요!',
     dropCopy: '복사',
@@ -295,8 +295,8 @@ const translations: Record<Locale, Strings> = {
     f3Desc: '成果物をパスワードで保護。リンクは共有しやすいままです。',
     f4Title: 'デフォルトで期限切れ',
     f4Desc: 'すべてのリンクにTTLがあり、共有した成果物が永遠に残ることはありません。',
-    dropTitle: 'ここにHTML・Markdownファイルをドロップ',
-    dropHint: 'またはクリックで選択 · 貼り付けもOK',
+    dropTitle: 'ここにファイルをドロップ',
+    dropHint: 'HTML · MD · PDF · 画像 · クリック/貼り付けもOK',
     dropBusy: '公開中…',
     dropDone: 'リンクができました！',
     dropCopy: 'コピー',
@@ -379,8 +379,8 @@ const translations: Record<Locale, Strings> = {
     f3Desc: '用密码锁定内容，链接依然便于分享。',
     f4Title: '默认过期',
     f4Desc: '每个链接都有 TTL，分享的内容不会永远存在。',
-    dropTitle: '将 HTML 或 Markdown 文件拖到这里',
-    dropHint: '或点击选择 · 也可直接粘贴',
+    dropTitle: '将文件拖到这里',
+    dropHint: 'HTML · MD · PDF · 图片 · 也可点击/粘贴',
     dropBusy: '发布中…',
     dropDone: '链接已就绪！',
     dropCopy: '复制',
@@ -463,8 +463,8 @@ const translations: Record<Locale, Strings> = {
     f3Desc: 'Protege los artefactos con contraseña. El enlace sigue siendo fácil de compartir.',
     f4Title: 'Caduca por defecto',
     f4Desc: 'Cada enlace tiene un TTL: lo compartido no vive para siempre.',
-    dropTitle: 'Suelta un archivo HTML o Markdown aquí',
-    dropHint: 'o haz clic para elegir · pegar también funciona',
+    dropTitle: 'Suelta un archivo aquí',
+    dropHint: 'HTML · MD · PDF · imágenes · clic o pegar también',
     dropBusy: 'Publicando…',
     dropDone: '¡Tu enlace está listo!',
     dropCopy: 'Copiar',
@@ -547,8 +547,8 @@ const translations: Record<Locale, Strings> = {
     f3Desc: 'Verrouillez les artefacts par mot de passe. Le lien reste facile à partager.',
     f4Title: 'Expiration par défaut',
     f4Desc: 'Chaque lien a un TTL — rien ne reste en ligne pour toujours.',
-    dropTitle: 'Déposez un fichier HTML ou Markdown ici',
-    dropHint: 'ou cliquez pour choisir · coller marche aussi',
+    dropTitle: 'Déposez un fichier ici',
+    dropHint: 'HTML · MD · PDF · images · clic ou collage aussi',
     dropBusy: 'Publication…',
     dropDone: 'Votre lien est prêt !',
     dropCopy: 'Copier',
@@ -631,8 +631,8 @@ const translations: Record<Locale, Strings> = {
     f3Desc: 'Sperre Artefakte hinter einem Passwort. Der Link bleibt leicht teilbar.',
     f4Title: 'Läuft standardmäßig ab',
     f4Desc: 'Jeder Link hat eine TTL — Geteiltes bleibt nicht für immer online.',
-    dropTitle: 'HTML- oder Markdown-Datei hier ablegen',
-    dropHint: 'oder klicken zum Auswählen · Einfügen geht auch',
+    dropTitle: 'Datei hier ablegen',
+    dropHint: 'HTML · MD · PDF · Bilder · Klicken/Einfügen geht auch',
     dropBusy: 'Wird veröffentlicht…',
     dropDone: 'Dein Link ist live!',
     dropCopy: 'Kopieren',
@@ -1178,7 +1178,7 @@ ${ogLocaleAlternates}
             </div>
           </div>
         </div>
-        <input type="file" id="dzFile" accept=".html,.htm,.md,.markdown,text/html,text/markdown" hidden>
+        <input type="file" id="dzFile" accept=".html,.htm,.md,.markdown,.txt,.json,.csv,.pdf,.png,.jpg,.jpeg,.gif,.webp,.svg" hidden>
         <svg class="doodle-star" viewBox="0 0 44 44" aria-hidden="true"><path d="M22 4 L26 16 L40 16 L29 24 L34 38 L22 29 L10 38 L15 24 L4 16 L18 16 Z" fill="#fff" stroke="#211d18" stroke-width="2" stroke-linejoin="round"/></svg>
     </div>
     <div class="hero-links reveal d4">
@@ -1329,23 +1329,24 @@ ${faqItems}
     function setState(s) { dz.setAttribute('data-state', s); }
     function state() { return dz.getAttribute('data-state'); }
 
-    function fileKind(file) {
-      if (/\\.html?$/i.test(file.name) || file.type === 'text/html') return 'html';
-      if (/\\.(md|markdown)$/i.test(file.name) || file.type === 'text/markdown') return 'markdown';
-      return null;
+    function fileMime(file) {
+      var byExt = {
+        html: 'text/html', htm: 'text/html',
+        md: 'text/markdown', markdown: 'text/markdown',
+        txt: 'text/plain', json: 'application/json', csv: 'text/csv',
+        pdf: 'application/pdf',
+        png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg',
+        gif: 'image/gif', webp: 'image/webp', svg: 'image/svg+xml',
+      };
+      var m = file.name.match(/\\.([a-z0-9]+)$/i);
+      return (m && byExt[m[1].toLowerCase()]) || null;
     }
 
-    function publish(body) {
-      setState('busy');
-      fetch('/publish', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+    function handleResponse(p) {
+      p.then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
       })
-        .then(function (res) {
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          return res.json();
-        })
         .then(function (data) {
           publishedUrl = data.url;
           urlEl.textContent = data.url.replace(/^https?:\\/\\//, '');
@@ -1356,18 +1357,25 @@ ${faqItems}
         .catch(function () { setState('error'); });
     }
 
+    function publish(body) {
+      setState('busy');
+      handleResponse(fetch('/publish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      }));
+    }
+
     function handleFile(file) {
-      var kind = file && fileKind(file);
-      if (!kind || file.size > MAX_BYTES) { setState('error'); return; }
-      var reader = new FileReader();
-      reader.onload = function () {
-        var title = file.name.replace(/\\.(html?|md|markdown)$/i, '');
-        var body = { title: title };
-        body[kind] = String(reader.result);
-        publish(body);
-      };
-      reader.onerror = function () { setState('error'); };
-      reader.readAsText(file);
+      var mime = file && fileMime(file);
+      if (!mime || file.size > MAX_BYTES) { setState('error'); return; }
+      setState('busy');
+      var title = file.name.replace(/\\.[a-z0-9]+$/i, '');
+      handleResponse(fetch('/publish/raw?title=' + encodeURIComponent(title), {
+        method: 'POST',
+        headers: { 'Content-Type': mime },
+        body: file,
+      }));
     }
 
     dz.addEventListener('click', function (e) {

@@ -52,6 +52,67 @@ describe('Pin API', () => {
     expect(res.text).toContain('Published with htmldrop');
   });
 
+  it('POST /publish/raw accepts application/pdf and serves it back verbatim', async () => {
+    const pdfBytes = Buffer.from('%PDF-1.4\n1 0 obj\n<<>>\nendobj\ntrailer\n<<>>\n%%EOF');
+    const published = await request(app)
+      .post('/publish/raw?title=my-doc')
+      .set('Content-Type', 'application/pdf')
+      .send(pdfBytes)
+      .expect(201);
+
+    const res = await request(app)
+      .get(`/view/${published.body.subdomain}`)
+      .expect(200)
+      .expect('Content-Type', /application\/pdf/);
+    expect(Buffer.compare(res.body, pdfBytes)).toBe(0);
+  });
+
+  it('POST /publish/raw accepts images', async () => {
+    // 1x1 transparent png
+    const png = Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+      'base64'
+    );
+    const published = await request(app)
+      .post('/publish/raw')
+      .set('Content-Type', 'image/png')
+      .send(png)
+      .expect(201);
+
+    const res = await request(app)
+      .get(`/view/${published.body.subdomain}`)
+      .expect(200)
+      .expect('Content-Type', /image\/png/);
+    expect(Buffer.compare(res.body, png)).toBe(0);
+  });
+
+  it('POST /publish/raw renders json as a pretty-printed reader page', async () => {
+    const published = await request(app)
+      .post('/publish/raw?title=data')
+      .set('Content-Type', 'application/json')
+      .send('{"a":1,"b":[2,3]}')
+      .expect(201);
+
+    const res = await request(app)
+      .get(`/view/${published.body.subdomain}`)
+      .expect(200);
+    expect(res.text).toContain('&quot;a&quot;: 1');
+    expect(res.text).toContain('<pre>');
+  });
+
+  it('POST /publish/raw renders plain text in the reader page', async () => {
+    const published = await request(app)
+      .post('/publish/raw')
+      .set('Content-Type', 'text/plain')
+      .send('hello\nworld <tag>')
+      .expect(201);
+
+    const res = await request(app)
+      .get(`/view/${published.body.subdomain}`)
+      .expect(200);
+    expect(res.text).toContain('hello\nworld &lt;tag&gt;');
+  });
+
   it('POST /publish/raw accepts text/markdown', async () => {
     const published = await request(app)
       .post('/publish/raw')

@@ -3,6 +3,10 @@ export interface ArtifactMeta {
   subdomain: string;
   title?: string;
   html: string;
+  /** MIME type the artifact is served with. Defaults to text/html. */
+  contentType?: string;
+  /** Base64 payload for binary artifacts (pdf, images). `html` is '' then. */
+  contentBase64?: string;
   createdAt: string;
   expiresAt: string;
   ownerKey?: string;
@@ -14,6 +18,8 @@ export interface ArtifactMeta {
 
 export interface PublishOptions {
   html: string;
+  /** Binary payload alternative to `html` (pdf, images). */
+  binary?: { data: Buffer; contentType: string };
   title?: string;
   ttlDays?: number;
   password?: string;

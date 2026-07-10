@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.726.0",
+    "@fontsource/gaegu": "^5.2.8",
     "@fontsource/inter": "^5.2.8",
     "@modelcontextprotocol/sdk": "1.7.0",
     "@napi-rs/canvas": "^1.0.1",

@@ -15,9 +15,10 @@
 
 ---
 
-htmldrop turns any HTML or Markdown artifact into a shareable link in seconds.
-Reports, dashboards, charts, demos — anything an agent (or a human) creates.
-Markdown is rendered into a clean reader page. No git, no build, no dashboard.
+htmldrop turns any HTML, Markdown, PDF, or image artifact into a shareable
+link in seconds. Reports, dashboards, charts, demos — anything an agent (or a
+human) creates. Markdown/text/JSON render into a clean reader page; PDFs and
+images are served as-is. No git, no build, no dashboard.
 
 **Try it now: [htmldrop.link](https://htmldrop.link)** — drag & drop an HTML
 file, paste HTML source, or POST to the API.
@@ -136,7 +137,7 @@ Full agent-facing docs live in [AGENTS.md](AGENTS.md), also served at
 | Endpoint | Body | Notes |
 |----------|------|-------|
 | `POST /publish` | JSON `{ html \| markdown, title, ttl_days, password, url }` | Primary endpoint |
-| `POST /publish/raw` | raw `text/html` or `text/markdown` body | Title via `x-htmldrop-title` header or `?title=` |
+| `POST /publish/raw` | raw body: `text/html`, `text/markdown`, `text/plain`, `application/json`, `text/csv`, `application/pdf`, `image/*` | Title via `x-htmldrop-title` header or `?title=` |
 | `POST /publish/from-url` | JSON `{ url, title, ttl_days, password }` | Fetches and republishes a page |
 
 Pass an owner key in the `x-htmldrop-key` header for higher rate limits and a

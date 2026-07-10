@@ -98,6 +98,14 @@ clean reader page server-side.
 
 The response text is a JSON string. Parse it once to access `url`, `id`, and `expires_at`.
 
+### Other formats (REST)
+
+`POST /publish/raw` accepts raw bodies of `text/html`, `text/markdown`,
+`text/plain`, `application/json`, `text/csv`, `application/pdf`, and
+`image/*` (png, jpeg, gif, webp, svg). Text formats render into a reader
+page; PDF and images are stored and served verbatim. Pass a title via the
+`x-htmldrop-title` header or `?title=` query parameter.
+
 ## REST fallback
 
 If you cannot use MCP, make a regular HTTP request:

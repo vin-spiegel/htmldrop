@@ -63,7 +63,11 @@ export async function publishArtifact(
   opts: PublishOptions,
   storage: { save: (m: ArtifactMeta) => Promise<void>; loadBySubdomain: (s: string) => Promise<ArtifactMeta | null> }
 ): Promise<PublishResult> {
-  if (!opts.html || Buffer.byteLength(opts.html, 'utf-8') > config.maxHtmlSizeBytes) {
+  if (opts.binary) {
+    if (opts.binary.data.length === 0 || opts.binary.data.length > config.maxHtmlSizeBytes) {
+      throw new Error('content too large or empty');
+    }
+  } else if (!opts.html || Buffer.byteLength(opts.html, 'utf-8') > config.maxHtmlSizeBytes) {
     throw new Error('HTML too large or empty');
   }
 
@@ -77,13 +81,12 @@ export async function publishArtifact(
 
   const id = generateId();
   const expiresAt = computeExpiration(opts.ttlDays, opts.ownerKey);
-  let finalHtml = wrapHtml(opts.html, { title: opts.title });
 
   const meta: ArtifactMeta = {
     id,
     subdomain,
     title: opts.title,
-    html: finalHtml,
+    html: '',
     createdAt: new Date().toISOString(),
     expiresAt: expiresAt.toISOString(),
     ownerKey: opts.ownerKey,
@@ -92,12 +95,19 @@ export async function publishArtifact(
     ogTitle: opts.title || 'htmldrop artifact',
   };
 
-  // OG image: prefer first image in HTML, else generate SVG card
-  let ogImageUrl = extractFirstImage(opts.html);
-  if (!ogImageUrl) {
-    ogImageUrl = `https://${config.baseDomain}/og/${subdomain}.png`;
+  if (opts.binary) {
+    // PDFs, images, … are stored and served verbatim — no shell, no badge.
+    meta.contentType = opts.binary.contentType;
+    meta.contentBase64 = opts.binary.data.toString('base64');
+  } else {
+    const finalHtml = wrapHtml(opts.html, { title: opts.title });
+    // OG image: prefer first image in HTML, else generate SVG card
+    let ogImageUrl = extractFirstImage(opts.html);
+    if (!ogImageUrl) {
+      ogImageUrl = `https://${config.baseDomain}/og/${subdomain}.png`;
+    }
+    meta.html = insertOgImage(finalHtml, ogImageUrl, opts.title || 'htmldrop artifact');
   }
-  meta.html = insertOgImage(finalHtml, ogImageUrl, opts.title || 'htmldrop artifact');
 
   await storage.save(meta);
 

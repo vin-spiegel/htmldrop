@@ -11,6 +11,9 @@ importers:
       '@aws-sdk/client-s3':
         specifier: ^3.726.0
         version: 3.1075.0
+      '@fontsource/gaegu':
+        specifier: ^5.2.8
+        version: 5.2.8
       '@fontsource/inter':
         specifier: ^5.2.8
         version: 5.2.8
@@ -453,6 +456,9 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
+
+  '@fontsource/gaegu@5.2.8':
+    resolution: {integrity: sha512-3rjyZGlUOQJo5zx0/1YFiFYKv4SZtaPiORncSXX4guo2P/sTMbxUIJRJWe14IS+CbkSrDppu24Y/KpXyQSFyhA==}
 
   '@fontsource/inter@5.2.8':
     resolution: {integrity: sha512-P6r5WnJoKiNVV+zvW2xM13gNdFhAEpQ9dQJHt3naLvfg+LkF2ldgSLiF4T41lf1SQCM9QmkqPTn4TH568IRagg==}
@@ -1803,6 +1809,8 @@ snapshots:
 
   '@esbuild/win32-x64@0.28.1':
     optional: true
+
+  '@fontsource/gaegu@5.2.8': {}
 
   '@fontsource/inter@5.2.8': {}
 

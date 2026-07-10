@@ -9,7 +9,29 @@ import { marked } from 'marked';
 export function markdownToHtml(markdown: string, title?: string): { html: string; title: string } {
   const body = marked.parse(markdown, { async: false }) as string;
   const resolvedTitle = title || extractTitle(markdown) || 'htmldrop artifact';
-  const html = `<!DOCTYPE html>
+  return { html: readerShell(body, resolvedTitle), title: resolvedTitle };
+}
+
+/**
+ * Plain-text-ish content (txt, json, csv) rendered as a <pre> inside the same
+ * reader shell. JSON is pretty-printed when it parses.
+ */
+export function textToHtml(text: string, title?: string, kind?: 'json' | 'csv' | 'text'): { html: string; title: string } {
+  let display = text;
+  if (kind === 'json') {
+    try {
+      display = JSON.stringify(JSON.parse(text), null, 2);
+    } catch {
+      /* keep as-is */
+    }
+  }
+  const resolvedTitle = title || 'htmldrop artifact';
+  const body = `<pre>${escapeHtml(display)}</pre>`;
+  return { html: readerShell(body, resolvedTitle), title: resolvedTitle };
+}
+
+function readerShell(body: string, resolvedTitle: string): string {
+  return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -62,7 +84,6 @@ ${body}
 </main>
 </body>
 </html>`;
-  return { html, title: resolvedTitle };
 }
 
 /** First `# heading` in the markdown, used as the title when none is given. */
