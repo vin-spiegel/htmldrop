@@ -3,12 +3,27 @@ import { wrapHtml, computeExpiration, buildUrl } from '../src/publish';
 import { generateSubdomain } from '../src/subdomain';
 
 describe('publish helpers', () => {
-  it('wrapHtml inserts noindex and title', () => {
+  it('wrapHtml shells a bare fragment with noindex, title, and badge', () => {
     const out = wrapHtml('<p>hi</p>', { title: 'My Report' });
     expect(out).toContain('<p>hi</p>');
     expect(out).toContain('noindex');
     expect(out).toContain('My Report');
-    expect(out).toContain('Published with Pin');
+    expect(out).toContain('Published with htmldrop');
+  });
+
+  it('wrapHtml leaves a complete document untouched except the badge', () => {
+    const doc =
+      '<!DOCTYPE html><html><head><title>x</title></head><body style="background:red"><h1>hi</h1></body></html>';
+    const out = wrapHtml(doc);
+    expect(out).toContain('style="background:red"'); // original body kept
+    expect(out).not.toContain('max-width:960px'); // no forced shell
+    expect(out).toMatch(/Published with htmldrop[\s\S]*<\/body>/); // badge before </body>
+    expect(out.match(/<html/gi)).toHaveLength(1); // no nested document
+  });
+
+  it('wrapHtml omits the badge when watermark is disabled', () => {
+    const out = wrapHtml('<html><body><h1>hi</h1></body></html>', { watermark: false });
+    expect(out).not.toContain('htmldrop_badge');
   });
 
   it('computeExpiration uses anon default', () => {

@@ -50,7 +50,7 @@ describe('Pin API', () => {
       .expect(200);
 
     expect(res.text).toContain('Secret report');
-    expect(res.text).toContain('Published with Pin');
+    expect(res.text).toContain('Published with htmldrop');
   });
 
   it('serves an artifact by /view/:subdomain path', async () => {
