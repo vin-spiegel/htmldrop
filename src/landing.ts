@@ -3,7 +3,7 @@
  *
  * Strings are extracted into a per-locale dictionary. The active locale is
  * resolved from the visitor's `Accept-Language` header (see `resolveLocale`).
- * Technical tokens (pin_publish, MCP, SSE, R2, OG, X-Robots-Tag, agents.md,
+ * Technical tokens (htmldrop, publish_html, MCP, SSE, OG, TTL, agents.md,
  * GitHub) are intentionally left untranslated.
  */
 
@@ -42,10 +42,15 @@ interface Strings {
   f3Desc: string;
   f4Title: string;
   f4Desc: string;
-  f5Title: string;
-  f5Desc: string;
-  f6Title: string;
-  f6Desc: string;
+  dropTitle: string;
+  dropHint: string;
+  dropBusy: string;
+  dropDone: string;
+  dropCopy: string;
+  dropCopied: string;
+  dropOpen: string;
+  dropAgain: string;
+  dropErr: string;
   howH2: string;
   howP: string;
   s1Title: string;
@@ -60,310 +65,345 @@ interface Strings {
 const translations: Record<Locale, Strings> = {
   en: {
     htmlLang: 'en',
-    metaTitle: 'Pin — Publish HTML for agents',
+    metaTitle: 'htmldrop — Publish HTML for agents',
     metaDesc: 'Publish HTML reports, dashboards, and visualizations with one API call.',
-    ogTitle: 'Pin — Publish HTML for agents',
+    ogTitle: 'htmldrop — Publish HTML for agents',
     ogDesc: 'POST HTML, get a link. MCP server included.',
     navApi: 'API',
     navMcp: 'MCP',
     heroLine1: 'Publish HTML',
     heroAccent: 'in seconds',
     tagline:
-      'Pin turns any HTML artifact into a public link with one API call. Reports, dashboards, charts, demos — anything an agent creates.',
+      'htmldrop turns any HTML artifact into a shareable link with one API call. Reports, dashboards, charts, demos — anything an agent creates.',
     ctaTryApi: 'Try the API',
     ctaReadAgents: 'Read agents.md',
     apiH2: 'One endpoint. One link.',
-    apiP: 'Send HTML as JSON, raw body, or fetch it from a URL. Pin handles storage, OG images, TTL, and rate limits.',
+    apiP: 'Send HTML as JSON, raw body, or fetch it from a URL. Hosting, preview cards, and expiry are handled for you.',
     apiReturns: '→ returns {"url":"...","id":"...","expires_at":"..."}',
     mcpH3: 'MCP Server at',
-    mcpP: 'Connect any MCP client via Server-Sent Events and call pin_publish directly from the agent.',
+    mcpP: 'Connect any MCP client via Server-Sent Events and call publish_html directly from the agent.',
     mcpCta: 'See agents.md',
     featuresH2: 'Built for agents, safe for humans.',
-    featuresP: 'Everything included without configuration creep.',
+    featuresP: 'Just the essentials, nothing to configure.',
     f1Title: 'MCP over SSE',
-    f1Desc: 'Expose pin_publish as a tool. Agents publish instantly without reading API docs.',
+    f1Desc: 'Expose publish_html as a tool. Agents publish instantly without reading API docs.',
     f2Title: 'Social cards',
-    f2Desc: 'Automatic Open Graph + Twitter Cards. Missing images get a generated 1200×630 PNG preview.',
-    f3Title: 'Fast & stateless',
-    f3Desc: 'Cloudflare R2 or local filesystem. Scales horizontally with no database.',
-    f4Title: 'Optional password',
-    f4Desc: 'Lock artifacts behind a password. Subdomain URLs stay easy to share.',
-    f5Title: 'TTL by default',
-    f5Desc: 'Content expires automatically. Configure anonymous and keyed tiers via environment variables.',
-    f6Title: 'Rate limits & noindex',
-    f6Desc: 'Per-IP and per-key limits with X-Robots-Tag keep the public web sane.',
+    f2Desc: 'Open Graph + Twitter Cards with a generated preview image, automatically.',
+    f3Title: 'Optional password',
+    f3Desc: 'Lock artifacts behind a password. The link stays easy to share.',
+    f4Title: 'Expires by default',
+    f4Desc: 'Every link has a TTL, so shared artifacts don’t live forever.',
+    dropTitle: 'Drop an HTML file here',
+    dropHint: 'or click to choose — publishes instantly',
+    dropBusy: 'Publishing…',
+    dropDone: 'Your link is live!',
+    dropCopy: 'Copy',
+    dropCopied: 'Copied!',
+    dropOpen: 'Open',
+    dropAgain: 'Publish another',
+    dropErr: 'Something went wrong. Try again.',
     howH2: 'How it works',
     howP: 'Three steps from HTML artifact to shareable URL.',
     s1Title: 'Send HTML',
     s1Desc: 'POST JSON, raw HTML, or point us at a URL.',
-    s2Title: 'Pin stores it',
-    s2Desc: 'We save the file to R2 or disk and generate metadata.',
+    s2Title: 'htmldrop hosts it',
+    s2Desc: 'We store the file and generate a social preview.',
     s3Title: 'Get a link',
-    s3Desc: 'Receive a random-subdomain URL with TTL and OG image.',
+    s3Desc: 'Receive a URL on its own subdomain, ready to share.',
     footer: 'Built for agents',
   },
   ko: {
     htmlLang: 'ko',
-    metaTitle: 'Pin — 에이전트를 위한 HTML 퍼블리싱',
+    metaTitle: 'htmldrop — 에이전트를 위한 HTML 퍼블리싱',
     metaDesc: 'API 호출 한 번으로 HTML 리포트, 대시보드, 시각화를 게시하세요.',
-    ogTitle: 'Pin — 에이전트를 위한 HTML 퍼블리싱',
+    ogTitle: 'htmldrop — 에이전트를 위한 HTML 퍼블리싱',
     ogDesc: 'HTML을 POST하면 링크가 나옵니다. MCP 서버 포함.',
     navApi: 'API',
     navMcp: 'MCP',
     heroLine1: 'HTML 게시,',
     heroAccent: '몇 초면 끝',
     tagline:
-      'Pin은 API 호출 한 번으로 모든 HTML 결과물을 공개 링크로 만들어 줍니다. 리포트, 대시보드, 차트, 데모 — 에이전트가 만든 무엇이든.',
+      'htmldrop은 API 호출 한 번으로 모든 HTML 결과물을 공유 링크로 만들어 줍니다. 리포트, 대시보드, 차트, 데모 — 에이전트가 만든 무엇이든.',
     ctaTryApi: 'API 사용해 보기',
     ctaReadAgents: 'agents.md 보기',
     apiH2: '엔드포인트 하나, 링크 하나.',
-    apiP: 'HTML을 JSON, 원본 본문으로 보내거나 URL에서 가져오세요. 저장, OG 이미지, TTL, 속도 제한까지 Pin이 처리합니다.',
+    apiP: 'HTML을 JSON, 원본 본문으로 보내거나 URL에서 가져오세요. 호스팅, 미리보기 카드, 만료까지 알아서 처리합니다.',
     apiReturns: '→ 반환값 {"url":"...","id":"...","expires_at":"..."}',
     mcpH3: 'MCP 서버 위치',
-    mcpP: 'Server-Sent Events로 어떤 MCP 클라이언트든 연결하고 에이전트에서 곧바로 pin_publish를 호출하세요.',
+    mcpP: 'Server-Sent Events로 어떤 MCP 클라이언트든 연결하고 에이전트에서 곧바로 publish_html를 호출하세요.',
     mcpCta: 'agents.md 보기',
     featuresH2: '에이전트를 위해 만들고, 사람에게 안전하게.',
-    featuresP: '설정 부담 없이 모든 기능이 기본 제공됩니다.',
+    featuresP: '꼭 필요한 것만, 설정 없이.',
     f1Title: 'SSE 기반 MCP',
-    f1Desc: 'pin_publish를 도구로 노출하세요. 에이전트가 API 문서를 읽지 않고도 바로 게시합니다.',
+    f1Desc: 'publish_html를 도구로 노출하세요. 에이전트가 API 문서를 읽지 않고도 바로 게시합니다.',
     f2Title: '소셜 카드',
-    f2Desc: 'Open Graph + Twitter 카드 자동 생성. 이미지가 없으면 1200×630 PNG 미리보기를 만들어 줍니다.',
-    f3Title: '빠르고 상태 없음',
-    f3Desc: 'Cloudflare R2 또는 로컬 파일시스템. 데이터베이스 없이 수평 확장됩니다.',
-    f4Title: '선택적 비밀번호',
-    f4Desc: '결과물을 비밀번호로 잠그세요. 서브도메인 URL은 공유하기 쉽게 유지됩니다.',
-    f5Title: '기본 TTL',
-    f5Desc: '콘텐츠가 자동으로 만료됩니다. 익명·키 등급은 환경 변수로 설정하세요.',
-    f6Title: '속도 제한 & noindex',
-    f6Desc: 'IP별·키별 제한과 X-Robots-Tag로 공개 웹을 깔끔하게 유지합니다.',
+    f2Desc: 'Open Graph + Twitter 카드와 미리보기 이미지를 자동으로 만들어 줍니다.',
+    f3Title: '선택적 비밀번호',
+    f3Desc: '결과물을 비밀번호로 잠그세요. 링크는 그대로 공유하기 쉽습니다.',
+    f4Title: '만료는 기본',
+    f4Desc: '모든 링크에 TTL이 있어, 공유한 결과물이 영원히 남지 않습니다.',
+    dropTitle: '여기에 HTML 파일을 끌어다 놓으세요',
+    dropHint: '또는 클릭해서 선택 — 바로 게시됩니다',
+    dropBusy: '게시 중…',
+    dropDone: '링크가 준비됐어요!',
+    dropCopy: '복사',
+    dropCopied: '복사됨!',
+    dropOpen: '열기',
+    dropAgain: '하나 더 게시',
+    dropErr: '문제가 생겼어요. 다시 시도해 주세요.',
     howH2: '동작 방식',
     howP: 'HTML 결과물에서 공유 가능한 URL까지 세 단계.',
     s1Title: 'HTML 전송',
     s1Desc: 'JSON, 원본 HTML을 POST하거나 URL을 알려주세요.',
-    s2Title: 'Pin이 저장',
-    s2Desc: '파일을 R2 또는 디스크에 저장하고 메타데이터를 생성합니다.',
+    s2Title: 'htmldrop이 호스팅',
+    s2Desc: '파일을 저장하고 소셜 미리보기를 생성합니다.',
     s3Title: '링크 받기',
-    s3Desc: 'TTL과 OG 이미지가 포함된 랜덤 서브도메인 URL을 받으세요.',
+    s3Desc: '바로 공유할 수 있는 전용 서브도메인 URL을 받으세요.',
     footer: '에이전트를 위해 제작됨',
   },
   ja: {
     htmlLang: 'ja',
-    metaTitle: 'Pin — エージェントのためのHTML公開',
+    metaTitle: 'htmldrop — エージェントのためのHTML公開',
     metaDesc: 'API呼び出し1回でHTMLレポート、ダッシュボード、ビジュアライゼーションを公開。',
-    ogTitle: 'Pin — エージェントのためのHTML公開',
+    ogTitle: 'htmldrop — エージェントのためのHTML公開',
     ogDesc: 'HTMLをPOSTすればリンクが返ります。MCPサーバー付き。',
     navApi: 'API',
     navMcp: 'MCP',
     heroLine1: 'HTMLを公開',
     heroAccent: '数秒で',
     tagline:
-      'PinはあらゆるHTML成果物を、API呼び出し1回で公開リンクに変えます。レポート、ダッシュボード、チャート、デモ — エージェントが作るものすべて。',
+      'htmldropはあらゆるHTML成果物を、API呼び出し1回で共有リンクに変えます。レポート、ダッシュボード、チャート、デモ — エージェントが作るものすべて。',
     ctaTryApi: 'APIを試す',
     ctaReadAgents: 'agents.mdを読む',
     apiH2: 'エンドポイント1つ、リンク1つ。',
-    apiP: 'HTMLをJSON・生のボディで送るか、URLから取得します。保存、OG画像、TTL、レート制限はPinが処理します。',
+    apiP: 'HTMLをJSON・生のボディで送るか、URLから取得します。ホスティング、プレビューカード、期限切れまで自動で処理します。',
     apiReturns: '→ 戻り値 {"url":"...","id":"...","expires_at":"..."}',
     mcpH3: 'MCPサーバー',
-    mcpP: 'Server-Sent Eventsで任意のMCPクライアントを接続し、エージェントから直接pin_publishを呼び出せます。',
+    mcpP: 'Server-Sent Eventsで任意のMCPクライアントを接続し、エージェントから直接publish_htmlを呼び出せます。',
     mcpCta: 'agents.mdを見る',
     featuresH2: 'エージェントのために、人にやさしく。',
-    featuresP: '設定の手間なく、すべて同梱。',
+    featuresP: '必要なものだけ、設定いらずで。',
     f1Title: 'SSE経由のMCP',
-    f1Desc: 'pin_publishをツールとして公開。エージェントはAPIドキュメントを読まずに即座に公開します。',
+    f1Desc: 'publish_htmlをツールとして公開。エージェントはAPIドキュメントを読まずに即座に公開します。',
     f2Title: 'ソーシャルカード',
-    f2Desc: 'Open Graph + Twitterカードを自動生成。画像がない場合は1200×630のPNGプレビューを生成します。',
-    f3Title: '高速・ステートレス',
-    f3Desc: 'Cloudflare R2またはローカルファイルシステム。データベース不要で水平スケール。',
-    f4Title: '任意のパスワード',
-    f4Desc: '成果物をパスワードで保護。サブドメインURLは共有しやすいままです。',
-    f5Title: 'デフォルトでTTL',
-    f5Desc: 'コンテンツは自動的に期限切れになります。匿名・キー付きの階層は環境変数で設定します。',
-    f6Title: 'レート制限 & noindex',
-    f6Desc: 'IP単位・キー単位の制限とX-Robots-Tagで公開ウェブを健全に保ちます。',
+    f2Desc: 'Open Graph + Twitterカードとプレビュー画像を自動生成します。',
+    f3Title: '任意のパスワード',
+    f3Desc: '成果物をパスワードで保護。リンクは共有しやすいままです。',
+    f4Title: 'デフォルトで期限切れ',
+    f4Desc: 'すべてのリンクにTTLがあり、共有した成果物が永遠に残ることはありません。',
+    dropTitle: 'ここにHTMLファイルをドロップ',
+    dropHint: 'またはクリックして選択 — すぐに公開されます',
+    dropBusy: '公開中…',
+    dropDone: 'リンクができました！',
+    dropCopy: 'コピー',
+    dropCopied: 'コピーしました！',
+    dropOpen: '開く',
+    dropAgain: 'もう1つ公開',
+    dropErr: 'エラーが発生しました。もう一度お試しください。',
     howH2: '仕組み',
     howP: 'HTML成果物から共有可能なURLまで3ステップ。',
     s1Title: 'HTMLを送る',
     s1Desc: 'JSON、生のHTMLをPOSTするか、URLを指定します。',
-    s2Title: 'Pinが保存',
-    s2Desc: 'ファイルをR2またはディスクに保存し、メタデータを生成します。',
+    s2Title: 'htmldropがホスト',
+    s2Desc: 'ファイルを保存し、ソーシャルプレビューを生成します。',
     s3Title: 'リンクを取得',
-    s3Desc: 'TTLとOG画像付きのランダムサブドメインURLを受け取ります。',
+    s3Desc: 'すぐ共有できる専用サブドメインURLを受け取ります。',
     footer: 'エージェントのために構築',
   },
   zh: {
     htmlLang: 'zh-CN',
-    metaTitle: 'Pin — 为智能体发布 HTML',
+    metaTitle: 'htmldrop — 为智能体发布 HTML',
     metaDesc: '一次 API 调用即可发布 HTML 报告、仪表盘和可视化内容。',
-    ogTitle: 'Pin — 为智能体发布 HTML',
+    ogTitle: 'htmldrop — 为智能体发布 HTML',
     ogDesc: 'POST HTML，即得链接。内置 MCP 服务器。',
     navApi: 'API',
     navMcp: 'MCP',
     heroLine1: '发布 HTML',
     heroAccent: '只需几秒',
     tagline:
-      'Pin 通过一次 API 调用，将任何 HTML 内容变成公开链接。报告、仪表盘、图表、演示 — 智能体创建的一切。',
+      'htmldrop 通过一次 API 调用，将任何 HTML 内容变成可分享的链接。报告、仪表盘、图表、演示 — 智能体创建的一切。',
     ctaTryApi: '试用 API',
     ctaReadAgents: '阅读 agents.md',
     apiH2: '一个端点，一个链接。',
-    apiP: '以 JSON、原始正文发送 HTML，或从 URL 抓取。存储、OG 图片、TTL 和速率限制都由 Pin 处理。',
+    apiP: '以 JSON、原始正文发送 HTML，或从 URL 抓取。托管、预览卡片和过期都自动处理。',
     apiReturns: '→ 返回 {"url":"...","id":"...","expires_at":"..."}',
     mcpH3: 'MCP 服务器位于',
-    mcpP: '通过 Server-Sent Events 连接任意 MCP 客户端，直接从智能体调用 pin_publish。',
+    mcpP: '通过 Server-Sent Events 连接任意 MCP 客户端，直接从智能体调用 publish_html。',
     mcpCta: '查看 agents.md',
     featuresH2: '为智能体打造，对人类安全。',
-    featuresP: '一切开箱即用，无需繁琐配置。',
+    featuresP: '只保留必需的，无需配置。',
     f1Title: '基于 SSE 的 MCP',
-    f1Desc: '将 pin_publish 暴露为工具。智能体无需阅读 API 文档即可即时发布。',
+    f1Desc: '将 publish_html 暴露为工具。智能体无需阅读 API 文档即可即时发布。',
     f2Title: '社交卡片',
-    f2Desc: '自动生成 Open Graph + Twitter 卡片。缺少图片时会生成 1200×630 的 PNG 预览。',
-    f3Title: '快速且无状态',
-    f3Desc: 'Cloudflare R2 或本地文件系统。无需数据库即可横向扩展。',
-    f4Title: '可选密码',
-    f4Desc: '用密码锁定内容。子域名 URL 依然便于分享。',
-    f5Title: '默认 TTL',
-    f5Desc: '内容会自动过期。通过环境变量配置匿名和带密钥的等级。',
-    f6Title: '速率限制与 noindex',
-    f6Desc: '按 IP 和按密钥的限制，配合 X-Robots-Tag，让公开网络保持整洁。',
+    f2Desc: '自动生成 Open Graph + Twitter 卡片和预览图片。',
+    f3Title: '可选密码',
+    f3Desc: '用密码锁定内容，链接依然便于分享。',
+    f4Title: '默认过期',
+    f4Desc: '每个链接都有 TTL，分享的内容不会永远存在。',
+    dropTitle: '将 HTML 文件拖到这里',
+    dropHint: '或点击选择 — 立即发布',
+    dropBusy: '发布中…',
+    dropDone: '链接已就绪！',
+    dropCopy: '复制',
+    dropCopied: '已复制！',
+    dropOpen: '打开',
+    dropAgain: '再发布一个',
+    dropErr: '出错了，请重试。',
     howH2: '工作原理',
     howP: '从 HTML 内容到可分享 URL，只需三步。',
     s1Title: '发送 HTML',
     s1Desc: 'POST JSON、原始 HTML，或指向一个 URL。',
-    s2Title: 'Pin 存储',
-    s2Desc: '我们将文件保存到 R2 或磁盘并生成元数据。',
+    s2Title: 'htmldrop 托管',
+    s2Desc: '我们保存文件并生成社交预览。',
     s3Title: '获取链接',
-    s3Desc: '获得带 TTL 和 OG 图片的随机子域名 URL。',
+    s3Desc: '获得一个可直接分享的专属子域名 URL。',
     footer: '为智能体而建',
   },
   es: {
     htmlLang: 'es',
-    metaTitle: 'Pin — Publica HTML para agentes',
+    metaTitle: 'htmldrop — Publica HTML para agentes',
     metaDesc: 'Publica informes, paneles y visualizaciones HTML con una sola llamada a la API.',
-    ogTitle: 'Pin — Publica HTML para agentes',
+    ogTitle: 'htmldrop — Publica HTML para agentes',
     ogDesc: 'Envía HTML por POST y obtén un enlace. Servidor MCP incluido.',
     navApi: 'API',
     navMcp: 'MCP',
     heroLine1: 'Publica HTML',
     heroAccent: 'en segundos',
     tagline:
-      'Pin convierte cualquier artefacto HTML en un enlace público con una sola llamada a la API. Informes, paneles, gráficos, demos: todo lo que un agente cree.',
+      'htmldrop convierte cualquier artefacto HTML en un enlace para compartir con una sola llamada a la API. Informes, paneles, gráficos, demos: todo lo que un agente cree.',
     ctaTryApi: 'Probar la API',
     ctaReadAgents: 'Leer agents.md',
     apiH2: 'Un endpoint. Un enlace.',
-    apiP: 'Envía HTML como JSON, cuerpo en bruto o recupéralo desde una URL. Pin gestiona almacenamiento, imágenes OG, TTL y límites de tasa.',
+    apiP: 'Envía HTML como JSON, cuerpo en bruto o recupéralo desde una URL. El alojamiento, las tarjetas de vista previa y la caducidad se gestionan por ti.',
     apiReturns: '→ devuelve {"url":"...","id":"...","expires_at":"..."}',
     mcpH3: 'Servidor MCP en',
-    mcpP: 'Conecta cualquier cliente MCP mediante Server-Sent Events y llama a pin_publish directamente desde el agente.',
+    mcpP: 'Conecta cualquier cliente MCP mediante Server-Sent Events y llama a publish_html directamente desde el agente.',
     mcpCta: 'Ver agents.md',
     featuresH2: 'Hecho para agentes, seguro para humanos.',
-    featuresP: 'Todo incluido, sin exceso de configuración.',
+    featuresP: 'Solo lo esencial, nada que configurar.',
     f1Title: 'MCP sobre SSE',
-    f1Desc: 'Expón pin_publish como herramienta. Los agentes publican al instante sin leer la documentación de la API.',
+    f1Desc: 'Expón publish_html como herramienta. Los agentes publican al instante sin leer la documentación de la API.',
     f2Title: 'Tarjetas sociales',
-    f2Desc: 'Open Graph + Twitter Cards automáticas. Si falta la imagen, se genera una vista previa PNG de 1200×630.',
-    f3Title: 'Rápido y sin estado',
-    f3Desc: 'Cloudflare R2 o sistema de archivos local. Escala horizontalmente sin base de datos.',
-    f4Title: 'Contraseña opcional',
-    f4Desc: 'Protege los artefactos con contraseña. Las URL de subdominio siguen siendo fáciles de compartir.',
-    f5Title: 'TTL por defecto',
-    f5Desc: 'El contenido expira automáticamente. Configura niveles anónimos y con clave mediante variables de entorno.',
-    f6Title: 'Límites de tasa y noindex',
-    f6Desc: 'Límites por IP y por clave con X-Robots-Tag mantienen sana la web pública.',
+    f2Desc: 'Open Graph + Twitter Cards con imagen de vista previa generada, automáticamente.',
+    f3Title: 'Contraseña opcional',
+    f3Desc: 'Protege los artefactos con contraseña. El enlace sigue siendo fácil de compartir.',
+    f4Title: 'Caduca por defecto',
+    f4Desc: 'Cada enlace tiene un TTL: lo compartido no vive para siempre.',
+    dropTitle: 'Suelta un archivo HTML aquí',
+    dropHint: 'o haz clic para elegir — se publica al instante',
+    dropBusy: 'Publicando…',
+    dropDone: '¡Tu enlace está listo!',
+    dropCopy: 'Copiar',
+    dropCopied: '¡Copiado!',
+    dropOpen: 'Abrir',
+    dropAgain: 'Publicar otro',
+    dropErr: 'Algo salió mal. Inténtalo de nuevo.',
     howH2: 'Cómo funciona',
     howP: 'Tres pasos del artefacto HTML a una URL para compartir.',
     s1Title: 'Envía HTML',
     s1Desc: 'POST de JSON, HTML en bruto o indícanos una URL.',
-    s2Title: 'Pin lo guarda',
-    s2Desc: 'Guardamos el archivo en R2 o en disco y generamos metadatos.',
+    s2Title: 'htmldrop lo aloja',
+    s2Desc: 'Guardamos el archivo y generamos una vista previa social.',
     s3Title: 'Obtén un enlace',
-    s3Desc: 'Recibe una URL de subdominio aleatorio con TTL e imagen OG.',
+    s3Desc: 'Recibe una URL con su propio subdominio, lista para compartir.',
     footer: 'Hecho para agentes',
   },
   fr: {
     htmlLang: 'fr',
-    metaTitle: 'Pin — Publiez du HTML pour les agents',
+    metaTitle: 'htmldrop — Publiez du HTML pour les agents',
     metaDesc: 'Publiez des rapports, tableaux de bord et visualisations HTML en un seul appel API.',
-    ogTitle: 'Pin — Publiez du HTML pour les agents',
+    ogTitle: 'htmldrop — Publiez du HTML pour les agents',
     ogDesc: 'Envoyez du HTML en POST, recevez un lien. Serveur MCP inclus.',
     navApi: 'API',
     navMcp: 'MCP',
     heroLine1: 'Publiez du HTML',
     heroAccent: 'en quelques secondes',
     tagline:
-      'Pin transforme n’importe quel artefact HTML en lien public en un seul appel API. Rapports, tableaux de bord, graphiques, démos — tout ce qu’un agent crée.',
+      'htmldrop transforme n’importe quel artefact HTML en lien à partager en un seul appel API. Rapports, tableaux de bord, graphiques, démos — tout ce qu’un agent crée.',
     ctaTryApi: 'Essayer l’API',
     ctaReadAgents: 'Lire agents.md',
     apiH2: 'Un endpoint. Un lien.',
-    apiP: 'Envoyez du HTML en JSON, en corps brut ou récupérez-le depuis une URL. Pin gère le stockage, les images OG, le TTL et les limites de débit.',
+    apiP: 'Envoyez du HTML en JSON, en corps brut ou depuis une URL. Hébergement, cartes d’aperçu et expiration sont gérés pour vous.',
     apiReturns: '→ renvoie {"url":"...","id":"...","expires_at":"..."}',
     mcpH3: 'Serveur MCP sur',
-    mcpP: 'Connectez n’importe quel client MCP via Server-Sent Events et appelez pin_publish directement depuis l’agent.',
+    mcpP: 'Connectez n’importe quel client MCP via Server-Sent Events et appelez publish_html directement depuis l’agent.',
     mcpCta: 'Voir agents.md',
     featuresH2: 'Conçu pour les agents, sûr pour les humains.',
-    featuresP: 'Tout est inclus, sans configuration superflue.',
+    featuresP: 'Juste l’essentiel, rien à configurer.',
     f1Title: 'MCP via SSE',
-    f1Desc: 'Exposez pin_publish comme outil. Les agents publient instantanément sans lire la documentation API.',
+    f1Desc: 'Exposez publish_html comme outil. Les agents publient instantanément sans lire la documentation API.',
     f2Title: 'Cartes sociales',
-    f2Desc: 'Open Graph + Twitter Cards automatiques. À défaut d’image, un aperçu PNG 1200×630 est généré.',
-    f3Title: 'Rapide et sans état',
-    f3Desc: 'Cloudflare R2 ou système de fichiers local. Mise à l’échelle horizontale sans base de données.',
-    f4Title: 'Mot de passe optionnel',
-    f4Desc: 'Verrouillez les artefacts par mot de passe. Les URL de sous-domaine restent faciles à partager.',
-    f5Title: 'TTL par défaut',
-    f5Desc: 'Le contenu expire automatiquement. Configurez les niveaux anonymes et à clé via des variables d’environnement.',
-    f6Title: 'Limites de débit & noindex',
-    f6Desc: 'Des limites par IP et par clé avec X-Robots-Tag gardent le web public sain.',
+    f2Desc: 'Open Graph + Twitter Cards avec image d’aperçu générée, automatiquement.',
+    f3Title: 'Mot de passe optionnel',
+    f3Desc: 'Verrouillez les artefacts par mot de passe. Le lien reste facile à partager.',
+    f4Title: 'Expiration par défaut',
+    f4Desc: 'Chaque lien a un TTL — rien ne reste en ligne pour toujours.',
+    dropTitle: 'Déposez un fichier HTML ici',
+    dropHint: 'ou cliquez pour choisir — publié instantanément',
+    dropBusy: 'Publication…',
+    dropDone: 'Votre lien est prêt !',
+    dropCopy: 'Copier',
+    dropCopied: 'Copié !',
+    dropOpen: 'Ouvrir',
+    dropAgain: 'Publier un autre',
+    dropErr: 'Une erreur est survenue. Réessayez.',
     howH2: 'Comment ça marche',
     howP: 'Trois étapes de l’artefact HTML à une URL partageable.',
     s1Title: 'Envoyez du HTML',
     s1Desc: 'POST de JSON, HTML brut, ou indiquez-nous une URL.',
-    s2Title: 'Pin le stocke',
-    s2Desc: 'Nous enregistrons le fichier sur R2 ou disque et générons les métadonnées.',
+    s2Title: 'htmldrop l’héberge',
+    s2Desc: 'Nous stockons le fichier et générons un aperçu social.',
     s3Title: 'Obtenez un lien',
-    s3Desc: 'Recevez une URL de sous-domaine aléatoire avec TTL et image OG.',
+    s3Desc: 'Recevez une URL avec son propre sous-domaine, prête à partager.',
     footer: 'Conçu pour les agents',
   },
   de: {
     htmlLang: 'de',
-    metaTitle: 'Pin — HTML für Agenten veröffentlichen',
+    metaTitle: 'htmldrop — HTML für Agenten veröffentlichen',
     metaDesc: 'Veröffentliche HTML-Berichte, Dashboards und Visualisierungen mit einem einzigen API-Aufruf.',
-    ogTitle: 'Pin — HTML für Agenten veröffentlichen',
+    ogTitle: 'htmldrop — HTML für Agenten veröffentlichen',
     ogDesc: 'HTML per POST senden, Link erhalten. MCP-Server inklusive.',
     navApi: 'API',
     navMcp: 'MCP',
     heroLine1: 'HTML veröffentlichen',
     heroAccent: 'in Sekunden',
     tagline:
-      'Pin verwandelt jedes HTML-Artefakt mit einem einzigen API-Aufruf in einen öffentlichen Link. Berichte, Dashboards, Diagramme, Demos — alles, was ein Agent erstellt.',
+      'htmldrop verwandelt jedes HTML-Artefakt mit einem einzigen API-Aufruf in einen teilbaren Link. Berichte, Dashboards, Diagramme, Demos — alles, was ein Agent erstellt.',
     ctaTryApi: 'API ausprobieren',
     ctaReadAgents: 'agents.md lesen',
     apiH2: 'Ein Endpoint. Ein Link.',
-    apiP: 'Sende HTML als JSON, als Rohtext oder lade es von einer URL. Pin übernimmt Speicherung, OG-Bilder, TTL und Rate-Limits.',
+    apiP: 'Sende HTML als JSON, als Rohtext oder von einer URL. Hosting, Vorschaukarten und Ablauf werden für dich erledigt.',
     apiReturns: '→ liefert {"url":"...","id":"...","expires_at":"..."}',
     mcpH3: 'MCP-Server unter',
-    mcpP: 'Verbinde jeden MCP-Client über Server-Sent Events und rufe pin_publish direkt aus dem Agenten auf.',
+    mcpP: 'Verbinde jeden MCP-Client über Server-Sent Events und rufe publish_html direkt aus dem Agenten auf.',
     mcpCta: 'agents.md ansehen',
     featuresH2: 'Für Agenten gebaut, sicher für Menschen.',
-    featuresP: 'Alles inklusive, ohne Konfigurationswildwuchs.',
+    featuresP: 'Nur das Wesentliche, nichts zu konfigurieren.',
     f1Title: 'MCP über SSE',
-    f1Desc: 'Stelle pin_publish als Tool bereit. Agenten veröffentlichen sofort, ohne API-Doku zu lesen.',
+    f1Desc: 'Stelle publish_html als Tool bereit. Agenten veröffentlichen sofort, ohne API-Doku zu lesen.',
     f2Title: 'Social Cards',
-    f2Desc: 'Automatische Open Graph + Twitter Cards. Fehlt ein Bild, wird eine 1200×630-PNG-Vorschau erzeugt.',
-    f3Title: 'Schnell & zustandslos',
-    f3Desc: 'Cloudflare R2 oder lokales Dateisystem. Skaliert horizontal ohne Datenbank.',
-    f4Title: 'Optionales Passwort',
-    f4Desc: 'Sperre Artefakte hinter einem Passwort. Subdomain-URLs bleiben leicht teilbar.',
-    f5Title: 'TTL standardmäßig',
-    f5Desc: 'Inhalte laufen automatisch ab. Konfiguriere anonyme und schlüsselbasierte Stufen über Umgebungsvariablen.',
-    f6Title: 'Rate-Limits & noindex',
-    f6Desc: 'Limits pro IP und pro Schlüssel mit X-Robots-Tag halten das öffentliche Web gesund.',
+    f2Desc: 'Open Graph + Twitter Cards mit generiertem Vorschaubild, automatisch.',
+    f3Title: 'Optionales Passwort',
+    f3Desc: 'Sperre Artefakte hinter einem Passwort. Der Link bleibt leicht teilbar.',
+    f4Title: 'Läuft standardmäßig ab',
+    f4Desc: 'Jeder Link hat eine TTL — Geteiltes bleibt nicht für immer online.',
+    dropTitle: 'HTML-Datei hier ablegen',
+    dropHint: 'oder klicken zum Auswählen — sofort veröffentlicht',
+    dropBusy: 'Wird veröffentlicht…',
+    dropDone: 'Dein Link ist live!',
+    dropCopy: 'Kopieren',
+    dropCopied: 'Kopiert!',
+    dropOpen: 'Öffnen',
+    dropAgain: 'Noch eins veröffentlichen',
+    dropErr: 'Etwas ist schiefgelaufen. Versuch es erneut.',
     howH2: 'So funktioniert es',
     howP: 'Drei Schritte vom HTML-Artefakt zur teilbaren URL.',
     s1Title: 'HTML senden',
     s1Desc: 'POST von JSON, rohem HTML, oder gib uns eine URL.',
-    s2Title: 'Pin speichert es',
-    s2Desc: 'Wir speichern die Datei auf R2 oder Disk und erzeugen Metadaten.',
+    s2Title: 'htmldrop hostet es',
+    s2Desc: 'Wir speichern die Datei und erzeugen eine Social-Vorschau.',
     s3Title: 'Link erhalten',
-    s3Desc: 'Erhalte eine zufällige Subdomain-URL mit TTL und OG-Bild.',
+    s3Desc: 'Erhalte eine URL mit eigener Subdomain, bereit zum Teilen.',
     footer: 'Für Agenten gebaut',
   },
 };
@@ -402,7 +442,7 @@ function escapeAttr(value: string): string {
 
 export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
   const t = translations[locale] ?? translations[DEFAULT_LOCALE];
-  const baseDomain = process.env.BASE_DOMAIN || 'pin-publish-production.up.railway.app';
+  const baseDomain = process.env.BASE_DOMAIN || 'htmldrop.link';
   return `<!DOCTYPE html>
 <html lang="${t.htmlLang}">
 <head>
@@ -416,224 +456,335 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #faf9f6;
+    --bg: #f7f3ea;
     --paper: #ffffff;
-    --ink: #1a1a1a;
-    --muted: #6b6b6e;
-    --accent: #ef4444;
-    --accent-soft: rgba(239, 68, 68, 0.12);
-    --blue: #2563eb;
-    --blue-soft: rgba(37, 99, 235, 0.10);
-    --line: #1a1a1a;
-    --shadow: rgba(26, 26, 26, 0.06);
-    --shadow-hover: rgba(26, 26, 26, 0.10);
+    --ink: #211d18;
+    --muted: #756c60;
+    --accent: #e8503a;
+    --accent-soft: rgba(232, 80, 58, 0.12);
+    --line: #211d18;
+    --shadow: rgba(33, 29, 24, 0.10);
+    --radius-hand: 235px 18px 225px 18px / 18px 225px 18px 235px;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body {
     margin: 0;
     padding: 0;
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Nunito', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     background: var(--bg);
     color: var(--ink);
-    line-height: 1.55;
-    background-image: radial-gradient(#e4dfd5 0.7px, transparent 0.7px);
-    background-size: 24px 24px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    background-image: radial-gradient(rgba(33, 29, 24, 0.06) 0.7px, transparent 0.7px);
+    background-size: 26px 26px;
   }
-  .container { max-width: 1000px; margin: 0 auto; padding: 0 1.5rem; }
+  .container { max-width: 1040px; margin: 0 auto; padding: 0 1.5rem; }
 
   /* Hand-drawn helpers */
   .doodle-border {
     border: 2px solid var(--line);
-    border-radius: 255px 12px 225px 12px / 12px 225px 12px 255px;
-    box-shadow: 5px 5px 0 var(--shadow);
-    transition: box-shadow 0.15s ease, transform 0.15s ease;
+    border-radius: var(--radius-hand);
+    box-shadow: 4px 4px 0 var(--shadow);
+    background: var(--paper);
+    --tilt: 0deg;
+    transform: rotate(var(--tilt));
+    transition: box-shadow 0.18s ease, transform 0.18s ease;
   }
-  .doodle-border:hover { box-shadow: 6px 6px 0 var(--shadow-hover); transform: translateY(-2px) rotate(-0.4deg); }
+  .doodle-border:hover { box-shadow: 7px 7px 0 var(--shadow); transform: translateY(-3px) rotate(calc(var(--tilt) - 0.6deg)); }
 
-  h1, h2, h3, .hand { font-family: 'Gaegu', system-ui, cursive; }
+  /* Hand-placed variance: every card gets its own tilt, wobble, and offset
+     so the grid reads as pinned-up paper, not cloned components. */
+  .features .feature:nth-child(1) { --tilt: -0.6deg; }
+  .features .feature:nth-child(2) { --tilt: 0.5deg; margin-top: 10px; border-radius: 18px 235px 22px 245px / 240px 20px 250px 18px; }
+  .features .feature:nth-child(3) { --tilt: 0.4deg; border-radius: 245px 16px 250px 20px / 18px 245px 16px 240px; }
+  .features .feature:nth-child(4) { --tilt: -0.5deg; margin-top: 8px; }
+  .steps .step:nth-child(1) { --tilt: -0.9deg; }
+  .steps .step:nth-child(2) { --tilt: 0.8deg; margin-top: 16px; border-radius: 20px 240px 18px 250px / 245px 18px 240px 20px; }
+  .steps .step:nth-child(3) { --tilt: -0.5deg; margin-top: 6px; border-radius: 250px 18px 240px 16px / 16px 250px 20px 245px; }
+
+  h1, h2, h3, h4, .hand { font-family: 'Gaegu', system-ui, cursive; letter-spacing: 0.01em; }
 
   /* Scribble underline draw-in */
-  .scribble-underline { position: relative; display: inline; }
+  .scribble-underline { position: relative; display: inline; white-space: nowrap; }
   .scribble-underline svg {
-    position: absolute; left: -4px; right: -4px; bottom: -2px;
-    width: calc(100% + 8px); height: 12px; overflow: visible; pointer-events: none;
+    position: absolute; left: -4px; right: -4px; bottom: -6px;
+    width: calc(100% + 8px); height: 14px; overflow: visible; pointer-events: none;
   }
   .scribble-underline path {
-    stroke: var(--accent); stroke-width: 5; fill: none; stroke-linecap: round;
+    stroke: var(--accent); stroke-width: 6; fill: none; stroke-linecap: round;
     stroke-dasharray: 220; stroke-dashoffset: 220;
-    animation: draw-underline 0.8s ease-out forwards; animation-delay: 0.4s;
+    animation: draw-underline 0.9s cubic-bezier(0.6, 0, 0.2, 1) forwards; animation-delay: 0.75s;
   }
   @keyframes draw-underline { to { stroke-dashoffset: 0; } }
 
+  /* Staggered page-load reveal */
+  .reveal { opacity: 0; transform: translateY(14px); animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+  .d1 { animation-delay: 0.05s; } .d2 { animation-delay: 0.15s; } .d3 { animation-delay: 0.25s; }
+  .d4 { animation-delay: 0.35s; } .d5 { animation-delay: 0.45s; }
+  @keyframes rise-in { to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; animation: none; }
+    .scribble-underline path { animation: none; stroke-dashoffset: 0; }
+  }
+
   /* Nav */
-  nav { padding: 1.5rem 0 0.5rem; }
-  .nav-inner { display: flex; align-items: center; justify-content: space-between; }
-  .logo-mark { display: flex; align-items: center; gap: 0.5rem; font-family: 'Gaegu', cursive; font-weight: 700; font-size: 1.4rem; }
-  .logo-pin { width: 30px; height: 30px; color: var(--accent); }
-  .nav-links { display: flex; gap: 0.5rem; }
+  .site-nav {
+    position: sticky; top: 0; z-index: 20;
+    backdrop-filter: saturate(140%) blur(8px);
+    background: rgba(247, 243, 234, 0.72);
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.2s ease;
+  }
+  .site-nav.scrolled { border-color: rgba(33, 29, 24, 0.10); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 0; }
+  .logo-mark { display: flex; align-items: center; gap: 0.45rem; font-family: 'Gaegu', cursive; font-weight: 700; font-size: 1.5rem; }
+  .logo-mark .tld { color: var(--accent); }
+  .logo-pin { width: 26px; height: 26px; color: var(--accent); transform: rotate(-6deg); }
+  .nav-links { display: flex; gap: 0.35rem; align-items: center; }
   .nav-links a {
-    color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 600;
+    color: var(--muted); text-decoration: none; font-size: 0.92rem; font-weight: 700;
     padding: 0.4rem 0.9rem; border: 2px solid transparent; border-radius: 999px;
     transition: all 0.15s ease;
   }
-  .nav-links a:hover { border-color: var(--line); color: var(--ink); transform: rotate(-1deg); }
+  .nav-links a:hover { border-color: var(--line); color: var(--ink); transform: rotate(-1.5deg); }
+  .nav-links a.gh { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .nav-links a.gh:hover { transform: translateY(-1px) rotate(-1.5deg); }
 
   /* Hero */
-  .hero { padding: 4rem 0 5rem; }
-  .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
-  .hero h1 { font-size: clamp(3rem, 5.8vw, 4.6rem); line-height: 1.05; letter-spacing: 0.02em; margin: 0 0 1rem; }
-  .tagline { font-size: 1.15rem; color: var(--muted); max-width: 420px; margin: 0 0 1.75rem; }
+  .hero { padding: 3.5rem 0 4.5rem; }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 3rem; align-items: center; }
+  .hero h1 { font-size: clamp(3.1rem, 6vw, 5rem); line-height: 1.02; margin: 0 0 1.1rem; }
+  .tagline { font-size: 1.15rem; color: var(--muted); max-width: 440px; margin: 0 0 1.9rem; }
   .hero-actions { display: flex; flex-wrap: wrap; gap: 0.85rem; }
   .btn {
-    display: inline-flex; align-items: center; gap: 0.4rem; text-decoration: none; font-weight: 600;
-    font-size: 0.95rem; padding: 0.85rem 1.4rem; background: var(--paper); color: var(--ink);
-    border: 2px solid var(--line); border-radius: 255px 12px 225px 12px / 12px 225px 12px 255px;
-    box-shadow: 4px 4px 0 var(--shadow); transition: transform 0.15s ease, box-shadow 0.15s ease;
+    display: inline-flex; align-items: center; gap: 0.45rem; text-decoration: none; font-weight: 700;
+    font-size: 0.98rem; padding: 0.8rem 1.5rem; background: var(--paper); color: var(--ink);
+    border: 2px solid var(--line); border-radius: var(--radius-hand);
+    box-shadow: 4px 4px 0 var(--shadow); transition: transform 0.16s ease, box-shadow 0.16s ease;
   }
-  .btn:hover { transform: translateY(-2px) rotate(-0.8deg); box-shadow: 5px 5px 0 var(--shadow-hover); }
-  .btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .btn.blue { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .btn:hover { transform: translateY(-3px) rotate(-1deg); box-shadow: 6px 7px 0 var(--shadow); }
+  .btn:active { transform: translateY(0); box-shadow: 2px 2px 0 var(--shadow); }
+  .btn.primary { background: var(--accent); color: #fff; border-color: var(--line); }
+  .btn .arr { transition: transform 0.16s ease; }
+  .btn:hover .arr { transform: translateX(3px); }
 
-  .hero-art { position: relative; display: flex; align-items: center; justify-content: center; min-height: 320px; }
-  .hero-art svg.main { width: 100%; max-width: 420px; height: auto; }
+  .hero-art { position: relative; display: flex; align-items: center; justify-content: center; min-height: 340px; }
+
+  /* Drop zone — the hero illustration is a real, working publish window */
+  .dropzone { width: 100%; max-width: 460px; cursor: pointer; --tilt: 0.6deg; }
+  .dz-head { display: flex; align-items: center; gap: 0.45rem; padding: 0.75rem 1.1rem; border-bottom: 2px solid var(--line); }
+  .dz-head .tl { width: 11px; height: 11px; border-radius: 50%; background: rgba(33,29,24,0.16); }
+  .dz-head .tl.a { background: var(--accent); opacity: 0.75; }
+  .dz-head .tag { margin-left: auto; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
+  .dz-body { padding: 1.1rem; }
+  .dz-inner {
+    border: 2.5px dashed rgba(33,29,24,0.30); border-radius: 14px;
+    padding: 2.2rem 1.4rem; text-align: center; transition: border-color 0.15s ease, background 0.15s ease;
+    min-height: 230px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .dropzone.drag .dz-inner { border-color: var(--accent); background: var(--accent-soft); }
+  .dropzone.drag { transform: rotate(0deg) scale(1.02); }
+  .dz-drop-ico { width: 46px; height: 46px; color: var(--accent); }
+  .dropzone.drag .dz-drop-ico { animation: dz-bounce 0.6s ease-in-out infinite; }
+  @keyframes dz-bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  .dz-title { font-family: 'Gaegu', cursive; font-size: 1.45rem; font-weight: 700; margin: 0.7rem 0 0.15rem; }
+  .dz-hint { color: var(--muted); font-size: 0.9rem; margin: 0; }
+  .dz-state { display: none; flex-direction: column; align-items: center; }
+  .dropzone[data-state="idle"] .dz-state.idle,
+  .dropzone[data-state="busy"] .dz-state.busy,
+  .dropzone[data-state="done"] .dz-state.done,
+  .dropzone[data-state="error"] .dz-state.error { display: flex; }
+  .dropzone[data-state="done"] { cursor: default; }
+  .dz-spin {
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 3px solid var(--accent-soft); border-top-color: var(--accent);
+    animation: dz-rot 0.8s linear infinite; margin-bottom: 0.8rem;
+  }
+  @keyframes dz-rot { to { transform: rotate(360deg); } }
+  .dz-url {
+    font-family: var(--mono); font-size: 0.88rem; color: var(--accent); font-weight: 700;
+    word-break: break-all; text-decoration: none; margin: 0.5rem 0 1rem; max-width: 100%;
+    border-bottom: 2px solid var(--accent-soft);
+  }
+  .dz-url:hover { border-bottom-color: var(--accent); }
+  .dz-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: center; }
+  .btn.sm { padding: 0.45rem 1rem; font-size: 0.85rem; box-shadow: 3px 3px 0 var(--shadow); }
+  .dz-again { margin-top: 0.9rem; background: none; border: none; color: var(--muted); font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; text-decoration: underline dotted; }
+  .dz-again:hover { color: var(--ink); }
+  .dz-err-msg { color: var(--accent); font-weight: 700; margin: 0.6rem 0 0; }
   .doodle-star { position: absolute; }
-  .doodle-star.top { top: 6%; right: 2%; width: 34px; height: 34px; }
-  .doodle-star.bottom { bottom: 18%; left: 4%; width: 26px; height: 26px; }
-  .doodle-arrow { position: absolute; width: 60px; bottom: 2%; right: 4%; transform: rotate(-8deg); }
+  .doodle-star.top { top: -3%; right: -4%; width: 36px; height: 36px; animation: spin-slow 14s linear infinite; }
+  .doodle-star.bottom { bottom: 16%; left: 2%; width: 28px; height: 28px; animation: twinkle 3s ease-in-out infinite; }
+  @keyframes spin-slow { to { transform: rotate(360deg); } }
+  @keyframes twinkle { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(0.82); opacity: 0.6; } }
+  .doodle-arrow { position: absolute; width: 62px; bottom: 0%; right: 3%; transform: rotate(-8deg); }
+
+  /* Sections */
+  section { padding: 4rem 0; }
+  .section-header { max-width: 580px; margin-bottom: 2.25rem; }
+  .section-header h2 { font-size: clamp(2rem, 4vw, 2.9rem); margin: 0 0 0.4rem; line-height: 1.08; }
+  .section-header p { color: var(--muted); margin: 0; font-size: 1.06rem; }
 
   /* API section */
-  section { padding: 3.5rem 0; }
-  .section-header { max-width: 560px; margin-bottom: 2rem; }
-  .section-header h2 { font-size: clamp(1.8rem, 3.6vw, 2.6rem); margin: 0 0 0.5rem; }
-  .section-header p { color: var(--muted); margin: 0; font-size: 1.05rem; }
-
-  .endpoint-bar {
-    background: var(--paper); padding: 1rem 1.25rem; display: flex; flex-wrap: wrap;
-    gap: 0.5rem; align-items: center; margin-bottom: 1rem;
+  .endpoint-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.75rem; }
+  .endpoint-row code {
+    background: var(--paper); color: var(--ink); padding: 0.5rem 1rem;
+    border: 2px solid var(--line); border-radius: 999px; box-shadow: 2px 3px 0 var(--shadow);
+    font-family: var(--mono); font-size: 0.82rem; font-weight: 400;
   }
-  .endpoint-bar code {
-    background: var(--accent-soft); color: var(--accent); padding: 0.35rem 0.65rem;
-    border-radius: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 0.82rem; font-weight: 700;
-  }
-  .endpoint-bar span { color: var(--muted); font-size: 0.9rem; }
+  .endpoint-row code b { color: var(--accent); font-weight: 700; }
   .code-card {
-    background: var(--ink); color: #f7f7fa; padding: 1.25rem 1.5rem;
-    border-radius: 18px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 0.85rem; line-height: 1.6; overflow-x: auto;
+    border: 2px solid var(--line); border-radius: 16px; overflow: hidden;
+    box-shadow: 5px 6px 0 var(--shadow); background: #1c1915;
   }
+  .code-head {
+    display: flex; align-items: center; gap: 0.5rem; padding: 0.8rem 1.25rem;
+    background: #2a2620; border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .code-head .tl { width: 12px; height: 12px; border-radius: 50%; }
+  .code-head .r { background: #ff6b5e; } .code-head .y { background: #f5a524; } .code-head .g { background: #46c37b; }
+  .code-head .tag { margin-left: auto; color: rgba(255,255,255,0.45); font-size: 0.75rem; font-family: var(--mono); letter-spacing: 0.05em; }
+  .code-body {
+    color: #f4efe6; padding: 1.6rem 1.75rem 1.75rem; margin: 0;
+    font-family: var(--mono);
+    font-size: 0.86rem; line-height: 2; overflow-x: auto; white-space: pre;
+  }
+  .code-body .cmd { color: #ffb4a8; } .code-body .flag { color: rgba(244, 239, 230, 0.6); } .code-body .str { color: #e8c789; }
+  .code-body .out { color: rgba(244, 239, 230, 0.45); }
 
   /* MCP banner */
   .mcp-banner {
-    background: linear-gradient(135deg, var(--blue-soft) 0%, var(--paper) 100%);
-    padding: 1.75rem 2rem; display: flex; flex-wrap: wrap;
-    align-items: center; justify-content: space-between; gap: 1.25rem;
+    background: linear-gradient(135deg, var(--accent-soft) 0%, var(--paper) 65%);
+    padding: 2rem 2.25rem; display: flex; flex-wrap: wrap;
+    align-items: center; justify-content: space-between; gap: 1.5rem;
   }
-  .mcp-banner h3 { margin: 0; font-size: 1.6rem; display: flex; align-items: center; gap: 0.5rem; }
-  .mcp-banner p { margin: 0.3rem 0 0; color: var(--muted); }
-  .mcp-banner .endpoint { font-family: ui-monospace, monospace; font-size: 0.85rem; color: var(--blue); font-weight: 700; }
+  .mcp-banner h3 { margin: 0; font-size: 1.85rem; display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap; }
+  .mcp-banner p { margin: 0.35rem 0 0; color: var(--muted); max-width: 46ch; }
+  .mcp-banner .endpoint { font-family: var(--mono); font-size: 0.9rem; color: #fff; background: var(--ink); padding: 0.15rem 0.55rem; border-radius: 7px; font-weight: 700; }
 
   /* Features */
-  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
-  .feature {
-    background: var(--paper); padding: 1.5rem;
-  }
-  .feature h3 { margin: 0 0 0.4rem; font-size: 1.4rem; display: flex; align-items: center; gap: 0.5rem; }
-  .feature p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+  .features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+  .feature { padding: 1.7rem 1.8rem; }
+  .feature h3 { margin: 0.9rem 0 0.45rem; font-size: 1.5rem; }
+  .feature p { margin: 0; color: var(--muted); font-size: 0.96rem; max-width: 42ch; }
   .feature-icon {
-    width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; border: 2px solid var(--line);
+    width: 46px; height: 46px; border-radius: 14px 8px 15px 9px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; border: 2px solid var(--line); box-shadow: 2px 2px 0 var(--shadow);
+    background: var(--accent-soft); color: var(--accent);
+    transform: rotate(-2.5deg);
   }
-  .feature-icon.accent { background: var(--accent-soft); color: var(--accent); }
-  .feature-icon.blue { background: var(--blue-soft); color: var(--blue); }
-  .feature-icon.lemon { background: #fff3cd; color: var(--ink); }
+  .features .feature:nth-child(even) .feature-icon { transform: rotate(2deg); border-radius: 9px 15px 8px 14px; }
 
-  /* Steps */
-  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-  .step {
-    text-align: center; padding: 1.5rem; background: var(--paper);
+  /* Steps — pinned-note cards with washi tape and a scribbled number ring */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; padding-top: 12px; }
+  .step { text-align: center; padding: 2.1rem 1.5rem 1.9rem; position: relative; }
+  .step::before {
+    content: ''; position: absolute; top: -12px; left: 50%; width: 72px; height: 24px;
+    background: rgba(232, 80, 58, 0.16);
+    box-shadow: inset 0 0 0 1px rgba(232, 80, 58, 0.10);
+    transform: translateX(-50%) rotate(-2.5deg);
   }
+  .steps .step:nth-child(2)::before { transform: translateX(-50%) rotate(2deg); width: 64px; }
+  .steps .step:nth-child(3)::before { transform: translateX(-50%) rotate(-1deg); width: 78px; }
   .step-num {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 38px; height: 38px; border-radius: 50%;
-    background: var(--ink); color: #fff; font-family: 'Gaegu', cursive;
-    font-size: 1.2rem; font-weight: 700; margin-bottom: 0.75rem;
+    position: relative; display: inline-flex; align-items: center; justify-content: center;
+    width: 52px; height: 52px; margin-bottom: 0.8rem;
+    font-family: 'Gaegu', cursive; font-size: 1.7rem; font-weight: 700; color: var(--ink);
   }
-  .step h4 { margin: 0 0 0.3rem; font-family: 'Gaegu', system-ui, cursive; font-size: 1.3rem; }
-  .step p { margin: 0; color: var(--muted); font-size: 0.92rem; }
+  .step-num svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .step h4 { margin: 0 0 0.35rem; font-size: 1.5rem; }
+  .step p { margin: 0; color: var(--muted); font-size: 0.95rem; }
 
   /* Footer */
-  footer { padding: 2.5rem 0; text-align: center; color: var(--muted); font-size: 0.9rem; font-family: 'Gaegu', system-ui, cursive; }
-  footer a { color: var(--muted); }
-  footer a:hover { color: var(--ink); }
+  footer { padding: 3rem 0 3.5rem; text-align: center; color: var(--muted); font-size: 1.05rem; font-family: 'Gaegu', system-ui, cursive; }
+  footer a { color: var(--ink); text-decoration: none; border-bottom: 2px solid var(--accent-soft); }
+  footer a:hover { border-bottom-color: var(--accent); }
 
   @media (max-width: 900px) {
-    .hero-grid { grid-template-columns: 1fr; }
+    .hero-grid { grid-template-columns: 1fr; gap: 2rem; }
     .hero { padding: 2.5rem 0 3.5rem; }
     .hero-art { order: -1; min-height: 260px; }
-    .features, .steps { grid-template-columns: repeat(2, 1fr); }
+    .steps { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 560px) {
     .features, .steps { grid-template-columns: 1fr; }
-    .endpoint-bar { flex-direction: column; align-items: flex-start; }
-    .mcp-banner { text-align: center; justify-content: center; }
-    .nav-links { display: none; }
+    .mcp-banner { text-align: left; }
+    .nav-links a:not(.gh) { display: none; }
   }
 </style>
 </head>
 <body>
-<div class="container">
-  <nav>
+<nav class="site-nav" id="siteNav">
+  <div class="container">
     <div class="nav-inner">
       <div class="logo-mark">
-        <svg class="logo-pin" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 4.17 3.93 8.11 5.63 9.63.33.29.37.8.37 1.37v.5c0 .28.22.5.5.5h1c.28 0 .5-.22.5-.5v-.5c0-.57.04-1.08.37-1.37C15.07 17.11 19 13.17 19 9c0-3.87-3.13-7-7-7z"/></svg>
-        Pin
+        <svg class="logo-pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 C12 2.5 5.5 10 5.5 14.5 a6.5 6.5 0 0 0 13 0 C18.5 10 12 2.5 12 2.5 Z" fill="currentColor" stroke="#211d18" stroke-width="1.8" stroke-linejoin="round"/><path d="M9.2 14.8 a2.8 2.8 0 0 0 2.4 2.9" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span>htmldrop<span class="tld">.link</span></span>
       </div>
       <div class="nav-links">
         <a href="#api">${t.navApi}</a>
         <a href="#mcp">${t.navMcp}</a>
         <a href="/agents.md">agents.md</a>
-        <a href="https://github.com/vin-spiegel/pin-publish" target="_blank" rel="noopener">GitHub</a>
+        <a class="gh" href="https://github.com/vin-spiegel/pin-publish" target="_blank" rel="noopener">GitHub</a>
       </div>
     </div>
-  </nav>
+  </div>
+</nav>
 
+<div class="container">
   <header class="hero">
     <div class="hero-grid">
       <div>
-        <h1>${t.heroLine1}<br><span class="scribble-underline">${t.heroAccent}<svg viewBox="0 0 180 12" preserveAspectRatio="none"><path d="M2 7 C 40 2, 70 10, 110 6 S 170 4, 178 9"/></svg></span>.</h1>
-        <p class="tagline">${t.tagline}</p>
-        <div class="hero-actions">
-          <a class="btn primary" href="#api">${t.ctaTryApi}</a>
+        <h1 class="reveal d1">${t.heroLine1}<br><span class="scribble-underline">${t.heroAccent}<svg viewBox="0 0 180 12" preserveAspectRatio="none"><path d="M2 7 C 40 2, 70 10, 110 6 S 170 4, 178 9"/></svg></span>.</h1>
+        <p class="tagline reveal d2">${t.tagline}</p>
+        <div class="hero-actions reveal d3">
+          <a class="btn primary" href="#api">${t.ctaTryApi} <span class="arr">→</span></a>
           <a class="btn" href="/agents.md">${t.ctaReadAgents}</a>
         </div>
       </div>
-      <div class="hero-art">
-        <svg class="main" viewBox="0 0 400 360" aria-hidden="true">
-          <rect x="60" y="50" width="280" height="260" rx="24" fill="#fff" stroke="#1a1a1a" stroke-width="2.5"/>
-          <rect x="60" y="87" width="280" height="2" fill="#1a1a1a" opacity="0.12"/>
-          <circle cx="88" cy="70" r="5" fill="#ef4444" opacity="0.5"/>
-          <circle cx="106" cy="70" r="5" fill="#f59e0b" opacity="0.8"/>
-          <circle cx="124" cy="70" r="5" fill="#2563eb" opacity="0.4"/>
-          <rect x="90" y="110" width="140" height="16" rx="8" fill="#ef4444" opacity="0.12"/>
-          <rect x="90" y="140" width="190" height="12" rx="6" fill="#1a1a1a" opacity="0.08"/>
-          <rect x="90" y="164" width="160" height="12" rx="6" fill="#1a1a1a" opacity="0.08"/>
-          <g transform="translate(235, 185)">
-            <circle cx="0" cy="0" r="44" fill="#ef4444" stroke="#1a1a1a" stroke-width="2.5"/>
-            <circle cx="0" cy="-18" r="12" fill="#fff" stroke="#1a1a1a" stroke-width="2.5"/>
-            <path d="M0 -6 L0 40" stroke="#1a1a1a" stroke-width="2.8" stroke-linecap="round"/>
-            <path d="M-16 24 L16 16" stroke="#1a1a1a" stroke-width="2.8" stroke-linecap="round"/>
-          </g>
-          <path d="M110 240 Q 150 285, 205 265" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/>
-          <circle cx="108" cy="236" r="5" fill="#f59e0b" stroke="#1a1a1a" stroke-width="1.5"/>
-        </svg>
-        <svg class="doodle-star top" viewBox="0 0 44 44" aria-hidden="true"><path d="M22 4 L26 16 L40 16 L29 24 L34 38 L22 29 L10 38 L15 24 L4 16 L18 16 Z" fill="#f59e0b" stroke="#1a1a1a" stroke-width="2" stroke-linejoin="round"/></svg>
-        <svg class="doodle-star bottom" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3 L18 12 L28 12 L20 18 L23 28 L16 22 L9 28 L12 18 L4 12 L14 12 Z" fill="#ef4444" stroke="#1a1a1a" stroke-width="2" stroke-linejoin="round"/></svg>
-        <svg class="doodle-arrow" viewBox="0 0 60 40" aria-hidden="true"><path d="M4 20 Q 20 5, 38 18 T 56 14" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/><path d="M48 8 L56 14 L50 22" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="hero-art reveal d2">
+        <div class="dropzone doodle-border" id="dropzone" data-state="idle">
+          <div class="dz-head">
+            <span class="tl"></span><span class="tl"></span><span class="tl a"></span>
+            <span class="tag">index.html</span>
+          </div>
+          <div class="dz-body">
+            <div class="dz-inner">
+              <div class="dz-state idle">
+                <svg class="dz-drop-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 C12 2.5 5.5 10 5.5 14.5 a6.5 6.5 0 0 0 13 0 C18.5 10 12 2.5 12 2.5 Z" fill="rgba(232,80,58,0.14)" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 9 L12 16 M9.2 13.2 L12 16 L14.8 13.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <p class="dz-title">${t.dropTitle}</p>
+                <p class="dz-hint">${t.dropHint}</p>
+              </div>
+              <div class="dz-state busy">
+                <div class="dz-spin"></div>
+                <p class="dz-title">${t.dropBusy}</p>
+              </div>
+              <div class="dz-state done">
+                <p class="dz-title">🎉 ${t.dropDone}</p>
+                <a class="dz-url" id="dzUrl" href="#" target="_blank" rel="noopener"></a>
+                <div class="dz-actions">
+                  <button type="button" class="btn primary sm" id="dzCopy" data-copied="${escapeAttr(t.dropCopied)}">${t.dropCopy}</button>
+                  <a class="btn sm" id="dzOpen" href="#" target="_blank" rel="noopener">${t.dropOpen}</a>
+                </div>
+                <button type="button" class="dz-again" id="dzAgain">${t.dropAgain}</button>
+              </div>
+              <div class="dz-state error">
+                <p class="dz-title">😵</p>
+                <p class="dz-err-msg" id="dzErrMsg">${t.dropErr}</p>
+                <button type="button" class="dz-again" id="dzRetry">${t.dropAgain}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <input type="file" id="dzFile" accept=".html,.htm,text/html" hidden>
+        <svg class="doodle-star top" viewBox="0 0 44 44" aria-hidden="true"><path d="M22 4 L26 16 L40 16 L29 24 L34 38 L22 29 L10 38 L15 24 L4 16 L18 16 Z" fill="#fff" stroke="#211d18" stroke-width="2" stroke-linejoin="round"/></svg>
+        <svg class="doodle-star bottom" viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3 L18 12 L28 12 L20 18 L23 28 L16 22 L9 28 L12 18 L4 12 L14 12 Z" fill="#e8503a" stroke="#211d18" stroke-width="2" stroke-linejoin="round"/></svg>
+        <svg class="doodle-arrow" viewBox="0 0 60 40" aria-hidden="true"><path d="M4 20 Q 20 5, 38 18 T 56 14" fill="none" stroke="#211d18" stroke-width="2.5" stroke-linecap="round" opacity="0.45"/><path d="M48 8 L56 14 L50 22" fill="none" stroke="#211d18" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.45"/></svg>
       </div>
     </div>
   </header>
@@ -645,26 +796,33 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
       <h2>${t.apiH2}</h2>
       <p>${t.apiP}</p>
     </div>
-    <div class="endpoint-bar doodle-border">
-      <code>POST /publish</code>
-      <code>POST /publish/raw</code>
-      <code>POST /publish/from-url</code>
-      <span>${t.apiReturns}</span>
+    <div class="endpoint-row">
+      <code><b>POST</b> /publish</code>
+      <code><b>POST</b> /publish/raw</code>
+      <code><b>POST</b> /publish/from-url</code>
     </div>
-    <div class="code-card">curl -X POST https://${baseDomain}/publish \\
-  -H "Content-Type: application/json" \\
-  -d '{"html":"&lt;h1&gt;Hello agents&lt;/h1&gt;","title":"Demo"}'</div>
+    <div class="code-card">
+      <div class="code-head">
+        <span class="tl r"></span><span class="tl y"></span><span class="tl g"></span>
+        <span class="tag">bash</span>
+      </div>
+      <pre class="code-body"><span class="cmd">curl</span> -X POST https://${baseDomain}/publish <span class="flag">\\</span>
+  <span class="flag">-H</span> <span class="str">"Content-Type: application/json"</span> <span class="flag">\\</span>
+  <span class="flag">-d</span> <span class="str">'{"html":"&lt;h1&gt;Hello agents&lt;/h1&gt;","title":"Demo"}'</span>
+
+<span class="out">${t.apiReturns}</span></pre>
+    </div>
   </div>
 </section>
 
-<section id="mcp" style="background: rgba(26,26,26,0.02);">
+<section id="mcp" style="background: rgba(33,29,24,0.02);">
   <div class="container">
     <div class="mcp-banner doodle-border">
       <div>
-        <h3><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M7 10 L12 13 L17 10" stroke="#2563eb" stroke-width="2.5"/></svg> ${t.mcpH3} <span class="endpoint">/mcp</span></h3>
+        <h3><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#211d18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M7 10 L12 13 L17 10" stroke="#e8503a" stroke-width="2.5"/></svg> ${t.mcpH3} <span class="endpoint">/mcp</span></h3>
         <p>${t.mcpP}</p>
       </div>
-      <a class="btn blue" href="/agents.md">${t.mcpCta}</a>
+      <a class="btn primary" href="/agents.md">${t.mcpCta} <span class="arr">→</span></a>
     </div>
   </div>
 </section>
@@ -677,34 +835,30 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
     </div>
     <div class="features">
       <article class="feature doodle-border">
-        <h3><span class="feature-icon accent"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span> ${t.f1Title}</h3>
+        <span class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+        <h3>${t.f1Title}</h3>
         <p>${t.f1Desc}</p>
       </article>
       <article class="feature doodle-border">
-        <h3><span class="feature-icon blue"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2" fill="#2563eb" opacity=".15" stroke="#2563eb" stroke-width="1.5"/><circle cx="15" cy="12" r="3" fill="#f59e0b" stroke="#1a1a1a" stroke-width="1.5"/><path d="M3 10h18" stroke="#2563eb" stroke-width="1.5"/></svg></span> ${t.f2Title}</h3>
+        <span class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></span>
+        <h3>${t.f2Title}</h3>
         <p>${t.f2Desc}</p>
       </article>
       <article class="feature doodle-border">
-        <h3><span class="feature-icon lemon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></span> ${t.f3Title}</h3>
+        <span class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+        <h3>${t.f3Title}</h3>
         <p>${t.f3Desc}</p>
       </article>
       <article class="feature doodle-border">
-        <h3><span class="feature-icon blue"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span> ${t.f4Title}</h3>
+        <span class="feature-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+        <h3>${t.f4Title}</h3>
         <p>${t.f4Desc}</p>
-      </article>
-      <article class="feature doodle-border">
-        <h3><span class="feature-icon accent"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span> ${t.f5Title}</h3>
-        <p>${t.f5Desc}</p>
-      </article>
-      <article class="feature doodle-border">
-        <h3><span class="feature-icon lemon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span> ${t.f6Title}</h3>
-        <p>${t.f6Desc}</p>
       </article>
     </div>
   </div>
 </section>
 
-<section style="background: rgba(26,26,26,0.02);">
+<section style="background: rgba(33,29,24,0.02);">
   <div class="container">
     <div class="section-header">
       <h2>${t.howH2}</h2>
@@ -712,17 +866,17 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
     </div>
     <div class="steps">
       <div class="step doodle-border">
-        <div class="step-num">1</div>
+        <div class="step-num"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 4.8 C 13.5 5.5 5.2 13.2 5.6 24.2 C 6 34.6 14.2 43 24.6 42.4 C 35 41.8 42.8 33.4 42.2 23.2 C 41.6 13 33.6 4.6 22.8 5.4" fill="rgba(232,80,58,0.12)" stroke="#e8503a" stroke-width="2.3" stroke-linecap="round"/></svg>1</div>
         <h4>${t.s1Title}</h4>
         <p>${t.s1Desc}</p>
       </div>
       <div class="step doodle-border">
-        <div class="step-num">2</div>
+        <div class="step-num"><svg viewBox="0 0 48 48" aria-hidden="true" style="transform: rotate(130deg)"><path d="M24 4.8 C 13.5 5.5 5.2 13.2 5.6 24.2 C 6 34.6 14.2 43 24.6 42.4 C 35 41.8 42.8 33.4 42.2 23.2 C 41.6 13 33.6 4.6 22.8 5.4" fill="rgba(232,80,58,0.12)" stroke="#e8503a" stroke-width="2.3" stroke-linecap="round"/></svg>2</div>
         <h4>${t.s2Title}</h4>
         <p>${t.s2Desc}</p>
       </div>
       <div class="step doodle-border">
-        <div class="step-num">3</div>
+        <div class="step-num"><svg viewBox="0 0 48 48" aria-hidden="true" style="transform: rotate(255deg)"><path d="M24 4.8 C 13.5 5.5 5.2 13.2 5.6 24.2 C 6 34.6 14.2 43 24.6 42.4 C 35 41.8 42.8 33.4 42.2 23.2 C 41.6 13 33.6 4.6 22.8 5.4" fill="rgba(232,80,58,0.12)" stroke="#e8503a" stroke-width="2.3" stroke-linecap="round"/></svg>3</div>
         <h4>${t.s3Title}</h4>
         <p>${t.s3Desc}</p>
       </div>
@@ -735,6 +889,115 @@ export function landingPageHtml(locale: Locale = DEFAULT_LOCALE): string {
     ${t.footer} · <a href="/agents.md">agents.md</a> · <a href="https://github.com/vin-spiegel/pin-publish" target="_blank" rel="noopener">GitHub</a>
   </div>
 </footer>
+<script>
+  (function () {
+    var nav = document.getElementById('siteNav');
+    if (!nav) return;
+    var onScroll = function () { nav.classList.toggle('scrolled', window.scrollY > 8); };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  })();
+
+  // Drag & drop publish — posts to the same /publish endpoint agents use.
+  (function () {
+    var MAX_BYTES = 25 * 1024 * 1024;
+    var dz = document.getElementById('dropzone');
+    var fileInput = document.getElementById('dzFile');
+    if (!dz || !fileInput) return;
+    var urlEl = document.getElementById('dzUrl');
+    var openEl = document.getElementById('dzOpen');
+    var copyBtn = document.getElementById('dzCopy');
+    var againBtn = document.getElementById('dzAgain');
+    var retryBtn = document.getElementById('dzRetry');
+    var publishedUrl = '';
+
+    function setState(s) { dz.setAttribute('data-state', s); }
+    function state() { return dz.getAttribute('data-state'); }
+
+    function looksLikeHtmlFile(file) {
+      return /\\.html?$/i.test(file.name) || file.type === 'text/html';
+    }
+
+    function publish(html, title) {
+      setState('busy');
+      fetch('/publish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ html: html, title: title }),
+      })
+        .then(function (res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function (data) {
+          publishedUrl = data.url;
+          urlEl.textContent = data.url.replace(/^https?:\\/\\//, '');
+          urlEl.href = data.url;
+          openEl.href = data.url;
+          setState('done');
+        })
+        .catch(function () { setState('error'); });
+    }
+
+    function handleFile(file) {
+      if (!file || !looksLikeHtmlFile(file) || file.size > MAX_BYTES) { setState('error'); return; }
+      var reader = new FileReader();
+      reader.onload = function () { publish(String(reader.result), file.name.replace(/\\.html?$/i, '')); };
+      reader.onerror = function () { setState('error'); };
+      reader.readAsText(file);
+    }
+
+    dz.addEventListener('click', function (e) {
+      if (state() === 'done' || state() === 'busy') return;
+      if (e.target.closest('.dz-again, .dz-actions, .dz-url')) return;
+      if (state() === 'error') setState('idle');
+      fileInput.click();
+    });
+    fileInput.addEventListener('change', function () {
+      if (fileInput.files && fileInput.files[0]) handleFile(fileInput.files[0]);
+      fileInput.value = '';
+    });
+
+    ['dragenter', 'dragover'].forEach(function (ev) {
+      dz.addEventListener(ev, function (e) {
+        e.preventDefault();
+        if (state() === 'idle' || state() === 'error') dz.classList.add('drag');
+      });
+    });
+    ['dragleave', 'drop'].forEach(function (ev) {
+      dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.remove('drag'); });
+    });
+    dz.addEventListener('drop', function (e) {
+      if (state() === 'busy' || state() === 'done') return;
+      var file = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      handleFile(file);
+    });
+    // Dropping outside the zone shouldn't navigate the tab away.
+    window.addEventListener('dragover', function (e) { e.preventDefault(); });
+    window.addEventListener('drop', function (e) { e.preventDefault(); });
+
+    // Paste HTML source anywhere on the page to publish it.
+    document.addEventListener('paste', function (e) {
+      if (state() !== 'idle') return;
+      if (/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
+      var text = e.clipboardData && e.clipboardData.getData('text/plain');
+      if (text && text.length <= MAX_BYTES && /<\\w+[^>]*>/.test(text)) publish(text, '');
+    });
+
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function () {
+        navigator.clipboard.writeText(publishedUrl).then(function () {
+          var orig = copyBtn.textContent;
+          copyBtn.textContent = copyBtn.getAttribute('data-copied');
+          setTimeout(function () { copyBtn.textContent = orig; }, 1400);
+        });
+      });
+    }
+    [againBtn, retryBtn].forEach(function (b) {
+      if (b) b.addEventListener('click', function (e) { e.stopPropagation(); setState('idle'); });
+    });
+  })();
+</script>
 </body>
 </html>`;
 }
