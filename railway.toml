@@ -1,2 +1,5 @@
-buildCommand = "npm install && npm run build"
-startCommand = "npm start"
+[build]
+buildCommand = "pnpm install --frozen-lockfile && pnpm run build"
+
+[deploy]
+startCommand = "pnpm start"

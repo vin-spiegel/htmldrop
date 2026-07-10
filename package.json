@@ -14,7 +14,13 @@
     "mcp": "node dist/mcp-server.js",
     "test": "vitest run",
     "test:watch": "vitest",
-    "railway:set-base-domain": "railway variables set BASE_DOMAIN=pin-publish-production.up.railway.app"
+    "railway:set-base-domain": "railway variables set BASE_DOMAIN=htmldrop.link"
+  },
+  "packageManager": "pnpm@10.12.4",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.726.0",
