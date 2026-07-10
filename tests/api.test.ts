@@ -37,6 +37,35 @@ describe('Pin API', () => {
     expect(res.status).toBe(400);
   });
 
+  it('POST /publish renders markdown into a reader page', async () => {
+    const published = await request(app)
+      .post('/publish')
+      .send({ markdown: '# My Report\n\nHello **world**' })
+      .expect(201);
+
+    const res = await request(app)
+      .get(`/view/${published.body.subdomain}`)
+      .expect(200);
+    expect(res.text).toContain('<h1>My Report</h1>');
+    expect(res.text).toContain('<strong>world</strong>');
+    expect(res.text).toContain('<title>My Report</title>'); // title from first heading
+    expect(res.text).toContain('Published with htmldrop');
+  });
+
+  it('POST /publish/raw accepts text/markdown', async () => {
+    const published = await request(app)
+      .post('/publish/raw')
+      .set('Content-Type', 'text/markdown')
+      .send('## Raw md\n\n- one\n- two')
+      .expect(201);
+
+    const res = await request(app)
+      .get(`/view/${published.body.subdomain}`)
+      .expect(200);
+    expect(res.text).toContain('<h2>Raw md</h2>');
+    expect(res.text).toContain('<li>one</li>');
+  });
+
   it('serves an artifact by subdomain via Host header', async () => {
     const published = await request(app)
       .post('/publish')

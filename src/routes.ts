@@ -5,6 +5,7 @@ import path from 'path';
 import { Storage } from './types';
 import { config } from './config';
 import { publishArtifact } from './publish';
+import { markdownToHtml } from './markdown';
 import { generatePngOgImage, generateSvgOgImage } from './og-image';
 
 /**
@@ -58,7 +59,7 @@ export function createRouter(storage: Storage): Router {
 
   router.use(express.json({ limit: '30mb' }));
   router.use(express.urlencoded({ extended: true, limit: '30mb' }));
-  router.use(express.raw({ type: 'text/html', limit: '30mb' }));
+  router.use(express.raw({ type: ['text/html', 'text/markdown'], limit: '30mb' }));
 
   // Owner key header: `x-htmldrop-key` is canonical; `x-pin-key` is accepted
   // for backwards compatibility with early clients.
@@ -97,15 +98,22 @@ export function createRouter(storage: Storage): Router {
     res.status(404).send('AGENTS.md not found');
   });
 
-  // Publish JSON
+  // Publish JSON — accepts `html` or `markdown` (rendered to the reader shell)
   router.post('/publish', rateLimiter, async (req, res) => {
     try {
-      const { html, title, ttl_days, password, url } = req.body;
+      const { html, markdown, title, ttl_days, password, url } = req.body;
       const ownerKey = ownerKeyOf(req);
+      let finalHtml = html;
+      let finalTitle = title;
+      if (!html && typeof markdown === 'string' && markdown.length > 0) {
+        const rendered = markdownToHtml(markdown, title);
+        finalHtml = rendered.html;
+        finalTitle = rendered.title;
+      }
       const result = await publishArtifact(
         {
-          html,
-          title,
+          html: finalHtml,
+          title: finalTitle,
           ttlDays: ttl_days ? Number(ttl_days) : undefined,
           password,
           ownerKey,
@@ -120,20 +128,23 @@ export function createRouter(storage: Storage): Router {
     }
   });
 
-  // Publish raw HTML
+  // Publish raw HTML or markdown (Content-Type: text/html | text/markdown)
   router.post('/publish/raw', rateLimiter, async (req, res) => {
     try {
       if (!Buffer.isBuffer(req.body) || req.body.length === 0) {
-        return res.status(400).json({ error: 'send text/html body' });
+        return res.status(400).json({ error: 'send text/html or text/markdown body' });
       }
       const ownerKey = ownerKeyOf(req);
-      const title =
+      let title =
         (req.headers['x-htmldrop-title'] ?? req.headers['x-pin-title'])?.toString() ||
         req.query.title?.toString();
-      const result = await publishArtifact(
-        { html: req.body.toString('utf-8'), title, ownerKey },
-        storage
-      );
+      let html = req.body.toString('utf-8');
+      if (req.is('text/markdown')) {
+        const rendered = markdownToHtml(html, title);
+        html = rendered.html;
+        title = rendered.title;
+      }
+      const result = await publishArtifact({ html, title, ownerKey }, storage);
       res.status(201).json(result);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'publish failed';

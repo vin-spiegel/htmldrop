@@ -15,9 +15,9 @@
 
 ---
 
-htmldrop turns any HTML artifact into a shareable link in seconds. Reports,
-dashboards, charts, demos — anything an agent (or a human) creates. No git, no
-build, no dashboard.
+htmldrop turns any HTML or Markdown artifact into a shareable link in seconds.
+Reports, dashboards, charts, demos — anything an agent (or a human) creates.
+Markdown is rendered into a clean reader page. No git, no build, no dashboard.
 
 **Try it now: [htmldrop.link](https://htmldrop.link)** — drag & drop an HTML
 file, paste HTML source, or POST to the API.
@@ -120,7 +120,8 @@ domain:
 
 | Argument | Type | Description |
 |----------|------|-------------|
-| `html` | string | HTML content to publish (or use `url`) |
+| `html` | string | HTML content to publish (or use `markdown` / `url`) |
+| `markdown` | string | Markdown content — rendered into a styled reader page |
 | `url` | string | Remote HTML page to fetch and publish |
 | `title` | string | Optional title for metadata and social cards |
 | `ttl_days` | number | Days until the artifact expires |
@@ -134,8 +135,8 @@ Full agent-facing docs live in [AGENTS.md](AGENTS.md), also served at
 
 | Endpoint | Body | Notes |
 |----------|------|-------|
-| `POST /publish` | JSON `{ html, title, ttl_days, password, url }` | Primary endpoint |
-| `POST /publish/raw` | raw `text/html` body | Title via `x-htmldrop-title` header or `?title=` |
+| `POST /publish` | JSON `{ html \| markdown, title, ttl_days, password, url }` | Primary endpoint |
+| `POST /publish/raw` | raw `text/html` or `text/markdown` body | Title via `x-htmldrop-title` header or `?title=` |
 | `POST /publish/from-url` | JSON `{ url, title, ttl_days, password }` | Fetches and republishes a page |
 
 Pass an owner key in the `x-htmldrop-key` header for higher rate limits and a

@@ -37,18 +37,20 @@ Content-Type: application/json
 
 ### `publish_html`
 
-Publish HTML and get a public link.
+Publish HTML or Markdown and get a public link. Markdown is rendered into a
+clean reader page server-side.
 
 **Schema**
 
 ```json
 {
   "name": "publish_html",
-  "description": "Publish an HTML artifact to a public URL",
+  "description": "Publish an HTML or markdown artifact to a public URL",
   "inputSchema": {
     "type": "object",
     "properties": {
       "html": { "type": "string", "description": "HTML content to publish" },
+      "markdown": { "type": "string", "description": "Markdown content to publish; rendered to a reader page" },
       "title": { "type": "string", "description": "Title used for social cards and metadata" },
       "ttl_days": { "type": "number", "description": "Days until the artifact expires" },
       "password": { "type": "string", "description": "Optional password to protect the artifact" },
