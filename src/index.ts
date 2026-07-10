@@ -13,8 +13,15 @@ const router = createRouter(storage);
 
 app.set('trust proxy', true);
 
-// Landing page at root — localized by the visitor's Accept-Language header
-app.get('/', (req, res) => {
+// Landing page at root — but ONLY on the base domain. A request whose Host is a
+// subdomain of the base (e.g. abc.htmldrop.link) is an artifact request, so hand
+// it off to the artifact router below instead of showing the landing page.
+app.get('/', (req, res, next) => {
+  const host = (req.headers.host || '').split(':')[0];
+  const base = config.baseDomain;
+  if (base && base !== 'localhost' && host !== base && host.endsWith('.' + base)) {
+    return next();
+  }
   const locale = resolveLocale(req.headers['accept-language']);
   res.set('Cache-Control', 'public, max-age=300');
   res.set('Vary', 'Accept-Language');

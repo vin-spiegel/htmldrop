@@ -7,6 +7,51 @@ import { config } from './config';
 import { publishArtifact } from './publish';
 import { generatePngOgImage, generateSvgOgImage } from './og-image';
 
+/**
+ * A self-contained password page for protected artifacts. The form POSTs the
+ * password (so it never lands in the URL), which means the shareable link
+ * (`/view/<subdomain>`) carries no secret — the viewer types the password here.
+ */
+function passwordPageHtml(subdomain: string, wrong = false): string {
+  const sub = encodeURIComponent(subdomain);
+  const err = wrong ? '<p class="err">Incorrect password — try again.</p>' : '';
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Password required</title>
+<style>
+  :root{color-scheme:dark}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;
+    background:#0e1015;color:#e9ecf3;
+    font-family:system-ui,"Segoe UI","Malgun Gothic","Apple SD Gothic Neo",sans-serif}
+  .card{width:min(360px,100%);background:#161922;border:1px solid #252b3b;
+    border-radius:14px;padding:30px 26px;text-align:center}
+  .lock{font-size:28px;line-height:1}
+  h1{font-size:17px;margin:14px 0 4px;font-weight:600}
+  .sub{color:#8b93a7;font-size:13px;margin:0 0 18px}
+  form{display:flex;flex-direction:column;gap:11px}
+  input{background:#0e1015;border:1px solid #2c3346;border-radius:9px;padding:12px 13px;
+    color:#e9ecf3;font-size:14px;outline:none;width:100%}
+  input:focus{border-color:#5bc0be}
+  button{background:#5bc0be;color:#0e1015;border:0;border-radius:9px;padding:12px;
+    font-size:14px;font-weight:600;cursor:pointer}
+  button:hover{background:#6fd0ce}
+  .err{color:#ef5f6b;font-size:12.5px;margin:2px 0 0}
+</style></head><body>
+  <div class="card">
+    <div class="lock">🔒</div>
+    <h1>Password required</h1>
+    <p class="sub">This artifact is password protected.</p>
+    <form method="POST" action="/view/${sub}">
+      <input name="password" type="password" placeholder="Enter password" autofocus required autocomplete="off">
+      ${err}
+      <button type="submit">View</button>
+    </form>
+  </div>
+</body></html>`;
+}
+
 export function createRouter(storage: Storage): Router {
   const router = express.Router();
 
@@ -134,14 +179,36 @@ export function createRouter(storage: Storage): Router {
       if (!meta) return res.status(404).send('<h1>Not found or expired</h1>');
 
       if (meta.password) {
+        // Back-compat: ?password= still works. Otherwise show a real form (which
+        // POSTs the password) instead of a bare 401 / requiring it in the URL.
         const query = new URLSearchParams(req.url.split('?')[1] || '');
         if (query.get('password') !== meta.password) {
-          return res.status(401).send(`<h1>Password required</h1>`);
+          res.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
+          return res.status(401).send(passwordPageHtml(req.params.subdomain));
         }
       }
 
       res.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
       res.set('Cache-Control', 'public, max-age=60');
+      res.status(200).send(meta.html);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'unknown error';
+      res.status(500).send(`<h1>Error</h1><p>${message}</p>`);
+    }
+  });
+
+  // Password form submit (POST from passwordPageHtml) — verifies the password
+  // from the request body, so it is never placed in the URL.
+  router.post('/view/:subdomain', async (req, res) => {
+    try {
+      const meta = await storage.loadBySubdomain(req.params.subdomain);
+      if (!meta) return res.status(404).send('<h1>Not found or expired</h1>');
+      res.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
+      if (meta.password && (req.body?.password ?? '') !== meta.password) {
+        return res.status(401).send(passwordPageHtml(req.params.subdomain, true));
+      }
+      // Password arrived via POST body — don't cache the unlocked view.
+      res.set('Cache-Control', 'no-store');
       res.status(200).send(meta.html);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'unknown error';
@@ -206,9 +273,10 @@ export function createRouter(storage: Storage): Router {
       if (meta.password) {
         const query = new URLSearchParams(req.url.split('?')[1] || '');
         if (query.get('password') !== meta.password) {
-          return res
-            .status(401)
-            .send(`<h1>Password required</h1><form>Password: <input name=password type=password></form>`);
+          // The form POSTs to the path-based /view route (valid SSL on the base
+          // domain), so the same unlock flow works regardless of entry point.
+          res.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
+          return res.status(401).send(passwordPageHtml(subdomain));
         }
       }
 
