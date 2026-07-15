@@ -811,7 +811,7 @@ ${ogLocaleAlternates}
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&family=Dongle:wght@400;700&family=Gaegu:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Gowun+Dodum&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #f7f3ea;
@@ -835,8 +835,7 @@ ${ogLocaleAlternates}
   body {
     margin: 0;
     padding: 0;
-    font-family: 'Baloo 2', 'Dongle', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    font-size-adjust: from-font;
+    font-family: 'Gowun Dodum', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
     background: var(--bg);
     color: var(--ink);
     line-height: 1.65;
@@ -870,9 +869,6 @@ ${ogLocaleAlternates}
   .steps .step:nth-child(3) { --tilt: -0.5deg; margin-top: 6px; border-radius: 250px 18px 240px 16px / 16px 250px 20px 245px; }
 
   h1, h2, h3, h4, .hand { font-family: 'Gaegu', system-ui, cursive; letter-spacing: 0.01em; }
-  /* Gaegu is the display face; keep its natural metrics (the body's
-     font-size-adjust that up-scales Dongle must not touch the headings). */
-  h1, h2, h3, h4, .hand, .logo-mark, .dz-title, .step-num, .faq-toggle, footer { font-size-adjust: none; }
 
   /* Scribble underline draw-in */
   .scribble-underline { position: relative; display: inline; white-space: nowrap; }
@@ -978,7 +974,7 @@ ${ogLocaleAlternates}
   .dz-url:hover { border-bottom-color: var(--accent); }
   .dz-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: center; }
   .btn.sm { padding: 0.45rem 1rem; font-size: 0.85rem; box-shadow: 3px 3px 0 var(--shadow); }
-  .dz-again { margin-top: 0.9rem; background: none; border: none; color: var(--muted); font-family: 'Baloo 2', 'Dongle', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; text-decoration: underline dotted; }
+  .dz-again { margin-top: 0.9rem; background: none; border: none; color: var(--muted); font-family: 'Gowun Dodum', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; text-decoration: underline dotted; }
   .dz-again:hover { color: var(--ink); }
   .dz-err-msg { color: var(--accent); font-weight: 700; margin: 0.6rem 0 0; }
   .doodle-star { position: absolute; top: -16px; right: -15px; width: 34px; height: 34px; animation: spin-slow 16s linear infinite; }
@@ -1112,7 +1108,7 @@ ${ogLocaleAlternates}
   footer { padding: 1.5rem 0 2.75rem; text-align: center; color: var(--muted); font-size: 1.05rem; font-family: 'Gaegu', system-ui, cursive; }
   footer a { color: var(--ink); text-decoration: none; border-bottom: 2px solid var(--accent-soft); }
   footer a:hover { border-bottom-color: var(--accent); }
-  .lang-switch { margin-top: 0.9rem; font-family: 'Baloo 2', 'Dongle', sans-serif; font-size: 0.82rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.35rem 1rem; }
+  .lang-switch { margin-top: 0.9rem; font-family: 'Gowun Dodum', sans-serif; font-size: 0.82rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.35rem 1rem; }
   .lang-switch a { color: var(--muted); border-bottom: 2px dotted rgba(33, 29, 24, 0.22); }
   .lang-switch a:hover { color: var(--ink); border-bottom-color: var(--accent); }
   .lang-switch span { color: var(--ink); font-weight: 700; }
