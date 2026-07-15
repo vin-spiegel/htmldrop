@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://htmldrop.link"><img src=".github/logo.svg" width="140" alt="htmldrop ロゴ"></a>
+  <a href="https://htmldrop.link"><img src="../.github/logo.svg" width="140" alt="htmldrop ロゴ"></a>
 </p>
 
 <h1 align="center">htmldrop</h1>
@@ -10,10 +10,10 @@
   <a href="https://htmldrop.link"><img src="https://img.shields.io/badge/htmldrop.link-live-e8503a" alt="htmldrop.link"></a>
   <a href="https://github.com/vin-spiegel/htmldrop/actions/workflows/ci.yml"><img src="https://github.com/vin-spiegel/htmldrop/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://www.npmjs.com/package/htmldrop-mcp"><img src="https://img.shields.io/npm/v/htmldrop-mcp" alt="npm"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT"></a>
+  <a href="../LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT"></a>
 </p>
 
-<p align="center"><a href="README.md">English</a> · <a href="README.ko.md">한국어</a> · 日本語 · <a href="README.zh-CN.md">简体中文</a> · <a href="README.es.md">Español</a> · <a href="README.fr.md">Français</a> · <a href="README.de.md">Deutsch</a></p>
+<p align="center"><a href="../README.md">English</a> · <a href="README.ko.md">한국어</a> · 日本語 · <a href="README.zh-CN.md">简体中文</a> · <a href="README.es.md">Español</a> · <a href="README.fr.md">Français</a> · <a href="README.de.md">Deutsch</a></p>
 
 ---
 
@@ -131,7 +131,7 @@ htmldropを自分で運用していますか?
 | `password` | string | パスワード保護 (任意) |
 | `owner_key` | string | 上限緩和・長いTTLのためのキー (任意) |
 
-エージェント向けの完全なドキュメントは [AGENTS.md](AGENTS.md) にあり、
+エージェント向けの完全なドキュメントは [AGENTS.md](../AGENTS.md) にあり、
 [htmldrop.link/agents.md](https://htmldrop.link/agents.md) でも配信されています。
 
 ## REST API
@@ -204,4 +204,4 @@ pnpm run build  # tsc -> dist/
 
 ## ライセンス
 
-[MIT](LICENSE)
+[MIT](../LICENSE)

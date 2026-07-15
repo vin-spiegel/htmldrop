@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://htmldrop.link"><img src=".github/logo.svg" width="140" alt="htmldrop-Logo"></a>
+  <a href="https://htmldrop.link"><img src="../.github/logo.svg" width="140" alt="htmldrop-Logo"></a>
 </p>
 
 <h1 align="center">htmldrop</h1>
@@ -10,10 +10,10 @@
   <a href="https://htmldrop.link"><img src="https://img.shields.io/badge/htmldrop.link-live-e8503a" alt="htmldrop.link"></a>
   <a href="https://github.com/vin-spiegel/htmldrop/actions/workflows/ci.yml"><img src="https://github.com/vin-spiegel/htmldrop/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://www.npmjs.com/package/htmldrop-mcp"><img src="https://img.shields.io/npm/v/htmldrop-mcp" alt="npm"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT"></a>
+  <a href="../LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT"></a>
 </p>
 
-<p align="center"><a href="README.md">English</a> · <a href="README.ko.md">한국어</a> · <a href="README.ja.md">日本語</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.es.md">Español</a> · <a href="README.fr.md">Français</a> · Deutsch</p>
+<p align="center"><a href="../README.md">English</a> · <a href="README.ko.md">한국어</a> · <a href="README.ja.md">日本語</a> · <a href="README.zh-CN.md">简体中文</a> · <a href="README.es.md">Español</a> · <a href="README.fr.md">Français</a> · Deutsch</p>
 
 ---
 
@@ -132,7 +132,7 @@ stdio-MCP-Server, der auf **deinen** Speicher und deine Domain veröffentlicht:
 | `password` | string | Optionaler Passwortschutz |
 | `owner_key` | string | Optionaler Schlüssel für höhere Limits und längere TTL |
 
-Die vollständige Agenten-Dokumentation liegt in [AGENTS.md](AGENTS.md) und
+Die vollständige Agenten-Dokumentation liegt in [AGENTS.md](../AGENTS.md) und
 wird auch unter [htmldrop.link/agents.md](https://htmldrop.link/agents.md)
 ausgeliefert.
 
@@ -207,4 +207,4 @@ pnpm run build  # tsc -> dist/
 
 ## Lizenz
 
-[MIT](LICENSE)
+[MIT](../LICENSE)
