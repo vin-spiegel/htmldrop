@@ -811,11 +811,15 @@ ${ogLocaleAlternates}
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nunito:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700&family=Dongle:wght@400;700&family=Gaegu:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #f7f3ea;
     --paper: #ffffff;
+    /* Passive cards sit on a warm tone-on-tone paper, not stark white, so they
+       read via their border + offset shadow instead of shouting against --bg.
+       Interactive surfaces (buttons, drop zone, pills) keep --paper. */
+    --card: #fbf8f1;
     --ink: #211d18;
     --muted: #756c60;
     --accent: #e8503a;
@@ -831,10 +835,11 @@ ${ogLocaleAlternates}
   body {
     margin: 0;
     padding: 0;
-    font-family: 'Nunito', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Baloo 2', 'Dongle', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size-adjust: from-font;
     background: var(--bg);
     color: var(--ink);
-    line-height: 1.6;
+    line-height: 1.65;
     -webkit-font-smoothing: antialiased;
     background-image: radial-gradient(rgba(33, 29, 24, 0.06) 0.7px, transparent 0.7px);
     background-size: 26px 26px;
@@ -847,7 +852,7 @@ ${ogLocaleAlternates}
     border: 2px solid var(--line-soft);
     border-radius: var(--radius-hand);
     box-shadow: 4px 4px 0 rgba(33, 29, 24, 0.07);
-    background: var(--paper);
+    background: var(--card);
     --tilt: 0deg;
     transform: rotate(var(--tilt));
     transition: box-shadow 0.18s ease, transform 0.18s ease;
@@ -865,6 +870,9 @@ ${ogLocaleAlternates}
   .steps .step:nth-child(3) { --tilt: -0.5deg; margin-top: 6px; border-radius: 250px 18px 240px 16px / 16px 250px 20px 245px; }
 
   h1, h2, h3, h4, .hand { font-family: 'Gaegu', system-ui, cursive; letter-spacing: 0.01em; }
+  /* Gaegu is the display face; keep its natural metrics (the body's
+     font-size-adjust that up-scales Dongle must not touch the headings). */
+  h1, h2, h3, h4, .hand, .logo-mark, .dz-title, .step-num, .faq-toggle, footer { font-size-adjust: none; }
 
   /* Scribble underline draw-in */
   .scribble-underline { position: relative; display: inline; white-space: nowrap; }
@@ -914,9 +922,9 @@ ${ogLocaleAlternates}
 
   /* Hero — single centered column: headline, one tagline, the drop zone
      as the only call to action, quiet text links below. */
-  .hero { padding: 3.2rem 0 4.5rem; text-align: center; }
-  .hero h1 { font-size: clamp(3rem, 5.5vw, 4.6rem); line-height: 1.05; margin: 0 0 1rem; }
-  .tagline { font-size: 1.12rem; color: var(--muted); max-width: 560px; margin: 0 auto 2.4rem; }
+  .hero { padding: 4.2rem 0 5.6rem; text-align: center; }
+  .hero h1 { font-size: clamp(3rem, 5.5vw, 4.6rem); line-height: 1.05; margin: 0 0 1.15rem; }
+  .tagline { font-size: 1.12rem; color: var(--muted); max-width: 560px; margin: 0 auto 2.9rem; }
   .hero-links { display: flex; justify-content: center; gap: 1.75rem; margin-top: 1.7rem; }
   .hero-links a {
     color: var(--muted); font-weight: 700; font-size: 0.95rem; text-decoration: none;
@@ -936,18 +944,18 @@ ${ogLocaleAlternates}
   .btn:hover .arr { transform: translateX(3px); }
 
   /* Drop zone — a real, working publish window as the hero centerpiece */
-  .hero-drop { position: relative; max-width: 620px; margin: 0 auto; }
+  .hero-drop { position: relative; max-width: 500px; margin: 0 auto; }
   /* The drop zone is the primary CTA — it keeps the full-ink line. */
-  .dropzone { width: 100%; cursor: pointer; --tilt: 0.4deg; border-color: var(--line); box-shadow: 4px 4px 0 var(--shadow); }
+  .dropzone { width: 100%; cursor: pointer; --tilt: 0.4deg; background: var(--paper); border-color: var(--line); box-shadow: 4px 4px 0 var(--shadow); }
   .dz-head { display: flex; align-items: center; gap: 0.45rem; padding: 0.75rem 1.1rem; border-bottom: 2px solid var(--line); }
   .dz-head .tl { width: 11px; height: 11px; border-radius: 50%; background: rgba(33,29,24,0.16); }
   .dz-head .tl.a { background: var(--accent); opacity: 0.75; }
   .dz-head .tag { margin-left: auto; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
-  .dz-body { padding: 1.1rem; }
+  .dz-body { padding: 1.25rem; }
   .dz-inner {
     border: 2.5px dashed rgba(33,29,24,0.30); border-radius: 14px;
-    padding: 2rem 1.4rem; text-align: center; transition: border-color 0.15s ease, background 0.15s ease;
-    min-height: 210px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 2.6rem 1.5rem; text-align: center; transition: border-color 0.15s ease, background 0.15s ease;
+    min-height: 256px; display: flex; flex-direction: column; align-items: center; justify-content: center;
   }
   .dropzone.drag .dz-inner { border-color: var(--accent); background: var(--accent-soft); }
   .dropzone.drag { transform: rotate(0deg) scale(1.02); }
@@ -976,22 +984,22 @@ ${ogLocaleAlternates}
   .dz-url:hover { border-bottom-color: var(--accent); }
   .dz-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: center; }
   .btn.sm { padding: 0.45rem 1rem; font-size: 0.85rem; box-shadow: 3px 3px 0 var(--shadow); }
-  .dz-again { margin-top: 0.9rem; background: none; border: none; color: var(--muted); font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; text-decoration: underline dotted; }
+  .dz-again { margin-top: 0.9rem; background: none; border: none; color: var(--muted); font-family: 'Baloo 2', 'Dongle', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; text-decoration: underline dotted; }
   .dz-again:hover { color: var(--ink); }
   .dz-err-msg { color: var(--accent); font-weight: 700; margin: 0.6rem 0 0; }
   .doodle-star { position: absolute; top: -16px; right: -15px; width: 34px; height: 34px; animation: spin-slow 16s linear infinite; }
   @keyframes spin-slow { to { transform: rotate(360deg); } }
 
   /* Sections */
-  section { padding: 4rem 0; }
-  .section-header { max-width: 580px; margin-bottom: 2.25rem; }
-  .section-header h2 { font-size: clamp(2rem, 4vw, 2.9rem); margin: 0 0 0.4rem; line-height: 1.08; }
-  .section-header p { color: var(--muted); margin: 0; font-size: 1.06rem; }
+  section { padding: 5.5rem 0; }
+  .section-header { max-width: 580px; margin-bottom: 2.4rem; }
+  .section-header h2 { font-size: clamp(1.7rem, 3vw, 2.25rem); margin: 0 0 0.35rem; line-height: 1.12; }
+  .section-header p { color: var(--muted); margin: 0; font-size: 1rem; }
 
   /* Dark beat — the API/MCP block goes full-bleed ink to give the page
      a real value change instead of four same-weight cream sections.
      Top/bottom edges are hand-drawn squiggles, not razor cuts. */
-  .dark { background: var(--ink); padding: 5.5rem 0 5rem; position: relative; }
+  .dark { background: #332c25; padding: 5.5rem 0 5rem; position: relative; }
   .dark::before, .dark::after {
     content: ''; position: absolute; left: 0; right: 0; height: 16px; pointer-events: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 16'%3E%3Cpath d='M0 9 C 14 4 31 13 52 8 C 70 4 88 14 112 9 C 132 5 150 13 174 8 C 194 4 218 12 240 7 L 240 0 L 0 0 Z' fill='%23f7f3ea'/%3E%3C/svg%3E");
@@ -1002,11 +1010,11 @@ ${ogLocaleAlternates}
   .dark .section-header h2 { color: #f4efe6; }
   .dark .section-header p { color: rgba(244, 239, 230, 0.60); }
   .dark .endpoint-row code {
-    background: transparent; color: #f4efe6; border-color: rgba(244, 239, 230, 0.35);
+    background: transparent; color: #f4efe6; border-color: rgba(244, 239, 230, 0.26);
     box-shadow: none;
   }
   .dark .endpoint-row code b { color: #ff8570; }
-  .dark .code-card { border-color: rgba(244, 239, 230, 0.22); box-shadow: 6px 7px 0 rgba(0, 0, 0, 0.35); }
+  .dark .code-card { border-color: rgba(244, 239, 230, 0.14); box-shadow: 4px 5px 0 rgba(0, 0, 0, 0.18); }
 
   /* API section */
   .endpoint-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.75rem; }
@@ -1018,21 +1026,22 @@ ${ogLocaleAlternates}
   .endpoint-row code b { color: var(--accent); font-weight: 700; }
   .code-card {
     border: 2px solid var(--line); border-radius: 16px; overflow: hidden;
-    box-shadow: 5px 6px 0 var(--shadow); background: #1c1915;
+    box-shadow: 5px 6px 0 var(--shadow); background: #29221b;
   }
   .code-head {
     display: flex; align-items: center; gap: 0.5rem; padding: 0.8rem 1.25rem;
-    background: #2a2620; border-bottom: 1px solid rgba(255,255,255,0.08);
+    background: #322a22; border-bottom: 1px solid rgba(255,255,255,0.06);
   }
   .code-head .tl { width: 12px; height: 12px; border-radius: 50%; }
-  .code-head .r { background: #ff6b5e; } .code-head .y { background: #f5a524; } .code-head .g { background: #46c37b; }
+  /* Muted window dots — one quiet coral, two tonal — instead of RGB traffic lights. */
+  .code-head .r { background: rgba(232, 80, 58, 0.55); } .code-head .y { background: rgba(244, 239, 230, 0.20); } .code-head .g { background: rgba(244, 239, 230, 0.14); }
   .code-head .tag { margin-left: auto; color: rgba(255,255,255,0.45); font-size: 0.75rem; font-family: var(--mono); letter-spacing: 0.05em; }
   .code-body {
     color: #f4efe6; padding: 1.6rem 1.75rem 1.75rem; margin: 0;
     font-family: var(--mono);
     font-size: 0.86rem; line-height: 2; overflow-x: auto; white-space: pre;
   }
-  .code-body .cmd { color: #ffb4a8; } .code-body .flag { color: rgba(244, 239, 230, 0.6); } .code-body .str { color: #e8c789; }
+  .code-body .cmd { color: #ffb4a8; } .code-body .flag { color: rgba(244, 239, 230, 0.6); } .code-body .str { color: rgba(244, 239, 230, 0.82); }
   .code-body .out { color: rgba(244, 239, 230, 0.45); }
 
   /* MCP row — lives at the bottom of the dark section */
@@ -1051,12 +1060,12 @@ ${ogLocaleAlternates}
   .btn.lg { padding: 1rem 2.1rem; font-size: 1.05rem; }
 
   /* Features */
-  .features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
-  .feature { padding: 1.7rem 1.8rem; }
-  .feature h3 { margin: 0.9rem 0 0.45rem; font-size: 1.5rem; }
+  .features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.35rem; }
+  .feature { padding: 1.55rem 1.65rem; }
+  .feature h3 { margin: 0.7rem 0 0.35rem; font-size: 1.28rem; }
   .feature p { margin: 0; color: var(--muted); font-size: 0.96rem; max-width: 42ch; }
   .feature-icon {
-    width: 46px; height: 46px; border-radius: 14px 8px 15px 9px; display: flex; align-items: center; justify-content: center;
+    width: 42px; height: 42px; border-radius: 14px 8px 15px 9px; display: flex; align-items: center; justify-content: center;
     flex-shrink: 0; border: 2px solid rgba(232, 80, 58, 0.45); box-shadow: 2px 2px 0 rgba(33, 29, 24, 0.06);
     background: var(--accent-soft); color: var(--accent);
     transform: rotate(-2.5deg);
@@ -1064,8 +1073,8 @@ ${ogLocaleAlternates}
   .features .feature:nth-child(even) .feature-icon { transform: rotate(2deg); border-radius: 9px 15px 8px 14px; }
 
   /* Steps — pinned-note cards with washi tape and a scribbled number ring */
-  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; padding-top: 12px; }
-  .step { text-align: center; padding: 2.1rem 1.5rem 1.9rem; position: relative; }
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.35rem; padding-top: 12px; }
+  .step { text-align: center; padding: 1.5rem 1.3rem 1.4rem; position: relative; }
   .step::before {
     content: ''; position: absolute; top: -12px; left: 50%; width: 72px; height: 24px;
     background: rgba(232, 80, 58, 0.16);
@@ -1076,40 +1085,40 @@ ${ogLocaleAlternates}
   .steps .step:nth-child(3)::before { transform: translateX(-50%) rotate(-1deg); width: 78px; }
   .step-num {
     position: relative; display: inline-flex; align-items: center; justify-content: center;
-    width: 52px; height: 52px; margin-bottom: 0.8rem;
-    font-family: 'Gaegu', cursive; font-size: 1.7rem; font-weight: 700; color: var(--ink);
+    width: 44px; height: 44px; margin-bottom: 0.55rem;
+    font-family: 'Gaegu', cursive; font-size: 1.4rem; font-weight: 700; color: var(--ink);
   }
   .step-num svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-  .step h4 { margin: 0 0 0.35rem; font-size: 1.5rem; }
+  .step h4 { margin: 0 0 0.3rem; font-size: 1.25rem; }
   .step p { margin: 0; color: var(--muted); font-size: 0.95rem; }
 
   .features-section { padding-top: 5rem; }
 
   /* FAQ — hand-drawn accordion cards */
-  .faq-list { display: grid; gap: 1rem; max-width: 780px; }
+  .faq-list { display: grid; gap: 0.7rem; max-width: 780px; }
   .faq-item { --tilt: 0deg; padding: 0; }
   .faq-list .faq-item:nth-child(odd) { --tilt: -0.25deg; }
   .faq-list .faq-item:nth-child(even) { --tilt: 0.25deg; border-radius: 18px 235px 22px 245px / 240px 20px 250px 18px; }
   .faq-item summary {
     display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-    cursor: pointer; list-style: none; padding: 1.05rem 1.4rem;
+    cursor: pointer; list-style: none; padding: 0.85rem 1.2rem;
   }
   .faq-item summary::-webkit-details-marker { display: none; }
-  .faq-item summary h3 { margin: 0; font-size: 1.35rem; line-height: 1.25; }
+  .faq-item summary h3 { margin: 0; font-size: 1.1rem; line-height: 1.3; }
   .faq-toggle {
-    flex-shrink: 0; width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center;
-    font-family: 'Gaegu', cursive; font-size: 1.4rem; font-weight: 700; color: var(--accent);
+    flex-shrink: 0; width: 25px; height: 25px; display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Gaegu', cursive; font-size: 1.15rem; font-weight: 700; color: var(--accent);
     border: 2px solid var(--line); border-radius: 12px 8px 13px 9px; background: var(--accent-soft);
     transform: rotate(-2deg); transition: transform 0.18s ease;
   }
   .faq-item[open] .faq-toggle { transform: rotate(43deg); }
-  .faq-item > p { margin: 0; padding: 0 1.4rem 1.25rem; color: var(--muted); font-size: 0.97rem; max-width: 64ch; }
+  .faq-item > p { margin: 0; padding: 0 1.2rem 1.05rem; color: var(--muted); font-size: 0.94rem; max-width: 64ch; }
 
   /* Footer */
   footer { padding: 1.5rem 0 2.75rem; text-align: center; color: var(--muted); font-size: 1.05rem; font-family: 'Gaegu', system-ui, cursive; }
   footer a { color: var(--ink); text-decoration: none; border-bottom: 2px solid var(--accent-soft); }
   footer a:hover { border-bottom-color: var(--accent); }
-  .lang-switch { margin-top: 0.9rem; font-family: 'Nunito', sans-serif; font-size: 0.82rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.35rem 1rem; }
+  .lang-switch { margin-top: 0.9rem; font-family: 'Baloo 2', 'Dongle', sans-serif; font-size: 0.82rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.35rem 1rem; }
   .lang-switch a { color: var(--muted); border-bottom: 2px dotted rgba(33, 29, 24, 0.22); }
   .lang-switch a:hover { color: var(--ink); border-bottom-color: var(--accent); }
   .lang-switch span { color: var(--ink); font-weight: 700; }
