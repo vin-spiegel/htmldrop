@@ -157,21 +157,31 @@ cp .env.example .env   # los valores por defecto funcionan
 pnpm dev               # http://localhost:3000
 ```
 
-El almacenamiento recurre al sistema de archivos local cuando Cloudflare R2
-no está configurado — sin base de datos, escala horizontalmente.
+**La única variable que necesitas configurar es `BASE_DOMAIN`.** Todo lo demás
+tiene un valor por defecto que funciona. Sin almacenamiento de objetos
+configurado, recurre al sistema de archivos local (`./data`) — sin base de datos.
 
 ### Variables de entorno
 
 | Variable | Por defecto | Descripción |
 |----------|-------------|-------------|
-| `PORT` | `3000` | Puerto HTTP |
-| `BASE_DOMAIN` | `localhost` | Dominio base para los subdominios de artefactos |
-| `CLOUDFLARE_R2_*` | — | Almacenamiento R2 opcional (endpoint, claves, bucket) |
+| **`BASE_DOMAIN`** | `localhost` | **Dominio base para los subdominios de artefactos. El único valor que la mayoría de autohospedados debe configurar.** |
+| `PORT` | `3000` | Puerto HTTP (normalmente lo define el host) |
+| `NODE_ENV` | `development` | Poner `production` al desplegar |
+| `CLOUDFLARE_R2_ENDPOINT` | — | Endpoint compatible con S3. Configura las cuatro variables R2 para almacenamiento de objetos; déjalas todas vacías para el sistema de archivos |
+| `CLOUDFLARE_R2_ACCESS_KEY_ID` | — | Clave de acceso del almacenamiento de objetos |
+| `CLOUDFLARE_R2_SECRET_ACCESS_KEY` | — | Clave secreta del almacenamiento de objetos |
+| `CLOUDFLARE_R2_BUCKET_NAME` | — | Nombre del bucket |
 | `ANON_TTL_DAYS` | `7` | TTL para publicaciones anónimas |
 | `KEY_TTL_DAYS` | `30` | TTL para publicaciones con clave |
-| `MAX_HTML_SIZE_BYTES` | `26214400` | Límite de subida (25 MB) |
+| `MAX_HTML_SIZE_BYTES` | `26214400` | Límite de subida (25 MiB) |
 | `RATE_LIMIT_ANON_PER_MINUTE` | `10` | Límite de tasa por IP |
-| `RATE_LIMIT_KEY_PER_MINUTE` | `60` | Límite de tasa por clave |
+| `RATE_LIMIT_KEY_PER_MINUTE` | `60` | Límite de tasa por clave de propietario |
+
+Cualquier almacenamiento compatible con S3 funciona para las variables
+`CLOUDFLARE_R2_*` (Cloudflare R2, AWS S3, MinIO, …). En hosts
+efímeros/contenedores, usa almacenamiento de objetos o monta un volumen
+persistente en `./data`, o los artefactos se pierden al redesplegar.
 
 Producción necesita un registro DNS comodín (`*.tu-dominio`) apuntando al
 servidor para que los subdominios de artefactos resuelvan.

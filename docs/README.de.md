@@ -158,21 +158,31 @@ cp .env.example .env   # Standardwerte funktionieren direkt
 pnpm dev               # http://localhost:3000
 ```
 
-Ohne konfiguriertes Cloudflare R2 fällt der Speicher auf das lokale
-Dateisystem zurück — keine Datenbank, horizontal skalierbar.
+**Die einzige Variable, die du setzen musst, ist `BASE_DOMAIN`.** Alles andere
+hat einen funktionierenden Standardwert. Ohne konfigurierten Objektspeicher
+fällt der Speicher auf das lokale Dateisystem (`./data`) zurück — keine Datenbank.
 
 ### Umgebungsvariablen
 
 | Variable | Standard | Beschreibung |
 |----------|----------|--------------|
-| `PORT` | `3000` | HTTP-Port |
-| `BASE_DOMAIN` | `localhost` | Basis-Domain für Artefakt-Subdomains |
-| `CLOUDFLARE_R2_*` | — | Optionaler R2-Speicher (Endpoint, Schlüssel, Bucket) |
+| **`BASE_DOMAIN`** | `localhost` | **Basis-Domain für Artefakt-Subdomains. Der einzige Wert, den die meisten Selbst-Hoster setzen müssen.** |
+| `PORT` | `3000` | HTTP-Port (meist vom Host gesetzt) |
+| `NODE_ENV` | `development` | Beim Deployment auf `production` setzen |
+| `CLOUDFLARE_R2_ENDPOINT` | — | S3-kompatibler Endpoint. Alle vier R2-Variablen setzen für Objektspeicher; alle leer lassen für Dateisystem |
+| `CLOUDFLARE_R2_ACCESS_KEY_ID` | — | Zugriffsschlüssel des Objektspeichers |
+| `CLOUDFLARE_R2_SECRET_ACCESS_KEY` | — | Geheimer Schlüssel des Objektspeichers |
+| `CLOUDFLARE_R2_BUCKET_NAME` | — | Bucket-Name |
 | `ANON_TTL_DAYS` | `7` | TTL für anonyme Veröffentlichungen |
 | `KEY_TTL_DAYS` | `30` | TTL für Veröffentlichungen mit Schlüssel |
-| `MAX_HTML_SIZE_BYTES` | `26214400` | Upload-Limit (25 MB) |
+| `MAX_HTML_SIZE_BYTES` | `26214400` | Upload-Limit (25 MiB) |
 | `RATE_LIMIT_ANON_PER_MINUTE` | `10` | Rate-Limit pro IP |
-| `RATE_LIMIT_KEY_PER_MINUTE` | `60` | Rate-Limit pro Schlüssel |
+| `RATE_LIMIT_KEY_PER_MINUTE` | `60` | Rate-Limit pro Owner-Schlüssel |
+
+Für die `CLOUDFLARE_R2_*`-Variablen funktioniert jeder S3-kompatible Speicher
+(Cloudflare R2, AWS S3, MinIO, …). Auf kurzlebigen/Container-Hosts nutze
+Objektspeicher oder mounte ein persistentes Volume unter `./data`, sonst gehen
+Artefakte beim Redeploy verloren.
 
 Die Produktion benötigt einen Wildcard-DNS-Eintrag (`*.deine-domain`), der
 auf den Server zeigt, damit Artefakt-Subdomains auflösen.

@@ -154,20 +154,29 @@ cp .env.example .env   # 默认配置即可运行
 pnpm dev               # http://localhost:3000
 ```
 
-未配置 Cloudflare R2 时回退到本地文件系统 — 无需数据库，可水平扩展。
+**实际上只需设置 `BASE_DOMAIN` 一个变量。** 其余都有可用的默认值。未配置
+对象存储时回退到本地文件系统(`./data`)— 无需数据库。
 
 ### 环境变量
 
 | 变量 | 默认值 | 说明 |
 |------|--------|------|
-| `PORT` | `3000` | HTTP 端口 |
-| `BASE_DOMAIN` | `localhost` | 内容子域名的基础域名 |
-| `CLOUDFLARE_R2_*` | — | R2 存储 (可选: 端点、密钥、存储桶) |
+| **`BASE_DOMAIN`** | `localhost` | **内容子域名的基础域名。大多数自托管者唯一必须设置的值。** |
+| `PORT` | `3000` | HTTP 端口 (通常由主机指定) |
+| `NODE_ENV` | `development` | 部署时设为 `production` |
+| `CLOUDFLARE_R2_ENDPOINT` | — | S3 兼容端点。设置全部四个 R2 变量则使用对象存储，全部留空则使用文件系统 |
+| `CLOUDFLARE_R2_ACCESS_KEY_ID` | — | 对象存储访问密钥 |
+| `CLOUDFLARE_R2_SECRET_ACCESS_KEY` | — | 对象存储私密密钥 |
+| `CLOUDFLARE_R2_BUCKET_NAME` | — | 存储桶名称 |
 | `ANON_TTL_DAYS` | `7` | 匿名发布的 TTL |
 | `KEY_TTL_DAYS` | `30` | 带密钥发布的 TTL |
-| `MAX_HTML_SIZE_BYTES` | `26214400` | 上传上限 (25 MB) |
+| `MAX_HTML_SIZE_BYTES` | `26214400` | 上传上限 (25 MiB) |
 | `RATE_LIMIT_ANON_PER_MINUTE` | `10` | 按 IP 的速率限制 |
-| `RATE_LIMIT_KEY_PER_MINUTE` | `60` | 按密钥的速率限制 |
+| `RATE_LIMIT_KEY_PER_MINUTE` | `60` | 按所有者密钥的速率限制 |
+
+`CLOUDFLARE_R2_*` 变量可使用任意 S3 兼容存储 (Cloudflare R2、AWS S3、MinIO 等)。
+在容器/临时主机上，请使用对象存储或在 `./data` 挂载持久卷，否则重新部署时
+内容会丢失。
 
 生产环境需要通配符 DNS 记录 (`*.your-domain`) 指向服务器，
 以便内容子域名能够解析。

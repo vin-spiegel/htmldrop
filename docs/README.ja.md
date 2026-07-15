@@ -155,21 +155,31 @@ cp .env.example .env   # デフォルトのまま動作します
 pnpm dev               # http://localhost:3000
 ```
 
-Cloudflare R2が未設定の場合はローカルファイルシステムにフォールバック —
-データベース不要で水平スケールします。
+**設定が必要なのは実質 `BASE_DOMAIN` のみです。** それ以外はすべて動作する
+デフォルト値があります。オブジェクトストレージが未設定の場合はローカル
+ファイルシステム(`./data`)にフォールバックします — データベース不要です。
 
 ### 環境変数
 
 | 変数 | デフォルト | 説明 |
 |------|-----------|------|
-| `PORT` | `3000` | HTTPポート |
-| `BASE_DOMAIN` | `localhost` | 成果物サブドメインのベースドメイン |
-| `CLOUDFLARE_R2_*` | — | R2ストレージ (任意: エンドポイント、キー、バケット) |
+| **`BASE_DOMAIN`** | `localhost` | **成果物サブドメインのベースドメイン。多くのセルフホスターが設定すべき唯一の値。** |
+| `PORT` | `3000` | HTTPポート (通常はホストが指定) |
+| `NODE_ENV` | `development` | デプロイ時は `production` に設定 |
+| `CLOUDFLARE_R2_ENDPOINT` | — | S3互換エンドポイント。R2変数4つをすべて設定するとオブジェクトストレージ、すべて空だとファイルシステム |
+| `CLOUDFLARE_R2_ACCESS_KEY_ID` | — | オブジェクトストレージのアクセスキー |
+| `CLOUDFLARE_R2_SECRET_ACCESS_KEY` | — | オブジェクトストレージのシークレットキー |
+| `CLOUDFLARE_R2_BUCKET_NAME` | — | バケット名 |
 | `ANON_TTL_DAYS` | `7` | 匿名公開のTTL |
 | `KEY_TTL_DAYS` | `30` | キー付き公開のTTL |
-| `MAX_HTML_SIZE_BYTES` | `26214400` | アップロード上限 (25 MB) |
+| `MAX_HTML_SIZE_BYTES` | `26214400` | アップロード上限 (25 MiB) |
 | `RATE_LIMIT_ANON_PER_MINUTE` | `10` | IPごとのレート制限 |
-| `RATE_LIMIT_KEY_PER_MINUTE` | `60` | キーごとのレート制限 |
+| `RATE_LIMIT_KEY_PER_MINUTE` | `60` | オーナーキーごとのレート制限 |
+
+`CLOUDFLARE_R2_*` 変数にはあらゆるS3互換ストレージが使えます(Cloudflare R2、
+AWS S3、MinIO など)。コンテナ/揮発性ホストではオブジェクトストレージを使うか、
+`./data` に永続ボリュームをマウントしてください — さもないと再デプロイ時に
+成果物が失われます。
 
 本番環境では、成果物サブドメインが解決できるようワイルドカードDNSレコード
 (`*.your-domain`) をサーバーに向けてください。

@@ -157,21 +157,31 @@ cp .env.example .env   # les valeurs par défaut fonctionnent
 pnpm dev               # http://localhost:3000
 ```
 
-Le stockage bascule sur le système de fichiers local quand Cloudflare R2
-n'est pas configuré — pas de base de données, mise à l'échelle horizontale.
+**La seule variable à définir est `BASE_DOMAIN`.** Tout le reste a une valeur
+par défaut fonctionnelle. Sans stockage objet configuré, le stockage bascule
+sur le système de fichiers local (`./data`) — pas de base de données.
 
 ### Variables d'environnement
 
 | Variable | Défaut | Description |
 |----------|--------|-------------|
-| `PORT` | `3000` | Port HTTP |
-| `BASE_DOMAIN` | `localhost` | Domaine de base des sous-domaines d'artefacts |
-| `CLOUDFLARE_R2_*` | — | Stockage R2 optionnel (endpoint, clés, bucket) |
+| **`BASE_DOMAIN`** | `localhost` | **Domaine de base des sous-domaines d'artefacts. La seule valeur que la plupart des auto-hébergeurs doivent définir.** |
+| `PORT` | `3000` | Port HTTP (généralement défini par l'hôte) |
+| `NODE_ENV` | `development` | Mettre `production` pour le déploiement |
+| `CLOUDFLARE_R2_ENDPOINT` | — | Endpoint compatible S3. Définir les quatre variables R2 pour le stockage objet ; toutes vides pour le système de fichiers |
+| `CLOUDFLARE_R2_ACCESS_KEY_ID` | — | Clé d'accès du stockage objet |
+| `CLOUDFLARE_R2_SECRET_ACCESS_KEY` | — | Clé secrète du stockage objet |
+| `CLOUDFLARE_R2_BUCKET_NAME` | — | Nom du bucket |
 | `ANON_TTL_DAYS` | `7` | TTL des publications anonymes |
 | `KEY_TTL_DAYS` | `30` | TTL des publications avec clé |
-| `MAX_HTML_SIZE_BYTES` | `26214400` | Limite d'upload (25 Mo) |
+| `MAX_HTML_SIZE_BYTES` | `26214400` | Limite d'upload (25 Mio) |
 | `RATE_LIMIT_ANON_PER_MINUTE` | `10` | Limite de débit par IP |
-| `RATE_LIMIT_KEY_PER_MINUTE` | `60` | Limite de débit par clé |
+| `RATE_LIMIT_KEY_PER_MINUTE` | `60` | Limite de débit par clé propriétaire |
+
+N'importe quel stockage compatible S3 fonctionne pour les variables
+`CLOUDFLARE_R2_*` (Cloudflare R2, AWS S3, MinIO, …). Sur les hôtes
+éphémères/conteneurs, utilisez un stockage objet ou montez un volume persistant
+sur `./data`, sinon les artefacts sont perdus au redéploiement.
 
 La production nécessite un enregistrement DNS wildcard (`*.votre-domaine`)
 pointant vers le serveur pour que les sous-domaines d'artefacts se résolvent.

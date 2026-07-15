@@ -155,21 +155,31 @@ cp .env.example .env   # 기본값 그대로 동작합니다
 pnpm dev               # http://localhost:3000
 ```
 
-Cloudflare R2가 설정되지 않으면 로컬 파일시스템으로 폴백됩니다 —
-데이터베이스 없이 수평 확장됩니다.
+**설정해야 하는 값은 사실상 `BASE_DOMAIN` 하나뿐입니다.** 나머지는 모두
+동작하는 기본값이 있습니다. 오브젝트 스토리지가 설정되지 않으면 로컬
+파일시스템(`./data`)으로 폴백됩니다 — 데이터베이스가 필요 없습니다.
 
 ### 환경 변수
 
 | 변수 | 기본값 | 설명 |
 |------|--------|------|
-| `PORT` | `3000` | HTTP 포트 |
-| `BASE_DOMAIN` | `localhost` | 결과물 서브도메인의 베이스 도메인 |
-| `CLOUDFLARE_R2_*` | — | R2 스토리지 (선택: 엔드포인트, 키, 버킷) |
+| **`BASE_DOMAIN`** | `localhost` | **결과물 서브도메인의 베이스 도메인. 대부분의 셀프호스터가 설정해야 하는 유일한 값.** |
+| `PORT` | `3000` | HTTP 포트 (보통 호스트가 지정) |
+| `NODE_ENV` | `development` | 배포 시 `production`으로 설정 |
+| `CLOUDFLARE_R2_ENDPOINT` | — | S3 호환 엔드포인트. R2 변수 4개를 모두 채우면 오브젝트 스토리지, 모두 비우면 파일시스템 |
+| `CLOUDFLARE_R2_ACCESS_KEY_ID` | — | 오브젝트 스토리지 액세스 키 |
+| `CLOUDFLARE_R2_SECRET_ACCESS_KEY` | — | 오브젝트 스토리지 시크릿 키 |
+| `CLOUDFLARE_R2_BUCKET_NAME` | — | 버킷 이름 |
 | `ANON_TTL_DAYS` | `7` | 익명 게시물 TTL |
 | `KEY_TTL_DAYS` | `30` | 키 게시물 TTL |
-| `MAX_HTML_SIZE_BYTES` | `26214400` | 업로드 상한 (25 MB) |
+| `MAX_HTML_SIZE_BYTES` | `26214400` | 업로드 상한 (25 MiB) |
 | `RATE_LIMIT_ANON_PER_MINUTE` | `10` | IP당 속도 제한 |
-| `RATE_LIMIT_KEY_PER_MINUTE` | `60` | 키당 속도 제한 |
+| `RATE_LIMIT_KEY_PER_MINUTE` | `60` | 오너 키당 속도 제한 |
+
+`CLOUDFLARE_R2_*` 변수에는 모든 S3 호환 스토리지를 쓸 수 있습니다(Cloudflare
+R2, AWS S3, MinIO 등). 컨테이너/휘발성 호스트에서는 오브젝트 스토리지를
+쓰거나 `./data`에 영구 볼륨을 마운트하세요 — 안 그러면 재배포 시 결과물이
+사라집니다.
 
 프로덕션에서는 결과물 서브도메인이 해석되도록 와일드카드 DNS 레코드
 (`*.your-domain`)가 서버를 가리켜야 합니다.
