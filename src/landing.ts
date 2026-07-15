@@ -920,17 +920,11 @@ ${ogLocaleAlternates}
   .nav-links a.gh { background: var(--ink); color: #fff; border-color: var(--ink); display: inline-flex; align-items: center; gap: 0.42rem; }
   .nav-links a.gh:hover { transform: translateY(-1px) rotate(-1.5deg); }
 
-  /* Hero — single centered column: headline, one tagline, the drop zone
-     as the only call to action, quiet text links below. */
+  /* Hero — single centered column: headline, one tagline, and the drop
+     zone as the only call to action. Secondary links live in the nav. */
   .hero { padding: 4.2rem 0 5.6rem; text-align: center; }
   .hero h1 { font-size: clamp(3rem, 5.5vw, 4.6rem); line-height: 1.05; margin: 0 0 1.15rem; }
   .tagline { font-size: 1.12rem; color: var(--muted); max-width: 560px; margin: 0 auto 2.9rem; }
-  .hero-links { display: flex; justify-content: center; gap: 1.75rem; margin-top: 1.7rem; }
-  .hero-links a {
-    color: var(--muted); font-weight: 700; font-size: 0.95rem; text-decoration: none;
-    border-bottom: 2px dotted rgba(33, 29, 24, 0.28); padding-bottom: 1px; transition: color 0.15s ease, border-color 0.15s ease;
-  }
-  .hero-links a:hover { color: var(--ink); border-bottom-color: var(--accent); }
   .btn {
     display: inline-flex; align-items: center; gap: 0.45rem; text-decoration: none; font-weight: 700;
     font-size: 0.98rem; padding: 0.8rem 1.5rem; background: var(--paper); color: var(--ink);
@@ -1192,10 +1186,6 @@ ${ogLocaleAlternates}
         </div>
         <input type="file" id="dzFile" accept=".html,.htm,.md,.markdown,.txt,.json,.csv,.pdf,.png,.jpg,.jpeg,.gif,.webp,.svg" hidden>
         <svg class="doodle-star" viewBox="0 0 44 44" aria-hidden="true"><path d="M22 4 L26 16 L40 16 L29 24 L34 38 L22 29 L10 38 L15 24 L4 16 L18 16 Z" fill="#fff" stroke="#211d18" stroke-width="2" stroke-linejoin="round"/></svg>
-    </div>
-    <div class="hero-links reveal d4">
-      <a href="#api">${t.ctaTryApi} →</a>
-      <a href="/agents.md">${t.ctaReadAgents}</a>
     </div>
   </header>
 </div>
