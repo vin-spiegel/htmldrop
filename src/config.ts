@@ -21,9 +21,6 @@ export const config = {
   cfR2AccessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID || '',
   cfR2SecretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY || '',
   cfR2Bucket: process.env.CLOUDFLARE_R2_BUCKET_NAME || '',
-  cfR2PublicUrl: process.env.CLOUDFLARE_R2_PUBLIC_URL || '',
-  cfApiToken: process.env.CLOUDFLARE_API_TOKEN || '',
-  cfZoneId: process.env.CLOUDFLARE_ZONE_ID || '',
 };
 
 export function isR2Configured(): boolean {

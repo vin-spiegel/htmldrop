@@ -155,21 +155,30 @@ cp .env.example .env   # defaults work out of the box
 pnpm dev               # http://localhost:3000
 ```
 
-Storage falls back to the local filesystem when Cloudflare R2 is not
-configured — no database, scales horizontally.
+**The only variable you need to set is `BASE_DOMAIN`.** Everything else has a
+working default. Storage falls back to the local filesystem (`./data`) when no
+object store is configured — no database required.
 
 ### Environment variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `PORT` | `3000` | HTTP port |
-| `BASE_DOMAIN` | `localhost` | Base domain for artifact subdomains |
-| `CLOUDFLARE_R2_*` | — | Optional R2 storage (endpoint, keys, bucket) |
+| **`BASE_DOMAIN`** | `localhost` | **Base domain for artifact subdomains. The one value most self-hosters must set.** |
+| `PORT` | `3000` | HTTP port (usually set by your host) |
+| `NODE_ENV` | `development` | Set to `production` when deploying |
+| `CLOUDFLARE_R2_ENDPOINT` | — | S3-compatible endpoint. Set all four R2 vars to use object storage; leave all blank for filesystem |
+| `CLOUDFLARE_R2_ACCESS_KEY_ID` | — | Object-storage access key |
+| `CLOUDFLARE_R2_SECRET_ACCESS_KEY` | — | Object-storage secret key |
+| `CLOUDFLARE_R2_BUCKET_NAME` | — | Bucket name |
 | `ANON_TTL_DAYS` | `7` | TTL for anonymous publishes |
 | `KEY_TTL_DAYS` | `30` | TTL for keyed publishes |
-| `MAX_HTML_SIZE_BYTES` | `26214400` | Upload cap (25 MB) |
+| `MAX_HTML_SIZE_BYTES` | `26214400` | Upload cap (25 MiB) |
 | `RATE_LIMIT_ANON_PER_MINUTE` | `10` | Per-IP rate limit |
-| `RATE_LIMIT_KEY_PER_MINUTE` | `60` | Per-key rate limit |
+| `RATE_LIMIT_KEY_PER_MINUTE` | `60` | Per-owner-key rate limit |
+
+Any S3-compatible store works for the `CLOUDFLARE_R2_*` variables (Cloudflare
+R2, AWS S3, MinIO, …). On ephemeral/container hosts, either use object storage
+or mount a persistent volume at `./data`, or artifacts are lost on redeploy.
 
 Production needs a wildcard DNS record (`*.your-domain`) pointing at the
 server so artifact subdomains resolve.
