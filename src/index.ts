@@ -5,7 +5,7 @@ import fs from 'fs';
 import { createRouter } from './routes';
 import { FilesystemStorage, R2Storage } from './storage';
 import { config, isR2Configured } from './config';
-import { mcpGetHandler, mcpPostHandler } from './mcp-sse';
+import { mcpGetHandler, mcpPostHandler, mcpStreamableHandler } from './mcp-sse';
 import { PUBLISH_TOOL } from './mcp-handlers';
 import {
   DEFAULT_LOCALE,
@@ -136,7 +136,13 @@ app.get('/mcp', (req, res) => {
   mcpGetHandler(req, res);
 });
 app.post('/mcp', express.json(), async (req, res) => {
-  await mcpPostHandler(req, res, req.body);
+  // With a sessionId it's a legacy SSE message; without one it's a stateless
+  // Streamable HTTP request (what modern clients / registry scanners use).
+  if (typeof req.query.sessionId === 'string') {
+    await mcpPostHandler(req, res, req.body);
+  } else {
+    await mcpStreamableHandler(req.body, res);
+  }
 });
 
 // Static MCP server card so registries (Smithery, etc.) can list the server
