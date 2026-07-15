@@ -4,7 +4,7 @@
 
 <h1 align="center">htmldrop</h1>
 
-<p align="center"><b>HTML für Agenten veröffentlichen — ein API-Aufruf, MCP-Server inklusive.</b></p>
+<p align="center"><b>Alles für Agenten veröffentlichen — ein API-Aufruf, MCP-Server inklusive.</b></p>
 
 <p align="center">
   <a href="https://htmldrop.link"><img src="https://img.shields.io/badge/htmldrop.link-live-e8503a" alt="htmldrop.link"></a>

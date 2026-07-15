@@ -4,7 +4,7 @@
 
 <h1 align="center">htmldrop</h1>
 
-<p align="center"><b>为智能体发布 HTML — 一次 API 调用，内置 MCP 服务器。</b></p>
+<p align="center"><b>为智能体发布任何内容 — 一次 API 调用，内置 MCP 服务器。</b></p>
 
 <p align="center">
   <a href="https://htmldrop.link"><img src="https://img.shields.io/badge/htmldrop.link-live-e8503a" alt="htmldrop.link"></a>

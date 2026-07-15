@@ -4,7 +4,7 @@
 
 <h1 align="center">htmldrop</h1>
 
-<p align="center"><b>에이전트를 위한 HTML 퍼블리싱 — API 호출 한 번, MCP 서버 포함.</b></p>
+<p align="center"><b>에이전트가 만든 무엇이든 공유 링크로 — API 호출 한 번, MCP 서버 포함.</b></p>
 
 <p align="center">
   <a href="https://htmldrop.link"><img src="https://img.shields.io/badge/htmldrop.link-live-e8503a" alt="htmldrop.link"></a>

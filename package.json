@@ -1,7 +1,7 @@
 {
   "name": "htmldrop-mcp",
   "version": "0.1.0",
-  "description": "Publish HTML for agents — one API call, MCP server included",
+  "description": "Publish anything for agents — one API call, MCP server included",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "repository": {

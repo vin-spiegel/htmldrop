@@ -4,7 +4,7 @@
 
 <h1 align="center">htmldrop</h1>
 
-<p align="center"><b>エージェントのためのHTML公開 — API呼び出し1回、MCPサーバー付き。</b></p>
+<p align="center"><b>エージェントが作るものを、なんでも公開 — API呼び出し1回、MCPサーバー付き。</b></p>
 
 <p align="center">
   <a href="https://htmldrop.link"><img src="https://img.shields.io/badge/htmldrop.link-live-e8503a" alt="htmldrop.link"></a>
