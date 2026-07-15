@@ -6,6 +6,7 @@ import { createRouter } from './routes';
 import { FilesystemStorage, R2Storage } from './storage';
 import { config, isR2Configured } from './config';
 import { mcpGetHandler, mcpPostHandler } from './mcp-sse';
+import { PUBLISH_TOOL } from './mcp-handlers';
 import {
   DEFAULT_LOCALE,
   Locale,
@@ -21,7 +22,10 @@ const app = express();
 const storage = isR2Configured() ? new R2Storage() : new FilesystemStorage();
 const router = createRouter(storage);
 
-app.set('trust proxy', true);
+// Trust exactly one proxy hop (Railway's edge). Trusting every hop (`true`)
+// lets a client spoof X-Forwarded-For and rotate `req.ip` at will, which would
+// defeat the IP-keyed anonymous rate limiter — the only abuse guard on publish.
+app.set('trust proxy', 1);
 
 // A request whose Host is a subdomain of the base (e.g. abc.htmldrop.link) is
 // an artifact request — landing/SEO routes must not answer it.
@@ -133,6 +137,20 @@ app.get('/mcp', (req, res) => {
 });
 app.post('/mcp', express.json(), async (req, res) => {
   await mcpPostHandler(req, res, req.body);
+});
+
+// Static MCP server card so registries (Smithery, etc.) can list the server
+// and its tool without a live introspection handshake against the SSE endpoint.
+app.get('/.well-known/mcp/server-card.json', (req, res, next) => {
+  if (isArtifactHost(req)) return next();
+  res.set('Cache-Control', 'public, max-age=3600');
+  res.json({
+    serverInfo: { name: 'htmldrop', version: '0.1.0' },
+    authentication: { required: false },
+    tools: [PUBLISH_TOOL],
+    resources: [],
+    prompts: [],
+  });
 });
 
 // Rest of the API and viewer routes
