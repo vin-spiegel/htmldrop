@@ -16,40 +16,78 @@ import { generatePngOgImage, generateSvgOgImage } from './og-image';
  * URL is kept after unlock; on the base-domain path fallback it's `/view/<sub>`.
  */
 function passwordPageHtml(subdomain: string, action: string, wrong = false): string {
-  const err = wrong ? '<p class="err">Incorrect password — try again.</p>' : '';
+  const err = wrong ? '<p class="err">Hmm, that’s not it — try again.</p>' : '';
   return `<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="theme-color" content="#f7f3ea">
 <title>Password required</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 <style>
-  :root{color-scheme:dark}
+  :root{
+    --bg:#f7f3ea; --paper:#ffffff; --ink:#211d18; --muted:#756c60;
+    --accent:#e8503a; --accent-soft:rgba(232,80,58,0.12);
+    --line:#211d18; --shadow:rgba(33,29,24,0.10);
+    --radius-hand:235px 18px 225px 18px / 18px 225px 18px 235px;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
   *{box-sizing:border-box}
-  body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;
-    background:#0e1015;color:#e9ecf3;
-    font-family:system-ui,"Segoe UI","Malgun Gothic","Apple SD Gothic Neo",sans-serif}
-  .card{width:min(360px,100%);background:#161922;border:1px solid #252b3b;
-    border-radius:14px;padding:30px 26px;text-align:center}
-  .lock{font-size:28px;line-height:1}
-  h1{font-size:17px;margin:14px 0 4px;font-weight:600}
-  .sub{color:#8b93a7;font-size:13px;margin:0 0 18px}
-  form{display:flex;flex-direction:column;gap:11px}
-  input{background:#0e1015;border:1px solid #2c3346;border-radius:9px;padding:12px 13px;
-    color:#e9ecf3;font-size:14px;outline:none;width:100%}
-  input:focus{border-color:#5bc0be}
-  button{background:#5bc0be;color:#0e1015;border:0;border-radius:9px;padding:12px;
-    font-size:14px;font-weight:600;cursor:pointer}
-  button:hover{background:#6fd0ce}
-  .err{color:#ef5f6b;font-size:12.5px;margin:2px 0 0}
+  body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;
+    background:var(--bg);color:var(--ink);
+    background-image:radial-gradient(rgba(33,29,24,0.05) 1px,transparent 1px);
+    background-size:22px 22px;
+    font-family:'Nunito',system-ui,-apple-system,"Malgun Gothic","Apple SD Gothic Neo",sans-serif}
+  .card{width:min(370px,100%);background:var(--paper);
+    border:2px solid var(--line);
+    border-radius:24px 235px 22px 245px / 240px 22px 250px 22px;
+    box-shadow:6px 7px 0 var(--shadow);padding:34px 30px 26px;text-align:center;
+    transform:rotate(-0.6deg)}
+  .lock{width:66px;height:66px;margin:0 auto;display:grid;place-items:center;
+    border:2px solid var(--line);border-radius:50%;background:var(--accent-soft);
+    box-shadow:3px 3px 0 var(--shadow);transform:rotate(1.5deg)}
+  h1{font-family:'Gaegu',system-ui,cursive;font-size:2rem;font-weight:700;
+    margin:.65rem 0 .1rem;letter-spacing:.01em}
+  .sub{color:var(--muted);font-size:.98rem;margin:0 0 1.35rem}
+  form{display:flex;flex-direction:column;gap:.7rem}
+  input{font-family:'Nunito',sans-serif;background:var(--bg);border:2px solid var(--line);
+    border-radius:14px 10px 13px 11px;padding:.85rem 1rem;color:var(--ink);font-size:1rem;
+    outline:none;width:100%;box-shadow:inset 2px 2px 0 rgba(33,29,24,0.04)}
+  input::placeholder{color:var(--muted)}
+  input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  button{font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;cursor:pointer;
+    background:var(--accent);color:#fff;border:2px solid var(--line);
+    border-radius:var(--radius-hand);padding:.8rem;box-shadow:4px 4px 0 var(--shadow);
+    transition:transform .12s ease,box-shadow .12s ease;margin-top:.15rem}
+  button:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--shadow)}
+  button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--shadow)}
+  .err{color:var(--accent);font-weight:700;font-size:.86rem;margin:.15rem 0 0}
+  .tag{margin-top:1.15rem;font-family:var(--mono);font-size:.72rem;color:var(--muted);
+    letter-spacing:.05em}
+  @keyframes shake{10%,90%{transform:translateX(-1px) rotate(-0.6deg)}
+    30%,70%{transform:translateX(3px) rotate(-0.6deg)}
+    50%{transform:translateX(-4px) rotate(-0.6deg)}}
+  .card.wrong{animation:shake .4s ease both}
+  @media (prefers-reduced-motion:reduce){.card.wrong{animation:none}button{transition:none}}
 </style></head><body>
-  <div class="card">
-    <div class="lock">🔒</div>
+  <div class="card${wrong ? ' wrong' : ''}">
+    <div class="lock">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#211d18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="4" y="10.5" width="16" height="10.5" rx="2.5" fill="rgba(232,80,58,0.12)"/>
+        <path d="M7.5 10.5 V7.6 a4.5 4.5 0 0 1 9 0 V10.5"/>
+        <circle cx="12" cy="15" r="1.5" fill="#e8503a" stroke="none"/>
+        <path d="M12 16.3 V18" stroke="#e8503a"/>
+      </svg>
+    </div>
     <h1>Password required</h1>
-    <p class="sub">This artifact is password protected.</p>
+    <p class="sub">This artifact is locked. Enter the password to view it.</p>
     <form method="POST" action="${action}">
       <input name="password" type="password" placeholder="Enter password" autofocus required autocomplete="off">
       ${err}
-      <button type="submit">View</button>
+      <button type="submit">Unlock &rarr;</button>
     </form>
+    <div class="tag">htmldrop</div>
   </div>
 </body></html>`;
 }
