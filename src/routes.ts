@@ -143,8 +143,15 @@ export function createRouter(storage: Storage): Router {
 
   // Expose AGENTS.md for other agents to discover MCP usage
   router.get('/agents.md', (_req, res) => {
-    const filePath = path.join(process.cwd(), 'AGENTS.md');
-    if (fs.existsSync(filePath)) {
+    // Look next to the compiled output first (build copies AGENTS.md into
+    // dist/, which is always present in the deployed image regardless of the
+    // builder), then fall back to the repo root for `pnpm dev`.
+    const candidates = [
+      path.join(__dirname, 'AGENTS.md'),
+      path.join(process.cwd(), 'AGENTS.md'),
+    ];
+    const filePath = candidates.find((p) => fs.existsSync(p));
+    if (filePath) {
       res.set('Content-Type', 'text/markdown; charset=utf-8');
       return res.status(200).send(fs.readFileSync(filePath, 'utf-8'));
     }
