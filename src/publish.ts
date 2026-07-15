@@ -2,6 +2,7 @@ import { ArtifactMeta, PublishOptions, PublishResult } from './types';
 import { config } from './config';
 import { generateId, generateSubdomain } from './subdomain';
 import { extractFirstImage, generatePngOgImage, insertOgImage } from './og-image';
+import { hashPassword } from './password';
 
 export function computeExpiration(ttlDays?: number, ownerKey?: string): Date {
   const days = ttlDays ?? (ownerKey ? config.keyTtlDays : config.anonTtlDays);
@@ -81,6 +82,7 @@ export async function publishArtifact(
 
   const id = generateId();
   const expiresAt = computeExpiration(opts.ttlDays, opts.ownerKey);
+  const password = opts.password ? await hashPassword(opts.password) : undefined;
 
   const meta: ArtifactMeta = {
     id,
@@ -90,7 +92,7 @@ export async function publishArtifact(
     createdAt: new Date().toISOString(),
     expiresAt: expiresAt.toISOString(),
     ownerKey: opts.ownerKey,
-    password: opts.password,
+    password,
     sourceUrl: opts.sourceUrl,
     ogTitle: opts.title || 'htmldrop artifact',
   };

@@ -7,6 +7,8 @@ import { config } from './config';
 import { publishArtifact } from './publish';
 import { markdownToHtml, textToHtml } from './markdown';
 import { generatePngOgImage, generateSvgOgImage } from './og-image';
+import { safeFetch, readCappedText, readCappedBytes } from './safe-fetch';
+import { verifyPassword } from './password';
 
 /**
  * A self-contained password page for protected artifacts. The form POSTs the
@@ -246,7 +248,7 @@ export function createRouter(storage: Storage): Router {
         return res.status(400).json({ error: 'url required' });
       }
       const ownerKey = ownerKeyOf(req);
-      const response = await fetch(url, {
+      const response = await safeFetch(url, {
         headers: { 'User-Agent': 'htmldrop-bot/0.1' },
       });
       if (!response.ok) {
@@ -262,13 +264,13 @@ export function createRouter(storage: Storage): Router {
       };
       let result;
       if (fetchedType === 'application/pdf' || fetchedType.startsWith('image/')) {
-        const data = Buffer.from(await response.arrayBuffer());
+        const data = await readCappedBytes(response);
         result = await publishArtifact({ html: '', binary: { data, contentType: fetchedType }, ...common }, storage);
       } else if (fetchedType === 'text/markdown') {
-        const rendered = markdownToHtml(await response.text(), title);
+        const rendered = markdownToHtml(await readCappedText(response), title);
         result = await publishArtifact({ ...common, html: rendered.html, title: rendered.title }, storage);
       } else {
-        result = await publishArtifact({ ...common, html: await response.text() }, storage);
+        result = await publishArtifact({ ...common, html: await readCappedText(response) }, storage);
       }
       res.status(201).json(result);
     } catch (err: unknown) {
@@ -284,18 +286,19 @@ export function createRouter(storage: Storage): Router {
   });
 
   // Path-based artifact viewer (fallback for Railway default domain SSL limits)
-  router.get('/view/:subdomain', async (req, res) => {
+  router.get('/view/:subdomain', rateLimiter, async (req: Request, res: Response) => {
     try {
-      const meta = await storage.loadBySubdomain(req.params.subdomain);
+      const subdomain = String(req.params.subdomain);
+      const meta = await storage.loadBySubdomain(subdomain);
       if (!meta) return res.status(404).send('<h1>Not found or expired</h1>');
 
       if (meta.password) {
         // Back-compat: ?password= still works. Otherwise show a real form (which
         // POSTs the password) instead of a bare 401 / requiring it in the URL.
         const query = new URLSearchParams(req.url.split('?')[1] || '');
-        if (query.get('password') !== meta.password) {
+        if (!(await verifyPassword(query.get('password'), meta.password))) {
           res.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
-          return res.status(401).send(passwordPageHtml(req.params.subdomain, `/view/${encodeURIComponent(req.params.subdomain)}`));
+          return res.status(401).send(passwordPageHtml(subdomain, `/view/${encodeURIComponent(subdomain)}`));
         }
       }
 
@@ -303,27 +306,28 @@ export function createRouter(storage: Storage): Router {
       res.set('Cache-Control', 'public, max-age=60');
       sendArtifact(res, meta);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'unknown error';
-      res.status(500).send(`<h1>Error</h1><p>${message}</p>`);
+      console.error('artifact view error:', err);
+      res.status(500).send('<h1>Something went wrong</h1>');
     }
   });
 
   // Password form submit (POST from passwordPageHtml) — verifies the password
   // from the request body, so it is never placed in the URL.
-  router.post('/view/:subdomain', async (req, res) => {
+  router.post('/view/:subdomain', rateLimiter, async (req: Request, res: Response) => {
     try {
-      const meta = await storage.loadBySubdomain(req.params.subdomain);
+      const subdomain = String(req.params.subdomain);
+      const meta = await storage.loadBySubdomain(subdomain);
       if (!meta) return res.status(404).send('<h1>Not found or expired</h1>');
       res.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
-      if (meta.password && (req.body?.password ?? '') !== meta.password) {
-        return res.status(401).send(passwordPageHtml(req.params.subdomain, `/view/${encodeURIComponent(req.params.subdomain)}`, true));
+      if (meta.password && !(await verifyPassword(req.body?.password, meta.password))) {
+        return res.status(401).send(passwordPageHtml(subdomain, `/view/${encodeURIComponent(subdomain)}`, true));
       }
       // Password arrived via POST body — don't cache the unlocked view.
       res.set('Cache-Control', 'no-store');
       sendArtifact(res, meta);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'unknown error';
-      res.status(500).send(`<h1>Error</h1><p>${message}</p>`);
+      console.error('artifact view error:', err);
+      res.status(500).send('<h1>Something went wrong</h1>');
     }
   });
 
@@ -337,8 +341,8 @@ export function createRouter(storage: Storage): Router {
       res.set('Cache-Control', 'public, max-age=3600');
       res.status(200).send(svg);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'unknown error';
-      res.status(500).send(message);
+      console.error('og image error:', err);
+      res.status(500).send('og image failed');
     }
   });
 
@@ -352,13 +356,13 @@ export function createRouter(storage: Storage): Router {
       res.set('Cache-Control', 'public, max-age=3600');
       res.status(200).send(png);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'unknown error';
-      res.status(500).send(message);
+      console.error('og image error:', err);
+      res.status(500).send('og image failed');
     }
   });
 
   // Serve artifact subdomain
-  router.get('/', async (req, res) => {
+  router.get('/', rateLimiter, async (req, res) => {
     const host = req.headers.host || '';
     const subdomain = host.split('.')[0];
     if (!subdomain || subdomain.includes('localhost') || !isNaN(Number(subdomain)) || host.split(':')[0] === 'localhost') {
@@ -383,7 +387,7 @@ export function createRouter(storage: Storage): Router {
 
       if (meta.password) {
         const query = new URLSearchParams(req.url.split('?')[1] || '');
-        if (query.get('password') !== meta.password) {
+        if (!(await verifyPassword(query.get('password'), meta.password))) {
           // Post back to the subdomain root itself so the clean URL is kept
           // after unlock (the subdomain has its own valid wildcard cert).
           res.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
@@ -395,14 +399,14 @@ export function createRouter(storage: Storage): Router {
       res.set('Cache-Control', 'public, max-age=60');
       sendArtifact(res, meta);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'unknown error';
-      res.status(500).send(`<h1>Error</h1><p>${message}</p>`);
+      console.error('artifact view error:', err);
+      res.status(500).send('<h1>Something went wrong</h1>');
     }
   });
 
   // Unlock a subdomain artifact in place — the gate form POSTs the password
   // here, so the address bar stays on the clean subdomain root after unlock.
-  router.post('/', async (req, res) => {
+  router.post('/', rateLimiter, async (req, res) => {
     const host = req.headers.host || '';
     const subdomain = host.split('.')[0];
     if (!subdomain || subdomain.includes('localhost') || !isNaN(Number(subdomain)) || host.split(':')[0] === 'localhost') {
@@ -412,15 +416,15 @@ export function createRouter(storage: Storage): Router {
       const meta = await storage.loadBySubdomain(subdomain);
       if (!meta) return res.status(404).send('<h1>Not found or expired</h1>');
       res.set('X-Robots-Tag', 'noindex, nofollow, noarchive');
-      if (meta.password && (req.body?.password ?? '') !== meta.password) {
+      if (meta.password && !(await verifyPassword(req.body?.password, meta.password))) {
         return res.status(401).send(passwordPageHtml(subdomain, '/', true));
       }
       // Password arrived via POST body — don't cache the unlocked view.
       res.set('Cache-Control', 'no-store');
       sendArtifact(res, meta);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'unknown error';
-      res.status(500).send(`<h1>Error</h1><p>${message}</p>`);
+      console.error('artifact view error:', err);
+      res.status(500).send('<h1>Something went wrong</h1>');
     }
   });
 

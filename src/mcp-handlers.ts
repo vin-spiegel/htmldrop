@@ -3,6 +3,7 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { publishArtifact } from './publish';
 import { markdownToHtml } from './markdown';
+import { safeFetch, readCappedText } from './safe-fetch';
 import { FilesystemStorage, R2Storage } from './storage';
 import { isR2Configured } from './config';
 
@@ -66,9 +67,9 @@ export async function handleCall(request: {
     let title = args.title ? String(args.title) : undefined;
     let sourceUrl: string | undefined;
     if (args.url && !args.html && !args.markdown) {
-      const response = await fetch(String(args.url), { headers: { 'User-Agent': 'htmldrop-mcp/0.1' } });
+      const response = await safeFetch(String(args.url), { headers: { 'User-Agent': 'htmldrop-mcp/0.1' } });
       if (!response.ok) throw new Error(`fetch failed: ${response.status}`);
-      html = await response.text();
+      html = await readCappedText(response);
       sourceUrl = String(args.url);
     } else if (args.markdown && !args.html) {
       const rendered = markdownToHtml(String(args.markdown), title);

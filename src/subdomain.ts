@@ -28,11 +28,26 @@ const NOUNS = [
   'shadow', 'summit', 'tundra', 'valley', 'volcano', 'wave', 'zenith',
 ];
 
+// Crypto-strength alphanumeric token appended to every subdomain. Non-password
+// artifacts are protected only by the secrecy of their URL, so the readable
+// adjective-noun pair (a tiny, guessable namespace) can't be the sole guard —
+// this token adds ~46 bits of unguessable entropy against enumeration.
+const TOKEN_ALPHABET = 'abcdefghijklmnopqrstuvwxyz0123456789';
+const TOKEN_LENGTH = 9;
+
+function randomToken(): string {
+  const bytes = crypto.randomBytes(TOKEN_LENGTH);
+  let out = '';
+  for (let i = 0; i < TOKEN_LENGTH; i++) {
+    out += TOKEN_ALPHABET[bytes[i] % TOKEN_ALPHABET.length];
+  }
+  return out;
+}
+
 export function generateSubdomain(): string {
-  const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
-  const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
-  const num = Math.floor(Math.random() * 90) + 10; // 10-99
-  return `${adj}-${noun}-${num}`;
+  const adj = ADJECTIVES[crypto.randomInt(ADJECTIVES.length)];
+  const noun = NOUNS[crypto.randomInt(NOUNS.length)];
+  return `${adj}-${noun}-${randomToken()}`;
 }
 
 export function generateId(): string {

@@ -40,7 +40,7 @@ describe('publish helpers', () => {
   it('generates unique subdomains', () => {
     const s1 = generateSubdomain();
     const s2 = generateSubdomain();
-    expect(s1).toMatch(/^[a-z]+-[a-z]+-\d+$/);
+    expect(s1).toMatch(/^[a-z]+-[a-z]+-[a-z0-9]{9}$/);
     expect(s1).not.toBe(s2);
   });
 });

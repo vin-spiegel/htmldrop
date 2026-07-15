@@ -14,11 +14,20 @@ export interface McpSession {
 
 const sessions = new Map<string, McpSession>();
 
+// The /mcp SSE endpoint is unauthenticated (any agent may connect), so cap the
+// live session map to keep a flood of open connections from exhausting memory.
+const MAX_SESSIONS = 200;
+
 export function getMcpSessions(): ReadonlyMap<string, McpSession> {
   return sessions;
 }
 
 export function mcpGetHandler(req: IncomingMessage, res: ServerResponse) {
+  if (sessions.size >= MAX_SESSIONS) {
+    res.writeHead(503);
+    res.end('MCP server busy, try again later');
+    return;
+  }
   const transport = new SSEServerTransport('/mcp', res);
   const server = new Server(
     { name: 'htmldrop', version: '0.1.0' },
