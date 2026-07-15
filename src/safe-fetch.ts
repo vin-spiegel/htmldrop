@@ -75,7 +75,16 @@ async function assertPublicUrl(rawUrl: string): Promise<void> {
   if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
     throw new Error('only http(s) urls are allowed');
   }
-  const results = await dns.lookup(parsed.hostname, { all: true }).catch(() => {
+  // If the host is an IP literal (including bracketed IPv6), check it directly.
+  // dns.lookup() rejects bracketed literals with "could not resolve host", which
+  // would let a reserved address like http://[::1]/ slip past the block.
+  const host = parsed.hostname;
+  const literal = host.startsWith('[') && host.endsWith(']') ? host.slice(1, -1) : host;
+  if (net.isIP(literal)) {
+    if (isBlockedIp(literal)) throw new Error('url resolves to a private or reserved address');
+    return;
+  }
+  const results = await dns.lookup(host, { all: true }).catch(() => {
     throw new Error('could not resolve host');
   });
   if (results.length === 0) throw new Error('could not resolve host');
