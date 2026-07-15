@@ -1,0 +1,14 @@
+---
+import Landing from '../components/Landing.astro';
+import { SUPPORTED, DEFAULT_LOCALE, type Locale } from '../i18n/ui';
+
+export function getStaticPaths() {
+  return SUPPORTED.filter((l) => l !== DEFAULT_LOCALE).map((locale) => ({
+    params: { locale },
+  }));
+}
+
+const { locale } = Astro.params as { locale: Locale };
+---
+
+<Landing locale={locale} />

@@ -1,5 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
+import path from 'path';
+import fs from 'fs';
 import { createRouter } from './routes';
 import { FilesystemStorage, R2Storage } from './storage';
 import { config, isR2Configured } from './config';
@@ -8,12 +10,11 @@ import {
   DEFAULT_LOCALE,
   Locale,
   SUPPORTED_LOCALES,
-  landingPageHtml,
   localePath,
   resolveLocale,
-} from './landing';
+} from './locale';
 import { generatePngOgImage } from './og-image';
-import type { Request } from 'express';
+import type { Request, Response } from 'express';
 
 const app = express();
 
@@ -30,6 +31,23 @@ function isArtifactHost(req: Request): boolean {
   return Boolean(base && base !== 'localhost' && host !== base && host.endsWith('.' + base));
 }
 
+// The landing is a static Astro build. Serve its assets (_astro bundles,
+// favicon, …) from wherever the build placed them: bundled into dist/landing
+// in production, or web/dist during local `astro build`. The locale HTML pages
+// are sent by the explicit routes below so /ko stays slash-less and the
+// Accept-Language redirect keeps working.
+const LANDING_DIR =
+  [path.join(__dirname, 'landing'), path.join(process.cwd(), 'web', 'dist')].find((p) =>
+    fs.existsSync(p)
+  ) ?? path.join(__dirname, 'landing');
+
+app.use(express.static(LANDING_DIR, { index: false }));
+
+function sendLanding(res: Response, file: string): void {
+  res.set('Cache-Control', 'public, max-age=300');
+  res.sendFile(path.join(LANDING_DIR, file));
+}
+
 // Landing page at root. English is the canonical root (and hreflang x-default);
 // browsers preferring another supported language are redirected once to the
 // locale's own URL (/ko, /ja, …) so every translation has a stable, indexable
@@ -42,9 +60,8 @@ app.get('/', (req, res, next) => {
     res.set('Cache-Control', 'public, max-age=300');
     return res.redirect(302, localePath(locale));
   }
-  res.set('Cache-Control', 'public, max-age=300');
   res.set('Content-Language', DEFAULT_LOCALE);
-  res.status(200).send(landingPageHtml(DEFAULT_LOCALE));
+  sendLanding(res, 'index.html');
 });
 
 // Localized landing pages at /ko, /ja, /zh, /es, /fr, /de.
@@ -52,9 +69,8 @@ const NON_DEFAULT_LOCALES = SUPPORTED_LOCALES.filter((l) => l !== DEFAULT_LOCALE
 app.get(NON_DEFAULT_LOCALES.map(localePath), (req, res, next) => {
   if (isArtifactHost(req)) return next();
   const locale = req.path.replace(/^\//, '') as Locale;
-  res.set('Cache-Control', 'public, max-age=300');
   res.set('Content-Language', locale);
-  res.status(200).send(landingPageHtml(locale));
+  sendLanding(res, `${locale}.html`);
 });
 
 // robots.txt — artifacts are kept out of search via X-Robots-Tag noindex

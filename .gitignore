@@ -9,3 +9,7 @@ coverage/
 
 # local agent config
 .claude/
+
+# Astro landing build output
+web/dist/
+.astro/
