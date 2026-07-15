@@ -1,5 +1,6 @@
 node_modules
 dist
+web/dist
 data
 tests
 .git
@@ -8,3 +9,4 @@ tests
 .env
 .env.example
 *.md
+!AGENTS.md
