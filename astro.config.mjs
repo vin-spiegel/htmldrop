@@ -9,7 +9,10 @@ export default defineConfig({
   srcDir: './web/src',
   outDir: './web/dist',
   publicDir: './web/public',
-  build: { format: 'directory' },
+  // Flat output (index.html, ko.html, …) so Express can serve the existing
+  // slash-less locale URLs (/ko, /ja) unchanged.
+  build: { format: 'file' },
+  trailingSlash: 'never',
   i18n: {
     defaultLocale: 'en',
     locales: ['en', 'ko', 'ja', 'zh', 'es', 'fr', 'de'],

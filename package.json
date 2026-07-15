@@ -23,7 +23,8 @@
   ],
   "scripts": {
     "dev": "tsx src/index.ts",
-    "build": "tsc && node -e \"require('fs').copyFileSync('AGENTS.md','dist/AGENTS.md')\"",
+    "build": "astro build && tsc && node scripts/bundle-assets.mjs",
+    "build:web": "astro build",
     "start": "node dist/index.js",
     "mcp": "node dist/mcp-server.js",
     "test": "vitest run",

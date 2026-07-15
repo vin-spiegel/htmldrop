@@ -1,0 +1,99 @@
+---
+import '../styles/global.css';
+import {
+  translations,
+  localePath,
+  SUPPORTED,
+  OG_LOCALES,
+  type Locale,
+} from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = translations[locale];
+
+const origin = Astro.site ? Astro.site.origin : 'https://htmldrop.link';
+const canonical = `${origin}${localePath(locale)}`;
+const ogImage = `${origin}/og.png`;
+const naver = process.env.NAVER_SITE_VERIFICATION;
+
+const ldEscape = (data: unknown) => JSON.stringify(data).replace(/</g, '\\u003c');
+
+const appLd = ldEscape({
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'htmldrop',
+  url: origin,
+  description: t.metaDesc,
+  applicationCategory: 'DeveloperApplication',
+  operatingSystem: 'Any',
+  browserRequirements: 'Requires a modern web browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  inLanguage: t.htmlLang,
+});
+
+const faqLd = ldEscape({
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  inLanguage: t.htmlLang,
+  mainEntity: t.faq.map(({ q, a }) => ({
+    '@type': 'Question',
+    name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a },
+  })),
+});
+---
+
+<!doctype html>
+<html lang={t.htmlLang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{t.metaTitle}</title>
+    <meta name="description" content={t.metaDesc} />
+    {naver && <meta name="naver-site-verification" content={naver} />}
+    <link rel="canonical" href={canonical} />
+    {
+      SUPPORTED.map((l) => (
+        <link
+          rel="alternate"
+          hreflang={l === 'zh' ? 'zh-CN' : l}
+          href={`${origin}${localePath(l)}`}
+        />
+      ))
+    }
+    <link rel="alternate" hreflang="x-default" href={`${origin}/`} />
+    <meta property="og:title" content={t.ogTitle} />
+    <meta property="og:description" content={t.ogDesc} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="htmldrop" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content={OG_LOCALES[locale]} />
+    {
+      SUPPORTED.filter((l) => l !== locale).map((l) => (
+        <meta property="og:locale:alternate" content={OG_LOCALES[l]} />
+      ))
+    }
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="theme-color" content="#f7f3ea" />
+    <script type="application/ld+json" set:html={appLd} />
+    <script type="application/ld+json" set:html={faqLd} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Gowun+Dodum&family=JetBrains+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

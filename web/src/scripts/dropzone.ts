@@ -31,7 +31,7 @@
         png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg',
         gif: 'image/gif', webp: 'image/webp', svg: 'image/svg+xml',
       };
-      var m = file.name.match(/\\.([a-z0-9]+)$/i);
+      var m = file.name.match(/\.([a-z0-9]+)$/i);
       return (m && byExt[m[1].toLowerCase()]) || null;
     }
 
@@ -42,7 +42,7 @@
       })
         .then(function (data) {
           publishedUrl = data.url;
-          urlEl.textContent = data.url.replace(/^https?:\\/\\//, '');
+          urlEl.textContent = data.url.replace(/^https?:\/\//, '');
           urlEl.href = data.url;
           openEl.href = data.url;
           setState('done');
@@ -63,7 +63,7 @@
       var mime = file && fileMime(file);
       if (!mime || file.size > MAX_BYTES) { setState('error'); return; }
       setState('busy');
-      var title = file.name.replace(/\\.[a-z0-9]+$/i, '');
+      var title = file.name.replace(/\.[a-z0-9]+$/i, '');
       handleResponse(fetch('/publish/raw?title=' + encodeURIComponent(title), {
         method: 'POST',
         headers: { 'Content-Type': mime },
@@ -106,8 +106,8 @@
       if (/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
       var text = e.clipboardData && e.clipboardData.getData('text/plain');
       if (!text || text.length > MAX_BYTES) return;
-      if (/<\\w+[^>]*>/.test(text)) publish({ html: text });
-      else if (/^#{1,6}\\s|^[-*]\\s|\\*\\*[^*]+\\*\\*|^\\d+\\.\\s/m.test(text)) publish({ markdown: text });
+      if (/<\w+[^>]*>/.test(text)) publish({ html: text });
+      else if (/^#{1,6}\s|^[-*]\s|\*\*[^*]+\*\*|^\d+\.\s/m.test(text)) publish({ markdown: text });
     });
 
     if (copyBtn) {
