@@ -48,13 +48,13 @@ Graph generada automáticamente y un TTL — lo compartido no vive para siempre.
 
 ## Conecta tu agente (MCP)
 
-El servidor MCP alojado vive en `https://htmldrop.link/mcp` (SSE) y expone
+El servidor MCP alojado vive en `https://htmldrop.link/mcp` (Streamable HTTP) y expone
 una herramienta: `publish_html`.
 
 ### Claude Code
 
 ```bash
-claude mcp add --transport sse htmldrop https://htmldrop.link/mcp
+claude mcp add --transport http htmldrop https://htmldrop.link/mcp
 ```
 
 ### Claude Desktop

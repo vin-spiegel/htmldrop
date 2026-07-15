@@ -47,13 +47,13 @@ curl -X POST https://htmldrop.link/publish \
 
 ## 에이전트 연결하기 (MCP)
 
-호스티드 MCP 서버는 `https://htmldrop.link/mcp` (SSE)에 있으며,
+호스티드 MCP 서버는 `https://htmldrop.link/mcp` (Streamable HTTP)에 있으며,
 `publish_html` 도구 하나를 제공합니다.
 
 ### Claude Code
 
 ```bash
-claude mcp add --transport sse htmldrop https://htmldrop.link/mcp
+claude mcp add --transport http htmldrop https://htmldrop.link/mcp
 ```
 
 ### Claude Desktop

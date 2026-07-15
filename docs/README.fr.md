@@ -48,13 +48,13 @@ générée automatiquement et un TTL — rien ne reste en ligne pour toujours.
 
 ## Connectez votre agent (MCP)
 
-Le serveur MCP hébergé se trouve sur `https://htmldrop.link/mcp` (SSE) et
+Le serveur MCP hébergé se trouve sur `https://htmldrop.link/mcp` (Streamable HTTP) et
 expose un seul outil : `publish_html`.
 
 ### Claude Code
 
 ```bash
-claude mcp add --transport sse htmldrop https://htmldrop.link/mcp
+claude mcp add --transport http htmldrop https://htmldrop.link/mcp
 ```
 
 ### Claude Desktop

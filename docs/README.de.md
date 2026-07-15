@@ -48,13 +48,13 @@ Graph-Vorschaukarte und eine TTL — Geteiltes bleibt nicht für immer online.
 
 ## Agenten verbinden (MCP)
 
-Der gehostete MCP-Server läuft unter `https://htmldrop.link/mcp` (SSE) und
+Der gehostete MCP-Server läuft unter `https://htmldrop.link/mcp` (Streamable HTTP) und
 stellt ein Tool bereit: `publish_html`.
 
 ### Claude Code
 
 ```bash
-claude mcp add --transport sse htmldrop https://htmldrop.link/mcp
+claude mcp add --transport http htmldrop https://htmldrop.link/mcp
 ```
 
 ### Claude Desktop

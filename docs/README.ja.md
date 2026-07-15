@@ -47,13 +47,13 @@ TTLが付きます — 共有した成果物が永遠に残ることはありま
 
 ## エージェントを接続する (MCP)
 
-ホスティッドMCPサーバーは `https://htmldrop.link/mcp` (SSE) にあり、
+ホスティッドMCPサーバーは `https://htmldrop.link/mcp` (Streamable HTTP) にあり、
 `publish_html` というツールを1つ公開しています。
 
 ### Claude Code
 
 ```bash
-claude mcp add --transport sse htmldrop https://htmldrop.link/mcp
+claude mcp add --transport http htmldrop https://htmldrop.link/mcp
 ```
 
 ### Claude Desktop

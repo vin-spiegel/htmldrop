@@ -46,13 +46,13 @@ curl -X POST https://htmldrop.link/publish \
 
 ## 连接你的智能体 (MCP)
 
-托管 MCP 服务器位于 `https://htmldrop.link/mcp` (SSE)，提供一个工具：
+托管 MCP 服务器位于 `https://htmldrop.link/mcp` (Streamable HTTP)，提供一个工具：
 `publish_html`。
 
 ### Claude Code
 
 ```bash
-claude mcp add --transport sse htmldrop https://htmldrop.link/mcp
+claude mcp add --transport http htmldrop https://htmldrop.link/mcp
 ```
 
 ### Claude Desktop

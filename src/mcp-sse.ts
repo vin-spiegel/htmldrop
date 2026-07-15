@@ -1,81 +1,38 @@
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { IncomingMessage, ServerResponse } from 'http';
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
-} from '@modelcontextprotocol/sdk/types.js';
+import { randomUUID } from 'crypto';
 import { PUBLISH_TOOL, handleCall } from './mcp-handlers';
 
-export interface McpSession {
-  transport: SSEServerTransport;
-  server: Server;
-}
-
-const sessions = new Map<string, McpSession>();
-
-// The /mcp SSE endpoint is unauthenticated (any agent may connect), so cap the
-// live session map to keep a flood of open connections from exhausting memory.
-const MAX_SESSIONS = 200;
-
-export function getMcpSessions(): ReadonlyMap<string, McpSession> {
-  return sessions;
-}
-
-export function mcpGetHandler(req: IncomingMessage, res: ServerResponse) {
-  if (sessions.size >= MAX_SESSIONS) {
-    res.writeHead(503);
-    res.end('MCP server busy, try again later');
-    return;
-  }
-  const transport = new SSEServerTransport('/mcp', res);
-  const server = new Server(
-    { name: 'htmldrop', version: '0.1.0' },
-    { capabilities: { tools: {} } }
-  );
-
-  server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: [PUBLISH_TOOL] }));
-  server.setRequestHandler(CallToolRequestSchema, async (request) => handleCall(request));
-
-  const sessionId = transport.sessionId;
-  sessions.set(sessionId, { transport, server });
-
-  server.connect(transport).catch((err) => {
-    sessions.delete(sessionId);
-    console.error('MCP SSE connection error:', err);
-  });
-
-  res.on('close', () => {
-    sessions.delete(sessionId);
-    server.close().catch(() => {});
-  });
-}
-
-export async function mcpPostHandler(req: IncomingMessage, res: ServerResponse, parsedBody?: unknown) {
-  const sessionId = new URL(req.url || '', `http://${req.headers.host}`).searchParams.get('sessionId');
-  if (!sessionId || !sessions.has(sessionId)) {
-    res.writeHead(404);
-    res.end('MCP session not found');
-    return;
-  }
-  const session = sessions.get(sessionId)!;
-  await session.transport.handlePostMessage(req, res, parsedBody);
-}
-
 /**
- * Stateless Streamable HTTP transport for `POST /mcp` (no sessionId). This is
- * the current MCP transport that modern clients and registry scanners (e.g.
- * Smithery) expect; each POST carries one JSON-RPC message and gets one JSON
- * response. The legacy SSE transport above still works for existing clients.
+ * Stateless Streamable HTTP transport for the hosted MCP server at `POST /mcp`.
+ *
+ * This is the current MCP transport (it replaced the older HTTP+SSE transport).
+ * Each request carries one JSON-RPC message and gets one response; there is no
+ * session state — the single tool (`publish_html`) needs none — which keeps the
+ * endpoint proxy- and registry-scanner-friendly. The response is framed as an
+ * SSE `message` event when the client sent `Accept: text/event-stream` (what
+ * Streamable HTTP clients do), otherwise as a plain JSON body.
  */
-export async function mcpStreamableHandler(body: unknown, res: ServerResponse) {
-  const json = (status: number, obj: unknown) => {
-    res.writeHead(status, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(obj));
+export async function mcpStreamableHandler(req: IncomingMessage, res: ServerResponse, body: unknown) {
+  const wantsSse = String(req.headers['accept'] || '').includes('text/event-stream');
+  const reply = (obj: unknown, extraHeaders: Record<string, string> = {}) => {
+    if (wantsSse) {
+      res.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        Connection: 'keep-alive',
+        ...extraHeaders,
+      });
+      res.end(`event: message\ndata: ${JSON.stringify(obj)}\n\n`);
+    } else {
+      res.writeHead(200, { 'Content-Type': 'application/json', ...extraHeaders });
+      res.end(JSON.stringify(obj));
+    }
   };
+
   const msg = body as { jsonrpc?: string; id?: unknown; method?: string; params?: any };
   if (!msg || typeof msg !== 'object' || msg.jsonrpc !== '2.0' || typeof msg.method !== 'string') {
-    json(400, { jsonrpc: '2.0', id: null, error: { code: -32600, message: 'Invalid Request' } });
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ jsonrpc: '2.0', id: null, error: { code: -32600, message: 'Invalid Request' } }));
     return;
   }
 
@@ -90,27 +47,30 @@ export async function mcpStreamableHandler(body: unknown, res: ServerResponse) {
   try {
     if (method === 'initialize') {
       const requested = params?.protocolVersion;
-      json(200, {
-        jsonrpc: '2.0',
-        id,
-        result: {
-          protocolVersion: typeof requested === 'string' ? requested : '2025-03-26',
-          capabilities: { tools: {} },
-          serverInfo: { name: 'htmldrop', version: '0.1.0' },
+      reply(
+        {
+          jsonrpc: '2.0',
+          id,
+          result: {
+            protocolVersion: typeof requested === 'string' ? requested : '2025-03-26',
+            capabilities: { tools: {} },
+            serverInfo: { name: 'htmldrop', version: '0.1.0' },
+          },
         },
-      });
+        { 'Mcp-Session-Id': randomUUID() }
+      );
     } else if (method === 'tools/list') {
-      json(200, { jsonrpc: '2.0', id, result: { tools: [PUBLISH_TOOL] } });
+      reply({ jsonrpc: '2.0', id, result: { tools: [PUBLISH_TOOL] } });
     } else if (method === 'tools/call') {
       const result = await handleCall({ params });
-      json(200, { jsonrpc: '2.0', id, result });
+      reply({ jsonrpc: '2.0', id, result });
     } else if (method === 'ping') {
-      json(200, { jsonrpc: '2.0', id, result: {} });
+      reply({ jsonrpc: '2.0', id, result: {} });
     } else {
-      json(200, { jsonrpc: '2.0', id, error: { code: -32601, message: `Method not found: ${method}` } });
+      reply({ jsonrpc: '2.0', id, error: { code: -32601, message: `Method not found: ${method}` } });
     }
   } catch (err: unknown) {
-    json(200, {
+    reply({
       jsonrpc: '2.0',
       id,
       error: { code: -32603, message: err instanceof Error ? err.message : String(err) },

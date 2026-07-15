@@ -47,13 +47,13 @@ and a TTL — shared artifacts don't live forever.
 
 ## Connect your agent (MCP)
 
-The hosted MCP server lives at `https://htmldrop.link/mcp` (SSE) and exposes
+The hosted MCP server lives at `https://htmldrop.link/mcp` (Streamable HTTP) and exposes
 one tool: `publish_html`.
 
 ### Claude Code
 
 ```bash
-claude mcp add --transport sse htmldrop https://htmldrop.link/mcp
+claude mcp add --transport http htmldrop https://htmldrop.link/mcp
 ```
 
 ### Claude Desktop
@@ -75,7 +75,7 @@ Claude Desktop speaks stdio, so bridge to the hosted server with
 
 ### Cursor
 
-Cursor connects to SSE URLs directly. In `.cursor/mcp.json`:
+Cursor connects to a remote MCP URL directly. In `.cursor/mcp.json`:
 
 ```json
 {

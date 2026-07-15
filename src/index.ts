@@ -5,7 +5,7 @@ import fs from 'fs';
 import { createRouter } from './routes';
 import { FilesystemStorage, R2Storage } from './storage';
 import { config, isR2Configured } from './config';
-import { mcpGetHandler, mcpPostHandler, mcpStreamableHandler } from './mcp-sse';
+import { mcpStreamableHandler } from './mcp-sse';
 import { PUBLISH_TOOL } from './mcp-handlers';
 import {
   DEFAULT_LOCALE,
@@ -131,18 +131,20 @@ app.get(['/favicon.ico', '/favicon.svg'], (_req, res) => {
   res.send(FAVICON_SVG);
 });
 
-// MCP over SSE at /mcp
-app.get('/mcp', (req, res) => {
-  mcpGetHandler(req, res);
+// MCP over Streamable HTTP at /mcp. Requests are POSTed; the server holds no
+// session state, so GET (which would open a server->client notification stream)
+// has nothing to serve and returns 405 — modern clients handle that and proceed
+// over POST.
+app.get('/mcp', (_req, res) => {
+  res.set('Allow', 'POST');
+  res.status(405).json({
+    jsonrpc: '2.0',
+    id: null,
+    error: { code: -32000, message: 'Method Not Allowed: this MCP endpoint is Streamable HTTP (POST only).' },
+  });
 });
 app.post('/mcp', express.json(), async (req, res) => {
-  // With a sessionId it's a legacy SSE message; without one it's a stateless
-  // Streamable HTTP request (what modern clients / registry scanners use).
-  if (typeof req.query.sessionId === 'string') {
-    await mcpPostHandler(req, res, req.body);
-  } else {
-    await mcpStreamableHandler(req.body, res);
-  }
+  await mcpStreamableHandler(req, res, req.body);
 });
 
 // Static MCP server card so registries (Smithery, etc.) can list the server

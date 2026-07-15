@@ -7,31 +7,27 @@ This is the htmldrop MCP server (htmldrop.link). It lets an agent publish an HTM
 | Endpoint | URL |
 |----------|-----|
 | Landing page | https://htmldrop.link/ |
-| HTTP/SSE MCP | `GET/POST https://htmldrop.link/mcp` |
+| MCP (Streamable HTTP) | `POST https://htmldrop.link/mcp` |
 | REST API | `POST https://htmldrop.link/publish` |
 | This file | https://htmldrop.link/agents.md |
 
 ## Connect as an MCP client
 
-Use HTTP/SSE. Connect to:
+The server speaks MCP over **Streamable HTTP** (stateless) — POST each JSON-RPC
+message to `/mcp`. No session handshake or `sessionId` is required. The response
+is returned as `application/json`, or as a `text/event-stream` `message` event
+if you send `Accept: text/event-stream`.
 
 ```text
-GET https://htmldrop.link/mcp
-```
-
-Wait for the endpoint event:
-
-```text
-event: endpoint
-data: /mcp?sessionId=<uuid>
-```
-
-All subsequent JSON-RPC messages go to:
-
-```text
-POST https://htmldrop.link/mcp?sessionId=<uuid>
+POST https://htmldrop.link/mcp
 Content-Type: application/json
+Accept: application/json, text/event-stream
+
+{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"agent","version":"1.0"}}}
 ```
+
+Then send `tools/list` and `tools/call` the same way. Most MCP clients handle
+this automatically — see the README for one-line setup (Claude Code, Cursor, …).
 
 ## Available tool
 
