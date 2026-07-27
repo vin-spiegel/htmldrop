@@ -22,6 +22,10 @@ content down sooner.
 ## Hardening notes for self-hosters
 
 - All published artifacts are served with `X-Robots-Tag: noindex, nofollow, noarchive`.
+- Newly published HTML is marked with a versioned CSP sandbox policy. Inline
+  scripts may run, but the document has an opaque origin and cannot make
+  external requests, submit forms, open popups, or navigate the top-level page.
+  Legacy artifacts keep their original behavior until they expire.
 - Per-IP and per-key rate limits are enabled by default (`RATE_LIMIT_*` env vars).
 - Every artifact has a TTL (`ANON_TTL_DAYS` / `KEY_TTL_DAYS`); nothing lives forever.
 - Uploads are capped by `MAX_HTML_SIZE_BYTES` (default 25 MB).

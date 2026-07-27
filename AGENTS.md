@@ -127,5 +127,7 @@ Response:
 
 - The returned URL is volatile. Content expires automatically based on `ttl_days`.
 - All artifacts include `X-Robots-Tag: noindex, nofollow, noarchive`.
+- New HTML artifacts run in a browser sandbox. Inline scripts work, but external
+  network requests, external assets, forms, popups, and top-level navigation are blocked.
 - Pass an `owner_key` for higher rate limits and longer default TTL.
 - Ask for a fresh URL if the page returns 404 (expired) or 401 (password protected).

@@ -94,6 +94,58 @@ function passwordPageHtml(subdomain: string, action: string, wrong = false): str
 </body></html>`;
 }
 
+const SANDBOXED_ARTIFACT_CSP = [
+  'sandbox allow-scripts',
+  "default-src 'none'",
+  "script-src 'unsafe-inline'",
+  "style-src 'unsafe-inline'",
+  'img-src data: blob:',
+  'font-src data:',
+  'media-src data: blob:',
+  "connect-src 'none'",
+  "form-action 'none'",
+  "base-uri 'none'",
+  "frame-src 'none'",
+  "object-src 'none'",
+  "worker-src 'none'",
+  "manifest-src 'none'",
+].join('; ');
+
+const SANDBOXED_ARTIFACT_PERMISSIONS = [
+  'accelerometer=()',
+  'autoplay=()',
+  'camera=()',
+  'display-capture=()',
+  'encrypted-media=()',
+  'fullscreen=()',
+  'geolocation=()',
+  'gyroscope=()',
+  'magnetometer=()',
+  'microphone=()',
+  'midi=()',
+  'payment=()',
+  'publickey-credentials-get=()',
+  'screen-wake-lock=()',
+  'usb=()',
+  'web-share=()',
+  'xr-spatial-tracking=()',
+].join(', ');
+
+function applyArtifactSecurityHeaders(res: Response, meta: ArtifactMeta): void {
+  // Legacy artifacts intentionally keep their original behavior. Every new
+  // HTML artifact is marked at publish time and served from an opaque sandbox
+  // origin with no network, form, popup, or top-navigation capabilities.
+  if (meta.securityPolicy !== 'sandboxed-v1' || meta.contentBase64) return;
+  res.set({
+    'Content-Security-Policy': SANDBOXED_ARTIFACT_CSP,
+    'Permissions-Policy': SANDBOXED_ARTIFACT_PERMISSIONS,
+    'Referrer-Policy': 'no-referrer',
+    'X-Content-Type-Options': 'nosniff',
+    'Cross-Origin-Opener-Policy': 'same-origin',
+    'Origin-Agent-Cluster': '?1',
+  });
+}
+
 /** Send an artifact with its stored content type; binary payloads verbatim. */
 function sendArtifact(res: Response, meta: ArtifactMeta): void {
   if (meta.contentBase64) {
@@ -101,6 +153,7 @@ function sendArtifact(res: Response, meta: ArtifactMeta): void {
     res.status(200).send(Buffer.from(meta.contentBase64, 'base64'));
     return;
   }
+  applyArtifactSecurityHeaders(res, meta);
   res.status(200).send(meta.html);
 }
 

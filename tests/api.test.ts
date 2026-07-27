@@ -4,6 +4,7 @@ import express from 'express';
 import { createRouter } from '../src/routes';
 import { FilesystemStorage } from '../src/storage';
 import { publishArtifact } from '../src/publish';
+import { generateSubdomain } from '../src/subdomain';
 
 describe('Pin API', () => {
   let storage: FilesystemStorage;
@@ -65,6 +66,7 @@ describe('Pin API', () => {
       .expect(200)
       .expect('Content-Type', /application\/pdf/);
     expect(Buffer.compare(res.body, pdfBytes)).toBe(0);
+    expect(res.headers['content-security-policy']).toBeUndefined();
   });
 
   it('POST /publish/raw accepts images', async () => {
@@ -141,6 +143,12 @@ describe('Pin API', () => {
 
     expect(res.text).toContain('Secret report');
     expect(res.text).toContain('Published with htmldrop');
+    expect(res.headers['content-security-policy']).toContain('sandbox allow-scripts');
+    expect(res.headers['content-security-policy']).toContain("connect-src 'none'");
+    expect(res.headers['content-security-policy']).toContain("form-action 'none'");
+    expect(res.headers['permissions-policy']).toContain('payment=()');
+    expect(res.headers['referrer-policy']).toBe('no-referrer');
+    expect(res.headers['x-content-type-options']).toBe('nosniff');
   });
 
   it('serves an artifact by /view/:subdomain path', async () => {
@@ -151,6 +159,7 @@ describe('Pin API', () => {
     const res = await request(app).get(`/view/${result.subdomain}`).expect(200);
     expect(res.text).toContain('Path fallback');
     expect(res.headers['x-robots-tag']).toContain('noindex');
+    expect(res.headers['content-security-policy']).toContain('sandbox allow-scripts');
   });
 
   it('allows password protected artifacts', async () => {
@@ -171,5 +180,27 @@ describe('Pin API', () => {
       .expect(200);
 
     expect(res.text).toContain('Protected');
+    expect(res.headers['content-security-policy']).toContain("default-src 'none'");
+  });
+
+  it('does not change the behavior of legacy artifacts', async () => {
+    const subdomain = generateSubdomain();
+    await storage.save({
+      id: `legacy-${Date.now()}`,
+      subdomain,
+      html: '<!doctype html><html><body><script src="https://cdn.example/app.js"></script></body></html>',
+      createdAt: new Date().toISOString(),
+      expiresAt: new Date(Date.now() + 60_000).toISOString(),
+    });
+
+    try {
+      const res = await request(app)
+        .get('/')
+        .set('Host', `${subdomain}.localhost`)
+        .expect(200);
+      expect(res.headers['content-security-policy']).toBeUndefined();
+    } finally {
+      await storage.deleteBySubdomain(subdomain);
+    }
   });
 });

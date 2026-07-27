@@ -9,6 +9,8 @@ export interface ArtifactMeta {
   contentBase64?: string;
   createdAt: string;
   expiresAt: string;
+  /** Response isolation applied when this artifact is served. */
+  securityPolicy?: 'sandboxed-v1';
   password?: string;
   sourceUrl?: string;
   ogSvg?: string;

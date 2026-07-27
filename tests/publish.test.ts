@@ -58,5 +58,6 @@ describe('publish helpers', () => {
     );
     expect(saved).toBeDefined();
     expect(saved).not.toHaveProperty('ownerKey');
+    expect(saved?.securityPolicy).toBe('sandboxed-v1');
   });
 });

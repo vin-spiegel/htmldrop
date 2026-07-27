@@ -94,6 +94,7 @@ export async function publishArtifact(
     html: '',
     createdAt: new Date().toISOString(),
     expiresAt: expiresAt.toISOString(),
+    securityPolicy: opts.binary ? undefined : 'sandboxed-v1',
     password,
     sourceUrl: opts.sourceUrl,
     ogTitle: opts.title || 'htmldrop artifact',

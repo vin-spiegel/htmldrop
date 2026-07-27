@@ -197,6 +197,8 @@ dashboard, and attach your domain plus its wildcard.
 ## Safety defaults
 
 - Artifacts are served with `X-Robots-Tag: noindex, nofollow, noarchive`
+- New HTML artifacts use a versioned CSP sandbox: inline scripts work, while
+  external network requests/assets, forms, popups, and top-level navigation are blocked
 - Per-IP and per-key rate limits
 - Everything expires via TTL
 - Optional password protection per artifact
