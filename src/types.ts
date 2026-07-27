@@ -9,7 +9,6 @@ export interface ArtifactMeta {
   contentBase64?: string;
   createdAt: string;
   expiresAt: string;
-  ownerKey?: string;
   password?: string;
   sourceUrl?: string;
   ogSvg?: string;
@@ -39,4 +38,6 @@ export interface Storage {
   loadBySubdomain(subdomain: string): Promise<ArtifactMeta | null>;
   loadById(id: string): Promise<ArtifactMeta | null>;
   deleteById(id: string): Promise<void>;
+  deleteBySubdomain(subdomain: string): Promise<void>;
+  deleteExpired(): Promise<number>;
 }

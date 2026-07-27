@@ -17,6 +17,7 @@ export const config = {
   maxHtmlSizeBytes: parseInt(process.env.MAX_HTML_SIZE_BYTES || `${25 * 1024 * 1024}`, 10),
   rateLimitAnonPerMinute: parseInt(process.env.RATE_LIMIT_ANON_PER_MINUTE || '10', 10),
   rateLimitKeyPerMinute: parseInt(process.env.RATE_LIMIT_KEY_PER_MINUTE || '60', 10),
+  expiryCleanupIntervalMs: parseInt(process.env.EXPIRY_CLEANUP_INTERVAL_MS || `${60 * 60 * 1000}`, 10),
   cfR2Endpoint: process.env.CLOUDFLARE_R2_ENDPOINT || '',
   cfR2AccessKeyId: process.env.CLOUDFLARE_R2_ACCESS_KEY_ID || '',
   cfR2SecretAccessKey: process.env.CLOUDFLARE_R2_SECRET_ACCESS_KEY || '',

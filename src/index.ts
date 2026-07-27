@@ -22,6 +22,26 @@ const app = express();
 const storage = isR2Configured() ? new R2Storage() : new FilesystemStorage();
 const router = createRouter(storage);
 
+let cleanupInProgress = false;
+async function cleanupExpiredArtifacts(): Promise<void> {
+  if (cleanupInProgress) return;
+  cleanupInProgress = true;
+  try {
+    const deleted = await storage.deleteExpired();
+    if (deleted > 0) console.log(`Expired artifact cleanup removed ${deleted} artifact(s)`);
+  } catch (err: unknown) {
+    console.error('Expired artifact cleanup failed:', err instanceof Error ? err.message : err);
+  } finally {
+    cleanupInProgress = false;
+  }
+}
+
+void cleanupExpiredArtifacts();
+const cleanupTimer = setInterval(() => {
+  void cleanupExpiredArtifacts();
+}, config.expiryCleanupIntervalMs);
+cleanupTimer.unref();
+
 // Trust exactly one proxy hop (Railway's edge). Trusting every hop (`true`)
 // lets a client spoof X-Forwarded-For and rotate `req.ip` at will, which would
 // defeat the IP-keyed anonymous rate limiter — the only abuse guard on publish.

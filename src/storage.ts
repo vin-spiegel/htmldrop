@@ -2,13 +2,22 @@ import fs from 'fs/promises';
 import path from 'path';
 import { ArtifactMeta, Storage } from './types';
 import { config } from './config';
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectsCommand,
+  ListObjectsV2Command,
+} from '@aws-sdk/client-s3';
 
 const DATA_DIR = path.resolve(process.cwd(), 'data');
 
 /** Content payload lives in its own file; the meta JSON only keeps metadata. */
 function stripContent(meta: ArtifactMeta): ArtifactMeta {
-  return { ...meta, html: '', contentBase64: undefined };
+  // `ownerKey` existed in legacy metadata. Never persist it: it is only needed
+  // while calculating the requested tier's expiry and rate limit.
+  const { ownerKey: _ownerKey, ...safeMeta } = meta as ArtifactMeta & { ownerKey?: string };
+  return { ...safeMeta, html: '', contentBase64: undefined };
 }
 
 function isBinary(meta: ArtifactMeta): boolean {
@@ -40,7 +49,10 @@ export class FilesystemStorage implements Storage {
       } else {
         meta.html = await fs.readFile(contentPath, 'utf-8');
       }
-      if (new Date(meta.expiresAt) < new Date()) return null;
+      if (isExpired(meta.expiresAt)) {
+        await this.deleteBySubdomain(subdomain);
+        return null;
+      }
       return meta;
     } catch {
       return null;
@@ -59,10 +71,44 @@ export class FilesystemStorage implements Storage {
   }
 
   async deleteById(id: string): Promise<void> {
-    const meta = await this.loadById(id);
-    if (!meta) return;
-    await fs.unlink(path.join(DATA_DIR, `${meta.subdomain}.json`)).catch(() => {});
-    await fs.unlink(path.join(DATA_DIR, `${meta.subdomain}.html`)).catch(() => {});
+    const entries = await fs.readdir(DATA_DIR).catch(() => [] as string[]);
+    for (const entry of entries) {
+      if (!entry.endsWith('.json')) continue;
+      try {
+        const meta: ArtifactMeta = JSON.parse(await fs.readFile(path.join(DATA_DIR, entry), 'utf-8'));
+        if (meta.id === id) {
+          await this.deleteBySubdomain(meta.subdomain);
+          return;
+        }
+      } catch {
+        // Ignore malformed or concurrently deleted metadata.
+      }
+    }
+  }
+
+  async deleteBySubdomain(subdomain: string): Promise<void> {
+    await Promise.all([
+      fs.unlink(path.join(DATA_DIR, `${subdomain}.json`)).catch(() => {}),
+      fs.unlink(path.join(DATA_DIR, `${subdomain}.html`)).catch(() => {}),
+    ]);
+  }
+
+  async deleteExpired(): Promise<number> {
+    const entries = await fs.readdir(DATA_DIR).catch(() => [] as string[]);
+    let deleted = 0;
+    for (const entry of entries) {
+      if (!entry.endsWith('.json')) continue;
+      try {
+        const meta: ArtifactMeta = JSON.parse(await fs.readFile(path.join(DATA_DIR, entry), 'utf-8'));
+        if (isExpired(meta.expiresAt)) {
+          await this.deleteBySubdomain(meta.subdomain);
+          deleted++;
+        }
+      } catch {
+        // Ignore malformed or concurrently deleted metadata.
+      }
+    }
+    return deleted;
   }
 }
 
@@ -119,6 +165,11 @@ export class R2Storage implements Storage {
       const raw = await streamToString(metaRes.Body);
       const meta: ArtifactMeta = JSON.parse(raw);
 
+      if (isExpired(meta.expiresAt)) {
+        await this.deleteBySubdomain(subdomain);
+        return null;
+      }
+
       const htmlRes = await this.client.send(
         new GetObjectCommand({ Bucket: config.cfR2Bucket, Key: this.htmlKey(subdomain) })
       );
@@ -129,7 +180,6 @@ export class R2Storage implements Storage {
         meta.html = await streamToString(htmlRes.Body);
       }
 
-      if (new Date(meta.expiresAt) < new Date()) return null;
       return meta;
     } catch {
       return null;
@@ -145,6 +195,79 @@ export class R2Storage implements Storage {
   async deleteById(id: string): Promise<void> {
     // No-op without listing; deletion by subdomain preferred.
   }
+
+  async deleteBySubdomain(subdomain: string): Promise<void> {
+    await this.client.send(
+      new DeleteObjectsCommand({
+        Bucket: config.cfR2Bucket,
+        Delete: {
+          Objects: [
+            { Key: this.metaKey(subdomain) },
+            { Key: this.htmlKey(subdomain) },
+          ],
+          Quiet: true,
+        },
+      })
+    );
+  }
+
+  async deleteExpired(): Promise<number> {
+    let continuationToken: string | undefined;
+    const expiredSubdomains: string[] = [];
+
+    do {
+      const listed = await this.client.send(
+        new ListObjectsV2Command({
+          Bucket: config.cfR2Bucket,
+          Prefix: 'meta/',
+          ContinuationToken: continuationToken,
+        })
+      );
+      const keys = (listed.Contents || [])
+        .map((item) => item.Key)
+        .filter((key): key is string => Boolean(key));
+
+      let next = 0;
+      const workers = Array.from({ length: Math.min(20, keys.length) }, async () => {
+        while (next < keys.length) {
+          const key = keys[next++];
+          try {
+            const result = await this.client.send(
+              new GetObjectCommand({ Bucket: config.cfR2Bucket, Key: key })
+            );
+            const meta: ArtifactMeta = JSON.parse(await streamToString(result.Body));
+            const subdomain = key.slice('meta/'.length, -'.json'.length);
+            if (meta.subdomain === subdomain && isExpired(meta.expiresAt)) {
+              expiredSubdomains.push(subdomain);
+            }
+          } catch {
+            // A concurrent request or cleanup may already have removed it.
+          }
+        }
+      });
+      await Promise.all(workers);
+      continuationToken = listed.IsTruncated ? listed.NextContinuationToken : undefined;
+    } while (continuationToken);
+
+    const objects = expiredSubdomains.flatMap((subdomain) => [
+      { Key: this.metaKey(subdomain) },
+      { Key: this.htmlKey(subdomain) },
+    ]);
+    for (let i = 0; i < objects.length; i += 1000) {
+      await this.client.send(
+        new DeleteObjectsCommand({
+          Bucket: config.cfR2Bucket,
+          Delete: { Objects: objects.slice(i, i + 1000), Quiet: true },
+        })
+      );
+    }
+    return expiredSubdomains.length;
+  }
+}
+
+function isExpired(expiresAt: string): boolean {
+  const timestamp = Date.parse(expiresAt);
+  return Number.isFinite(timestamp) && timestamp <= Date.now();
 }
 
 async function streamToBuffer(stream: unknown): Promise<Buffer> {

@@ -3,6 +3,7 @@ import { config } from './config';
 import { generateId, generateSubdomain } from './subdomain';
 import { extractFirstImage, generatePngOgImage, insertOgImage } from './og-image';
 import { hashPassword } from './password';
+import { assertSafeHtml } from './content-safety';
 
 export function computeExpiration(ttlDays?: number, ownerKey?: string): Date {
   const days = ttlDays ?? (ownerKey ? config.keyTtlDays : config.anonTtlDays);
@@ -70,6 +71,8 @@ export async function publishArtifact(
     }
   } else if (!opts.html || Buffer.byteLength(opts.html, 'utf-8') > config.maxHtmlSizeBytes) {
     throw new Error('HTML too large or empty');
+  } else {
+    assertSafeHtml(opts.html);
   }
 
   let subdomain = generateSubdomain();
@@ -91,7 +94,6 @@ export async function publishArtifact(
     html: '',
     createdAt: new Date().toISOString(),
     expiresAt: expiresAt.toISOString(),
-    ownerKey: opts.ownerKey,
     password,
     sourceUrl: opts.sourceUrl,
     ogTitle: opts.title || 'htmldrop artifact',

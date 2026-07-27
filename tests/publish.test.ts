@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { wrapHtml, computeExpiration, buildUrl } from '../src/publish';
+import { wrapHtml, computeExpiration, buildUrl, publishArtifact } from '../src/publish';
 import { generateSubdomain } from '../src/subdomain';
+import type { ArtifactMeta } from '../src/types';
 
 describe('publish helpers', () => {
   it('wrapHtml shells a bare fragment with noindex, title, and badge', () => {
@@ -42,5 +43,20 @@ describe('publish helpers', () => {
     const s2 = generateSubdomain();
     expect(s1).toMatch(/^[a-z]+-[a-z]+-[a-z0-9]{9}$/);
     expect(s1).not.toBe(s2);
+  });
+
+  it('does not persist owner keys in artifact metadata', async () => {
+    let saved: ArtifactMeta | undefined;
+    await publishArtifact(
+      { html: '<p>safe</p>', ownerKey: 'owner-key-canary' },
+      {
+        save: async (meta) => {
+          saved = meta;
+        },
+        loadBySubdomain: async () => null,
+      }
+    );
+    expect(saved).toBeDefined();
+    expect(saved).not.toHaveProperty('ownerKey');
   });
 });
