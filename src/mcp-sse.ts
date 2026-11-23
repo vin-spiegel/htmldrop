@@ -3,6 +3,19 @@ import { randomUUID } from 'crypto';
 import { PUBLISH_TOOL, handleCall } from './mcp-handlers';
 
 /**
+ * MCP protocol revisions this endpoint speaks. The transport is stateless and
+ * implements only `initialize`, `tools/list`, `tools/call` and `ping`, so it can
+ * serve any of these revisions as-is.
+ */
+const SUPPORTED_PROTOCOL_VERSIONS = ['2025-06-18', '2025-03-26', '2024-11-05'];
+
+/**
+ * Version advertised when the client omits `protocolVersion` or asks for one we
+ * do not speak — never echo back a revision this server does not support.
+ */
+const DEFAULT_PROTOCOL_VERSION = '2025-03-26';
+
+/**
  * Stateless Streamable HTTP transport for the hosted MCP server at `POST /mcp`.
  *
  * This is the current MCP transport (it replaced the older HTTP+SSE transport).
@@ -47,12 +60,16 @@ export async function mcpStreamableHandler(req: IncomingMessage, res: ServerResp
   try {
     if (method === 'initialize') {
       const requested = params?.protocolVersion;
+      const protocolVersion =
+        typeof requested === 'string' && SUPPORTED_PROTOCOL_VERSIONS.includes(requested)
+          ? requested
+          : DEFAULT_PROTOCOL_VERSION;
       reply(
         {
           jsonrpc: '2.0',
           id,
           result: {
-            protocolVersion: typeof requested === 'string' ? requested : '2025-03-26',
+            protocolVersion,
             capabilities: { tools: {} },
             serverInfo: { name: 'htmldrop', version: '0.1.0' },
           },
